@@ -39,13 +39,21 @@ public class SelfCommandPrompt {
 	/**
 	 * supports all platforms
 	 */
-	public static void runWithJavaCMD(String appTitle)
+	public static void runWithJavaCMD(String appTitle, boolean onlyCompiled)
 	{
 		//TODO:
 	}
 	
 	/**
-	 * run your current program with command prompt and close your current program without one
+	 * use this command to support wrappers like eclipses jar in jar loader
+	 */
+	public static void runwithCMD(String[] args, String appTitle, boolean onlyCompiled)
+	{
+		runwithCMD(getMainClass(), args, appTitle, onlyCompiled);
+	}
+	
+	/**
+	 * run your current program with command prompt and close your current program without one. Doesn't support wrappers unless you use {@link SelfCommandPrompt#getMainClass()}
 	 */
 	public static void runwithCMD(Class mainClass, String[] args, String appTitle, boolean onlyCompiled) 
 	{
@@ -53,7 +61,7 @@ public class SelfCommandPrompt {
         if(console == null)
         {
             try
-            {
+            {	
             	String str = toString(args, " ");
             	String argsStr = " " + mainClass.getName() + (str.isEmpty() ? "" : " " + str);
             	String jarPath = mainClass.getProtectionDomain().getCodeSource().getLocation().getPath();//get the path of the currently running jar
@@ -83,6 +91,23 @@ public class SelfCommandPrompt {
 			}
             System.exit(0);
         }
+	}
+	
+	public static Class<?> getMainClass()
+	{
+		StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+		StackTraceElement main = stack[stack.length - 1];
+		String actualMain = main.getClassName();
+		Class<?> mainClass = null;
+		try 
+		{
+			mainClass = Class.forName(actualMain);
+		} 
+		catch (ClassNotFoundException e1) 
+		{
+			e1.printStackTrace();
+		}
+		return mainClass;
 	}
 	
 	public static String toString(String[] args, String sep) 
