@@ -32,7 +32,7 @@ public class SelfCommandPrompt {
 		
 		//got to make sure to pause the command prompt until the user has read the info
 		Scanner scanner = new Scanner(System.in).useDelimiter("\n");
-		System.out.println("Press enter to continue:");
+		System.out.println("Press ENTER to continue:");
 		scanner.next();
 	}
 	
