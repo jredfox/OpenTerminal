@@ -1,11 +1,7 @@
 package jredfox.selfcmd;
 
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.KeyEvent;
 import java.io.Console;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.util.Scanner;
@@ -31,9 +27,12 @@ public class SelfCommandPrompt {
 		}
 		
 		//got to make sure to pause the command prompt until the user has read the info
-		Scanner scanner = new Scanner(System.in).useDelimiter("\n");
+		Scanner old = new Scanner(System.in);
+		Scanner scanner = old.useDelimiter("\n");
 		System.out.println("Press ENTER to continue:");
 		scanner.next();
+		old.close();
+		scanner.close();
 	}
 	
 	/**
@@ -55,7 +54,7 @@ public class SelfCommandPrompt {
 	/**
 	 * run your current program with command prompt and close your current program without one. Doesn't support wrappers unless you use {@link SelfCommandPrompt#getMainClass()}
 	 */
-	public static void runwithCMD(Class mainClass, String[] args, String appTitle, boolean onlyCompiled) 
+	public static void runwithCMD(Class<?> mainClass, String[] args, String appTitle, boolean onlyCompiled) 
 	{
         Console console = System.console();
         if(console == null)
