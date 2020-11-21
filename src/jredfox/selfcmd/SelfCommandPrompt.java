@@ -19,7 +19,7 @@ public class SelfCommandPrompt {
 	{
 		try
 		{
-			Class mainClass = Class.forName(args[0].replace("?", "."));
+			Class mainClass = Class.forName(args[0]);
 			String[] actualArgs = new String[args.length - 1];
 			System.arraycopy(args, 1, actualArgs, 0, actualArgs.length);
 			Method method = mainClass.getMethod("main", String[].class);
