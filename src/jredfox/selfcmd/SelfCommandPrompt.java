@@ -25,9 +25,9 @@ public class SelfCommandPrompt {
 			Method method = mainClass.getMethod("main", String[].class);
 			method.invoke(null, new Object[]{actualArgs});
 		}
-		catch(Exception e)
+		catch(Throwable t)
 		{
-			e.printStackTrace();
+			t.printStackTrace();
 		}
 		
 		//got to make sure to pause the command prompt until the user has read the info
