@@ -120,7 +120,7 @@ public class SelfCommandPrompt {
 		for(String s : args)
 		{
 			String q = s.contains(" ") ? "\"" : "";
-			s = index + 1 != args.length ? (q + s + sep + q) : (q + s + q);
+			s = index + 1 != args.length ? (q + s + q + sep) : (q + s + q);
 			b.append(s);
 			index++;
 		}
