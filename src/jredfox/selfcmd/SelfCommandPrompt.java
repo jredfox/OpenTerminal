@@ -13,13 +13,18 @@ import jredfox.filededuper.util.DeDuperUtil;
  */
 public class SelfCommandPrompt {
 	
+	/**
+	 * args are [shouldPause, mainClass, programArgs]
+	 */
 	public static void main(String[] args)
 	{
+		boolean shouldPause = Boolean.parseBoolean(args[0]);
+		
 		try
 		{
-			Class mainClass = Class.forName(args[0]);
-			String[] actualArgs = new String[args.length - 1];
-			System.arraycopy(args, 1, actualArgs, 0, actualArgs.length);
+			Class mainClass = Class.forName(args[1]);
+			String[] actualArgs = new String[args.length - 2];
+			System.arraycopy(args, 2, actualArgs, 0, actualArgs.length);
 			Method method = mainClass.getMethod("main", String[].class);
 			method.invoke(null, new Object[]{actualArgs});
 		}
@@ -28,13 +33,15 @@ public class SelfCommandPrompt {
 			t.printStackTrace();
 		}
 		
-		//got to make sure to pause the command prompt until the user has read the info
-		Scanner old = new Scanner(System.in);
-		Scanner scanner = old.useDelimiter("\n");
-		System.out.println("Press ENTER to continue:");
-		scanner.next();
-		old.close();
-		scanner.close();
+		if(shouldPause)
+		{
+			Scanner old = new Scanner(System.in);
+			Scanner scanner = old.useDelimiter("\n");
+			System.out.println("Press ENTER to continue:");
+			scanner.next();
+			old.close();
+			scanner.close();
+		}
 	}
 
 	/**
@@ -48,15 +55,15 @@ public class SelfCommandPrompt {
 	/**
 	 * use this command to support wrappers like eclipses jar in jar loader
 	 */
-	public static void runwithCMD(String[] args, String appTitle, boolean onlyCompiled)
+	public static void runwithCMD(String[] args, String appTitle, boolean onlyCompiled, boolean pause)
 	{
-		runwithCMD(getMainClass(), args, appTitle, onlyCompiled);
+		runwithCMD(getMainClass(), args, appTitle, onlyCompiled, pause);
 	}
 	
 	/**
 	 * run your current program with command prompt and close your current program without one. Doesn't support wrappers unless you use {@link SelfCommandPrompt#getMainClass()}
 	 */
-	public static void runwithCMD(Class<?> mainClass, String[] args, String appTitle, boolean onlyCompiled) 
+	public static void runwithCMD(Class<?> mainClass, String[] args, String appTitle, boolean onlyCompiled, boolean pause) 
 	{
         Console console = System.console();
         if(console == null)
@@ -72,7 +79,7 @@ public class SelfCommandPrompt {
             		return;
             	
             	String os = System.getProperty("os.name").toLowerCase();
-            	String command = "java " + "-cp " + System.getProperty("java.class.path") + " " + SelfCommandPrompt.class.getName() + argsStr;
+            	String command = "java " + "-cp " + System.getProperty("java.class.path") + " " + SelfCommandPrompt.class.getName() + " " + pause + argsStr;
             	if(os.contains("windows"))
             	{
             		new ProcessBuilder("cmd", "/c", "start", "\"" + appTitle + "\"", "cmd", "/c", command).start();
