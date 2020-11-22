@@ -5,6 +5,8 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.util.Scanner;
+
+import jredfox.filededuper.util.DeDuperUtil;
 /**
  * @author jredfox. Credits to Chocohead#7137 for helping
  * this class is a wrapper for your program. It fires command prompt and stops it from quitting without user input
@@ -34,7 +36,7 @@ public class SelfCommandPrompt {
 		old.close();
 		scanner.close();
 	}
-	
+
 	/**
 	 * supports all platforms
 	 */
@@ -117,7 +119,9 @@ public class SelfCommandPrompt {
 		int index = 0;
 		for(String s : args)
 		{
-			b.append(index + 1 != args.length ? s + sep : s);
+			String q = s.contains(" ") ? "\"" : "";
+			s = index + 1 != args.length ? (q + s + sep + q) : (q + s + q);
+			b.append(s);
 			index++;
 		}
 		return b.toString();
