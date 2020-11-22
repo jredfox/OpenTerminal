@@ -1,11 +1,19 @@
 package jredfox.selfcmd;
 
+import java.io.BufferedReader;
 import java.io.Console;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
+import java.util.List;
 import java.util.Scanner;
 
+import jredfox.filededuper.Main;
 import jredfox.filededuper.util.DeDuperUtil;
 /**
  * @author jredfox. Credits to Chocohead#7137 for helping
@@ -23,10 +31,10 @@ public class SelfCommandPrompt {
 		try
 		{
 			Class mainClass = Class.forName(args[1]);
-			String[] actualArgs = new String[args.length - 2];
-			System.arraycopy(args, 2, actualArgs, 0, actualArgs.length);
+			String[] programArgs = new String[args.length - 2];
+			System.arraycopy(args, 2, programArgs, 0, programArgs.length);
 			Method method = mainClass.getMethod("main", String[].class);
-			method.invoke(null, new Object[]{actualArgs});
+			method.invoke(null, new Object[]{programArgs});
 		}
 		catch(Throwable t)
 		{
@@ -53,7 +61,8 @@ public class SelfCommandPrompt {
 	}
 	
 	/**
-	 * use this command to support wrappers like eclipses jar in jar loader
+	 * reboot your application with a command prompt terminal. Note if you hard code your mainClass instead of using the above method it won't support all compilers like eclipse's jar in jar loader
+	 * NOTE: doesn't support debug function as it breaks ides connection proxies to the jvm agent's debug
 	 */
 	public static void runwithCMD(String[] args, String appTitle, boolean onlyCompiled, boolean pause)
 	{
@@ -61,10 +70,13 @@ public class SelfCommandPrompt {
 	}
 	
 	/**
-	 * run your current program with command prompt and close your current program without one. Doesn't support wrappers unless you use {@link SelfCommandPrompt#getMainClass()}
+	 * reboot your application with a command prompt terminal. Note if you hard code your mainClass instead of using the above method it won't support all compilers like eclipse's jar in jar loader
+	 * NOTE: doesn't support debug function as it breaks ides connection proxies to the jvm agent's debug
 	 */
 	public static void runwithCMD(Class<?> mainClass, String[] args, String appTitle, boolean onlyCompiled, boolean pause) 
 	{
+		if(isDebugMode())
+			return;
         Console console = System.console();
         if(console == null)
         {
@@ -78,8 +90,9 @@ public class SelfCommandPrompt {
             	if(!compiled && onlyCompiled)
             		return;
             	
+            	String jvmArgs = getJVMArgs();
             	String os = System.getProperty("os.name").toLowerCase();
-            	String command = "java " + "-cp " + System.getProperty("java.class.path") + " " + SelfCommandPrompt.class.getName() + " " + pause + argsStr;
+            	String command = "java " + (jvmArgs.isEmpty() ? "" : jvmArgs + " ") + "-cp " + System.getProperty("java.class.path") + " " + SelfCommandPrompt.class.getName() + " " + pause + argsStr;
             	if(os.contains("windows"))
             	{
             		new ProcessBuilder("cmd", "/c", "start", "\"" + appTitle + "\"", "cmd", "/c", command).start();
@@ -99,6 +112,30 @@ public class SelfCommandPrompt {
 			}
             System.exit(0);
         }
+	}
+
+	public static String getJVMArgs()
+	{
+		RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
+		List<String> arguments = runtimeMxBean.getInputArguments();
+		StringBuilder b = new StringBuilder();
+		String sep = " ";
+		int index = 0;
+		for(String s : arguments)
+		{
+			s = index + 1 != arguments.size() ? s + sep : s;
+			b.append(s);
+			index++;
+		}
+		return b.toString();
+	}
+	
+	/**
+	 * answer found from https://stackoverflow.com/questions/1109019/determine-if-a-java-application-is-in-debug-mode-in-eclipse/6865049#6865049
+	 */
+	public static boolean isDebugMode()
+	{
+		return java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
 	}
 	
 	public static Class<?> getMainClass()
