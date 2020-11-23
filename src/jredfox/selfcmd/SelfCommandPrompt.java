@@ -123,12 +123,9 @@ public class SelfCommandPrompt {
 		return b.toString();
 	}
 	
-	/**
-	 * answer found from https://stackoverflow.com/questions/1109019/determine-if-a-java-application-is-in-debug-mode-in-eclipse/6865049#6865049
-	 */
 	public static boolean isDebugMode()
 	{
-		return java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
+		return java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString().contains("-agentlib:jdwp");
 	}
 	
 	public static Class<?> getMainClass()
