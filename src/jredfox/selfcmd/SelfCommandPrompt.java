@@ -14,6 +14,8 @@ import java.util.Scanner;
  */
 public class SelfCommandPrompt {
 	
+	public static final String VERSION = "1.2";
+	
 	/**
 	 * args are [shouldPause, mainClass, programArgs]
 	 */
@@ -81,13 +83,14 @@ public class SelfCommandPrompt {
             	String argsStr = " " + mainClass.getName() + (str.isEmpty() ? "" : " " + str);
             	String jarPath = mainClass.getProtectionDomain().getCodeSource().getLocation().getPath();//get the path of the currently running jar
             	String filename = URLDecoder.decode(jarPath, "UTF-8").substring(1);
-            	boolean compiled = getExtension(new File(filename)).equals("jar");
+            	boolean compiled = getExtension(new File(filename)).equals("jar") || getMainClassName().endsWith("jarinjarloader.JarRsrcLoader");//work around as there is a bug currently in their jar in jar loader
             	if(!compiled && onlyCompiled)
             		return;
             	
             	String jvmArgs = getJVMArgs();
             	String os = System.getProperty("os.name").toLowerCase();
             	String command = "java " + (jvmArgs.isEmpty() ? "" : jvmArgs + " ") + "-cp " + System.getProperty("java.class.path") + " " + SelfCommandPrompt.class.getName() + " " + pause + argsStr;
+//            	System.out.println(command);
             	if(os.contains("windows"))
             	{
             		new ProcessBuilder("cmd", "/c", "start", "\"" + appTitle + "\"", "cmd", "/c", command).start();
@@ -130,15 +133,21 @@ public class SelfCommandPrompt {
 		return java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString().contains("-agentlib:jdwp");
 	}
 	
-	public static Class<?> getMainClass()
+	public static String getMainClassName()
 	{
 		StackTraceElement[] stack = Thread.currentThread().getStackTrace();
 		StackTraceElement main = stack[stack.length - 1];
 		String actualMain = main.getClassName();
+		return actualMain;
+	}
+	
+	public static Class<?> getMainClass()
+	{
 		Class<?> mainClass = null;
 		try 
 		{
-			mainClass = Class.forName(actualMain);
+			String className = getMainClassName();
+			mainClass = Class.forName(className);
 		} 
 		catch (ClassNotFoundException e1) 
 		{
