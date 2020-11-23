@@ -1,20 +1,13 @@
 package jredfox.selfcmd;
 
-import java.io.BufferedReader;
 import java.io.Console;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.Scanner;
-
-import jredfox.filededuper.Main;
-import jredfox.filededuper.util.DeDuperUtil;
 /**
  * @author jredfox. Credits to Chocohead#7137 for helping
  * this class is a wrapper for your program. It fires command prompt and stops it from quitting without user input
@@ -53,7 +46,7 @@ public class SelfCommandPrompt {
 	}
 
 	/**
-	 * supports all platforms
+	 * supports all platforms no need to reboot, supports debugging and all ides
 	 */
 	public static void runWithJavaCMD(String appTitle, boolean onlyCompiled)
 	{
