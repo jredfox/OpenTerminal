@@ -55,7 +55,8 @@ public class SelfCommandPrompt {
 	
 	/**
 	 * reboot your application with a command prompt terminal. Note if you hard code your mainClass instead of using the above method it won't support all compilers like eclipse's jar in jar loader
-	 * NOTE: doesn't support debug function as it breaks ides connection proxies to the jvm agent's debug
+	 * NOTE: doesn't support debug function as it breaks ides connection proxies to the jvm agent's debug.
+	 * before calling this if you have jvmArguments for like ports or connections close them before rebooting
 	 */
 	public static void runwithCMD(String[] args, String appTitle, boolean onlyCompiled, boolean pause)
 	{
@@ -64,7 +65,8 @@ public class SelfCommandPrompt {
 	
 	/**
 	 * reboot your application with a command prompt terminal. Note if you hard code your mainClass instead of using the above method it won't support all compilers like eclipse's jar in jar loader
-	 * NOTE: doesn't support debug function as it breaks ides connection proxies to the jvm agent's debug
+	 * NOTE: doesn't support debug function as it breaks ides connection proxies to the jvm agent's debug.
+	 * before calling this if you have jvmArguments for like ports or connections close them before rebooting
 	 */
 	public static void runwithCMD(Class<?> mainClass, String[] args, String appTitle, boolean onlyCompiled, boolean pause) 
 	{
