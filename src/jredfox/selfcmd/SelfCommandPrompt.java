@@ -2,6 +2,7 @@ package jredfox.selfcmd;
 
 import java.io.Console;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Method;
@@ -14,7 +15,7 @@ import java.util.Scanner;
  */
 public class SelfCommandPrompt {
 	
-	public static final String VERSION = "1.2";
+	public static final String VERSION = "1.2.1";
 	
 	/**
 	 * args are [shouldPause, mainClass, programArgs]
@@ -25,7 +26,7 @@ public class SelfCommandPrompt {
 		
 		try
 		{
-			Class mainClass = Class.forName(args[1]);
+			Class<?> mainClass = Class.forName(args[1]);
 			String[] programArgs = new String[args.length - 2];
 			System.arraycopy(args, 2, programArgs, 0, programArgs.length);
 			Method method = mainClass.getMethod("main", String[].class);
@@ -79,18 +80,15 @@ public class SelfCommandPrompt {
         {
             try
             {	
-            	String str = toString(args, " ");
+            	String str = getProgramArgs(args, " ");
             	String argsStr = " " + mainClass.getName() + (str.isEmpty() ? "" : " " + str);
-            	String jarPath = mainClass.getProtectionDomain().getCodeSource().getLocation().getPath();//get the path of the currently running jar
-            	String filename = URLDecoder.decode(jarPath, "UTF-8").substring(1);
-            	boolean compiled = getExtension(new File(filename)).equals("jar") || getMainClassName().endsWith("jarinjarloader.JarRsrcLoader");//work around as there is a bug currently in their jar in jar loader
+            	boolean compiled = isCompiled(mainClass);
             	if(!compiled && onlyCompiled)
             		return;
             	
             	String jvmArgs = getJVMArgs();
             	String os = System.getProperty("os.name").toLowerCase();
             	String command = "java " + (jvmArgs.isEmpty() ? "" : jvmArgs + " ") + "-cp " + System.getProperty("java.class.path") + " " + SelfCommandPrompt.class.getName() + " " + pause + argsStr;
-//            	System.out.println(command);
             	if(os.contains("windows"))
             	{
             		new ProcessBuilder("cmd", "/c", "start", "\"" + appTitle + "\"", "cmd", "/c", command).start();
@@ -111,7 +109,36 @@ public class SelfCommandPrompt {
             System.exit(0);
         }
 	}
-
+	
+	/**
+	 * checks if the jar is compiled based on the main class
+	 * @throws UnsupportedEncodingException 
+	 */
+	public static boolean isCompiled() throws UnsupportedEncodingException
+	{
+		return isCompiled(getMainClass());
+	}
+	
+	/**
+	 * checks per class if the jar is compiled
+	 * @throws UnsupportedEncodingException 
+	 */
+	public static boolean isCompiled(Class<?> mainClass) throws UnsupportedEncodingException
+	{
+		File file = getFileFromClass(mainClass);
+		return getExtension(file).equals("jar") || getMainClassName().endsWith("jarinjarloader.JarRsrcLoader");
+	}
+	
+	/**
+	 * get a file from a class
+	 */
+	public static File getFileFromClass(Class<?> clazz) throws UnsupportedEncodingException
+	{
+		String jarPath = clazz.getProtectionDomain().getCodeSource().getLocation().getPath();//get the path of the currently running jar
+		String fileName = URLDecoder.decode(jarPath, "UTF-8").substring(1);
+		return new File(fileName);
+	}
+	
 	public static String getJVMArgs()
 	{
 		RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
@@ -156,7 +183,7 @@ public class SelfCommandPrompt {
 		return mainClass;
 	}
 	
-	public static String toString(String[] args, String sep) 
+	public static String getProgramArgs(String[] args, String sep) 
 	{
 		if(args == null)
 			return null;
