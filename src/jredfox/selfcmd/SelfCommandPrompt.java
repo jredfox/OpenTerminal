@@ -1,6 +1,5 @@
 package jredfox.selfcmd;
 
-import java.io.Console;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
@@ -9,13 +8,16 @@ import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.Scanner;
+
+import jredfox.filededuper.config.simple.MapConfig;
+import jredfox.filededuper.util.DeDuperUtil;
 /**
  * @author jredfox. Credits to Chocohead#7137 for helping
  * this class is a wrapper for your program. It fires command prompt and stops it from quitting without user input
  */
 public class SelfCommandPrompt {
 	
-	public static final String VERSION = "1.2.1";
+	public static final String VERSION = "1.3.0";
 	
 	/**
 	 * args are [shouldPause, mainClass, programArgs]
@@ -49,7 +51,8 @@ public class SelfCommandPrompt {
 	}
 
 	/**
-	 * supports all platforms no need to reboot, supports debugging and all ides
+	 * supports all platforms no need to reboot, supports debugging and all ides,
+	 * and supports shutdown hooks
 	 */
 	public static void runWithJavaCMD(String appTitle, boolean onlyCompiled)
 	{
@@ -61,9 +64,9 @@ public class SelfCommandPrompt {
 	 * NOTE: doesn't support debug function as it breaks ides connection proxies to the jvm agent's debug.
 	 * before calling this if you have jvmArguments for like ports or connections close them before rebooting
 	 */
-	public static void runwithCMD(String[] args, String appTitle, boolean onlyCompiled, boolean pause)
+	public static void runwithCMD(String[] args, String appName, String appId, boolean onlyCompiled, boolean pause)
 	{
-		runwithCMD(getMainClass(), args, appTitle, onlyCompiled, pause);
+		runwithCMD(getMainClass(), args, appName, appId, onlyCompiled, pause);
 	}
 	
 	/**
@@ -71,50 +74,60 @@ public class SelfCommandPrompt {
 	 * NOTE: doesn't support debug function as it breaks ides connection proxies to the jvm agent's debug.
 	 * before calling this if you have jvmArguments for like ports or connections close them before rebooting
 	 */
-	public static void runwithCMD(Class<?> mainClass, String[] args, String appTitle, boolean onlyCompiled, boolean pause) 
+	public static void runwithCMD(Class<?> mainClass, String[] args, String appName, String appId, boolean onlyCompiled, boolean pause) 
 	{
-		if(isDebugMode())
+		if(!isCompiled(mainClass) && onlyCompiled || isDebugMode() || SelfCommandPrompt.class.getName().equals(getMainClassName()))
+		{
 			return;
-        Console console = System.console();
-        if(console == null)
-        {
-            try
-            {	
-            	String str = getProgramArgs(args, " ");
-            	String argsStr = " " + mainClass.getName() + (str.isEmpty() ? "" : " " + str);
-            	boolean compiled = isCompiled(mainClass);
-            	if(!compiled && onlyCompiled)
-            		return;
-            	
-            	String jvmArgs = getJVMArgs();
-            	String os = System.getProperty("os.name").toLowerCase();
-            	String command = "java " + (jvmArgs.isEmpty() ? "" : jvmArgs + " ") + "-cp " + System.getProperty("java.class.path") + " " + SelfCommandPrompt.class.getName() + " " + pause + argsStr;
-            	if(os.contains("windows"))
-            	{
-            		new ProcessBuilder("cmd", "/c", "start", "\"" + appTitle + "\"", "cmd", "/c", command).start();
-            	}
-            	else if(os.contains("mac"))
-            	{
-            		new ProcessBuilder("/bin/bash", "-c", command).start();
-            	}
-            	else if(os.contains("linux"))
-            	{
-            		new ProcessBuilder("xfce4-terminal", "--title=" + appTitle, "--hold", "-x", command).start();
-            	}
-			}
-            catch (Exception e)
-            {
-				e.printStackTrace();
-			}
-            System.exit(0);
-        }
+		}
+		rebootWithTerminal(mainClass, args, appName, appId, onlyCompiled, pause);
 	}
 	
+	/**
+	 * this method is a directly calls commands to reboot your app with a command prompt terminal. 
+	 * do not call this directly without if statements it will recursively reboot infinitely
+	 */
+	public static void rebootWithTerminal(Class<?> mainClass, String[] args, String appName, String appId, boolean onlyCompiled, boolean pause)
+	{
+        try
+        {
+            String str = getProgramArgs(args, " ");
+            String argsStr = " " + mainClass.getName() + (str.isEmpty() ? "" : " " + str);
+            String jvmArgs = getJVMArgs();
+            String os = System.getProperty("os.name").toLowerCase();
+            String command = "java " + (jvmArgs.isEmpty() ? "" : jvmArgs + " ") + "-cp " + System.getProperty("java.class.path") + " " + SelfCommandPrompt.class.getName() + " " + pause + argsStr;
+            if(os.contains("windows"))
+            {
+            	Runtime.getRuntime().exec("cmd /c start" + " \"" + appName + "\" " + command);
+            }
+            else if(os.contains("mac"))
+            {
+            	Runtime.getRuntime().exec("/bin/bash -c " + command);//TODO: make the command work
+            }
+            else if(os.contains("linux"))
+            {
+            	//TODO: generate sh files for linux because they have too many kernals then execute those files
+            }
+            else
+            {
+            	SelfCommandPrompt.runWithJavaCMD(appName, onlyCompiled);//for unsupported os's use the java console
+            	return;//do not exit the application so return from the method
+            }
+            Runtime.getRuntime().gc();
+            System.exit(0);
+        }
+        catch (Exception e)
+        {
+        	e.printStackTrace();
+			SelfCommandPrompt.runWithJavaCMD(appName, onlyCompiled);//for unsupported os's use the java console
+		}
+	}
+
 	/**
 	 * checks if the jar is compiled based on the main class
 	 * @throws UnsupportedEncodingException 
 	 */
-	public static boolean isCompiled() throws UnsupportedEncodingException
+	public static boolean isCompiled()
 	{
 		return isCompiled(getMainClass());
 	}
@@ -123,10 +136,18 @@ public class SelfCommandPrompt {
 	 * checks per class if the jar is compiled
 	 * @throws UnsupportedEncodingException 
 	 */
-	public static boolean isCompiled(Class<?> mainClass) throws UnsupportedEncodingException
+	public static boolean isCompiled(Class<?> mainClass)
 	{
-		File file = getFileFromClass(mainClass);
-		return getExtension(file).equals("jar") || getMainClassName().endsWith("jarinjarloader.JarRsrcLoader");
+		try 
+		{
+			File file = getFileFromClass(mainClass);
+			return getExtension(file).equals("jar") || getMainClassName().endsWith("jarinjarloader.JarRsrcLoader");
+		} 
+		catch (UnsupportedEncodingException e) 
+		{
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 	/**
@@ -211,6 +232,6 @@ public class SelfCommandPrompt {
 	
 	public static File getProgramDir()
 	{
-		return new File(System.getProperty("user.dir"));
+		return new File(System.getProperty("user.dir")).getAbsoluteFile();
 	}
 }
