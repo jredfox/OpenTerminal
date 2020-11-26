@@ -6,18 +6,19 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import jredfox.filededuper.config.simple.MapConfig;
-import jredfox.filededuper.util.DeDuperUtil;
+import jredfox.filededuper.util.IOUtils;
+import jredfox.selfcmd.jconsole.JConsole;
 /**
  * @author jredfox. Credits to Chocohead#7137 for helping
  * this class is a wrapper for your program. It fires command prompt and stops it from quitting without user input
  */
 public class SelfCommandPrompt {
 	
-	public static final String VERSION = "1.3.0";
+	public static final String VERSION = "1.3.1";
 	
 	/**
 	 * args are [shouldPause, mainClass, programArgs]
@@ -51,12 +52,25 @@ public class SelfCommandPrompt {
 	}
 
 	/**
-	 * supports all platforms no need to reboot, supports debugging and all ides,
-	 * and supports shutdown hooks
+	 * supports all platforms no need to reboot, supports debugging and all ides, and supports shutdown hooks
 	 */
-	public static void runWithJavaCMD(String appTitle, boolean onlyCompiled)
+	public static JConsole startJConsole(String appName, boolean onlyCompiled)
 	{
-		//TODO:
+		if(onlyCompiled && !isCompiled(getMainClass()))
+		{
+			return null;
+		}
+		
+		JConsole console = new JConsole(appName)
+		{
+			@Override
+			public boolean isJavaCommand(String[] command){return true;}//always return true we do not support os commands in JConsole
+
+			@Override
+			public boolean shutdown() {return true;}
+		};
+		console.setEnabled(true);
+		return console;
 	}
 	
 	/**
@@ -76,7 +90,8 @@ public class SelfCommandPrompt {
 	 */
 	public static void runwithCMD(Class<?> mainClass, String[] args, String appName, String appId, boolean onlyCompiled, boolean pause) 
 	{
-		if(!isCompiled(mainClass) && onlyCompiled || isDebugMode() || SelfCommandPrompt.class.getName().equals(getMainClassName()))
+		boolean compiled = isCompiled(mainClass);
+		if(!compiled && onlyCompiled || compiled && System.console() != null || isDebugMode() || SelfCommandPrompt.class.getName().equals(getMainClassName()))
 		{
 			return;
 		}
@@ -102,7 +117,27 @@ public class SelfCommandPrompt {
             }
             else if(os.contains("mac"))
             {
-            	Runtime.getRuntime().exec("/bin/bash -c " + command);//TODO: make the command work
+            	//TODO: test if it launches, figurure out @echo off command for mac equivalent
+            	File javacmds = new File(System.getProperty("user.dir"), "javacmds.sh");
+            	List<String> cmds = new ArrayList<>();
+            	cmds.add("#!/bin/bash");
+            	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");
+            	cmds.add(command);
+            	System.out.println("attempting to save file:" + javacmds.getAbsolutePath());
+            	IOUtils.saveFileLines(cmds, javacmds, true);
+            	IOUtils.makeExe(javacmds);
+            	
+            	File launchSh = new File(System.getProperty("user.dir"), "run.sh");
+            	List<String> li = new ArrayList<>();
+            	li.add("#!/bin/bash");
+            	li.add("osascript -e \"tell application \\\"Terminal\\\" to do script \\\"" + javacmds.getAbsolutePath() + "\"\"");
+            	System.out.println("attempting to save File:" + launchSh.getAbsolutePath());
+            	IOUtils.saveFileLines(li, launchSh, true);
+            	IOUtils.makeExe(launchSh);
+            	Runtime.getRuntime().exec(launchSh.getAbsolutePath());
+//            	ProcessBuilder pb = new ProcessBuilder(launchSh.getAbsolutePath());
+//            	pb.inheritIO();
+//            	pb.start();
             }
             else if(os.contains("linux"))
             {
@@ -110,16 +145,17 @@ public class SelfCommandPrompt {
             }
             else
             {
-            	SelfCommandPrompt.runWithJavaCMD(appName, onlyCompiled);//for unsupported os's use the java console
+            	SelfCommandPrompt.startJConsole(appName, onlyCompiled);//for unsupported os's use the java console
             	return;//do not exit the application so return from the method
             }
             Runtime.getRuntime().gc();
             System.exit(0);
         }
         catch (Exception e)
-        {
+        {	
+			SelfCommandPrompt.startJConsole(appName, onlyCompiled);//use JConsole as a backup in case they are on a very old os version
         	e.printStackTrace();
-			SelfCommandPrompt.runWithJavaCMD(appName, onlyCompiled);//for unsupported os's use the java console
+			System.out.println("JCONSOLE STARTING:");
 		}
 	}
 
@@ -232,6 +268,6 @@ public class SelfCommandPrompt {
 	
 	public static File getProgramDir()
 	{
-		return new File(System.getProperty("user.dir")).getAbsoluteFile();
+		return new File(System.getProperty("user.dir"));
 	}
 }
