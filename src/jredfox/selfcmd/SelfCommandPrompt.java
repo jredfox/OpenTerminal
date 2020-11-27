@@ -122,6 +122,7 @@ public class SelfCommandPrompt {
             	File javacmds = new File(System.getProperty("user.dir"), "javacmds.sh");
             	List<String> cmds = new ArrayList<>();
             	cmds.add("#!/bin/bash");
+            	cmds.add("set +v");//@Echo off?????
             	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");
             	cmds.add(command);
             	System.out.println("attempting to save file:" + javacmds.getAbsolutePath());
@@ -135,7 +136,7 @@ public class SelfCommandPrompt {
             	System.out.println("attempting to save File:" + launchSh.getAbsolutePath());
             	IOUtils.saveFileLines(li, launchSh, true);
             	IOUtils.makeExe(launchSh);
-            	Runtime.getRuntime().exec(launchSh.getAbsolutePath());//TODO: test
+            	Runtime.getRuntime().exec(launchSh.getAbsolutePath());//TODO: test, echo off
 //            	ProcessBuilder pb = new ProcessBuilder(launchSh.getAbsolutePath());
 //            	pb.inheritIO();
 //            	pb.start();
@@ -145,10 +146,12 @@ public class SelfCommandPrompt {
             	File javacmds = new File(System.getProperty("user.dir"), "javacmds.sh");
             	List<String> cmds = new ArrayList<>();
             	cmds.add("#!/bin/sh");
+            	cmds.add("set +v");
+            	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");
             	cmds.add(command);
             	IOUtils.saveFileLines(cmds, javacmds, true);
             	IOUtils.makeExe(javacmds);
-            	Runtime.getRuntime().exec("xdg-open " + javacmds.getAbsolutePath());//TODO: test
+            	Runtime.getRuntime().exec("xdg-open " + javacmds.getAbsolutePath());//TODO: test, setTitle, echooff
             }
             else
             {
