@@ -52,6 +52,7 @@ public class SelfCommandPrompt {
 	}
 
 	/**
+	 * NOTE: is WIP and doesn't take input currently use shell / batch files for unsupported oses in the mean time to run the jar
 	 * supports all platforms no need to reboot, supports debugging and all ides, and supports shutdown hooks
 	 */
 	public static JConsole startJConsole(String appName, boolean onlyCompiled)
@@ -67,7 +68,7 @@ public class SelfCommandPrompt {
 			public boolean isJavaCommand(String[] command){return true;}//always return true we do not support os commands in JConsole
 
 			@Override
-			public boolean shutdown() {return true;}
+			public boolean shutdown(){return true;}
 		};
 		console.setEnabled(true);
 		return console;
@@ -134,14 +135,20 @@ public class SelfCommandPrompt {
             	System.out.println("attempting to save File:" + launchSh.getAbsolutePath());
             	IOUtils.saveFileLines(li, launchSh, true);
             	IOUtils.makeExe(launchSh);
-            	Runtime.getRuntime().exec(launchSh.getAbsolutePath());
+            	Runtime.getRuntime().exec(launchSh.getAbsolutePath());//TODO: test
 //            	ProcessBuilder pb = new ProcessBuilder(launchSh.getAbsolutePath());
 //            	pb.inheritIO();
 //            	pb.start();
             }
             else if(os.contains("linux"))
             {
-            	//TODO: generate sh files for linux because they have too many kernals then execute those files
+            	File javacmds = new File(System.getProperty("user.dir"), "javacmds.sh");
+            	List<String> cmds = new ArrayList<>();
+            	cmds.add("#!/bin/sh");
+            	cmds.add(command);
+            	IOUtils.saveFileLines(cmds, javacmds, true);
+            	IOUtils.makeExe(javacmds);
+            	Runtime.getRuntime().exec("xdg-open " + javacmds.getAbsolutePath());//TODO: test
             }
             else
             {
