@@ -32,7 +32,8 @@ import javax.swing.UIManager;
 import javax.swing.text.Document;
 
 /**
- * @author micah_laster, jredfox
+ * @author jredfox
+ * @credit micah_laster for making most of the gui
  */
 public abstract class JConsole {
 	

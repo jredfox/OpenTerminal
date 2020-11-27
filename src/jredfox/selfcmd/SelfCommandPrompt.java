@@ -12,6 +12,7 @@ import java.util.Scanner;
 
 import jredfox.filededuper.util.IOUtils;
 import jredfox.selfcmd.jconsole.JConsole;
+import jredfox.selfcmd.thread.ShutdownThread;
 /**
  * @author jredfox. Credits to Chocohead#7137 for helping
  * this class is a wrapper for your program. It fires command prompt and stops it from quitting without user input
@@ -97,6 +98,15 @@ public class SelfCommandPrompt {
 			return;
 		}
 		rebootWithTerminal(mainClass, args, appName, appId, onlyCompiled, pause);
+	}
+	
+	/**
+	 * NOTE: this isn't a shutdown event to prevent shutdown only a hook into the shutdown events. 
+	 * That would be app specific this is jvm program (non app) specific which works for both
+	 */
+	public static void addShutdownThread(ShutdownThread sht)
+	{
+		throw new RuntimeException("Unsupported Check back in a future version!");
 	}
 	
 	/**
