@@ -1,11 +1,14 @@
 package jredfox.selfcmd;
 
+import java.io.Console;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -19,7 +22,7 @@ import jredfox.selfcmd.thread.ShutdownThread;
  */
 public class SelfCommandPrompt {
 	
-	public static final String VERSION = "1.3.1";
+	public static final String VERSION = "1.4.1";
 	
 	/**
 	 * args are [shouldPause, mainClass, programArgs]
@@ -51,18 +54,30 @@ public class SelfCommandPrompt {
 			scanner.close();
 		}
 	}
+	
+	public static void syncUserDirWithJar()
+	{
+		try 
+		{
+			setUserDir(getFileFromClass(getMainClass()).getParentFile());
+		}
+		catch (UnsupportedEncodingException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public static void setUserDir(File file)
+	{
+		System.setProperty("user.dir", file.getAbsolutePath());
+	}
 
 	/**
 	 * NOTE: is WIP and doesn't take input currently use shell / batch files for unsupported oses in the mean time to run the jar
 	 * supports all platforms no need to reboot, supports debugging and all ides, and supports shutdown hooks
 	 */
-	public static JConsole startJConsole(String appName, boolean onlyCompiled)
-	{
-		if(onlyCompiled && !isCompiled(getMainClass()))
-		{
-			return null;
-		}
-		
+	public static JConsole startJConsole(String appName)
+	{	
 		JConsole console = new JConsole(appName)
 		{
 			@Override
@@ -97,7 +112,7 @@ public class SelfCommandPrompt {
 		{
 			return;
 		}
-		rebootWithTerminal(mainClass, args, appName, appId, onlyCompiled, pause);
+		rebootWithTerminal(mainClass, args, appName, appId, pause);
 	}
 	
 	/**
@@ -113,7 +128,7 @@ public class SelfCommandPrompt {
 	 * this method is a directly calls commands to reboot your app with a command prompt terminal. 
 	 * do not call this directly without if statements it will recursively reboot infinitely
 	 */
-	public static void rebootWithTerminal(Class<?> mainClass, String[] args, String appName, String appId, boolean onlyCompiled, boolean pause)
+	public static void rebootWithTerminal(Class<?> mainClass, String[] args, String appName, String appId, boolean pause)
 	{
         try
         {
@@ -124,32 +139,27 @@ public class SelfCommandPrompt {
             String command = "java " + (jvmArgs.isEmpty() ? "" : jvmArgs + " ") + "-cp " + System.getProperty("java.class.path") + " " + SelfCommandPrompt.class.getName() + " " + pause + argsStr;
             if(os.contains("windows"))
             {
-            	Runtime.getRuntime().exec("cmd /c start" + " \"" + appName + "\" " + command);
+            	Runtime.getRuntime().exec("cmd /c start" + " \"" + appName + "\" " + command);//power shell isn't supported as it screws up with the java -cp command when using the gui manually
             }
             else if(os.contains("mac"))
             {
-            	//TODO: test if it launches, figurure out @echo off command for mac equivalent
-            	File javacmds = new File(System.getProperty("user.dir"), "javacmds.sh");
+            	File javacmds = new File(getProgramDir(), "javacmds.sh");
             	List<String> cmds = new ArrayList<>();
             	cmds.add("#!/bin/bash");
-            	cmds.add("set +v");//@Echo off?????
+            	cmds.add("set +v");
             	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");
+            	cmds.add("cd " + getProgramDir().getAbsolutePath());//enforce same directory with mac's redirects you never know where you are
             	cmds.add(command);
-            	System.out.println("attempting to save file:" + javacmds.getAbsolutePath());
             	IOUtils.saveFileLines(cmds, javacmds, true);
             	IOUtils.makeExe(javacmds);
             	
-            	File launchSh = new File(System.getProperty("user.dir"), "run.sh");
+            	File launchSh = new File(getProgramDir(), "run.sh");
             	List<String> li = new ArrayList<>();
             	li.add("#!/bin/bash");
-            	li.add("osascript -e \"tell application \\\"Terminal\\\" to do script \\\"" + javacmds.getAbsolutePath() + "\"\"");
-            	System.out.println("attempting to save File:" + launchSh.getAbsolutePath());
+            	li.add("osascript -e \"tell application \\\"Terminal\\\" to do script \\\"" + javacmds.getAbsolutePath() + "\\\"\"");
             	IOUtils.saveFileLines(li, launchSh, true);
             	IOUtils.makeExe(launchSh);
-            	Runtime.getRuntime().exec(launchSh.getAbsolutePath());//TODO: test, echo off
-//            	ProcessBuilder pb = new ProcessBuilder(launchSh.getAbsolutePath());
-//            	pb.inheritIO();
-//            	pb.start();
+            	Runtime.getRuntime().exec("/bin/bash -c " + launchSh.getAbsolutePath());
             }
             else if(os.contains("linux"))
             {
@@ -161,11 +171,12 @@ public class SelfCommandPrompt {
             	cmds.add(command);
             	IOUtils.saveFileLines(cmds, javacmds, true);
             	IOUtils.makeExe(javacmds);
-            	Runtime.getRuntime().exec("xdg-open " + javacmds.getAbsolutePath());//TODO: test, setTitle, echooff
+            	Runtime.getRuntime().exec(new String[]{ getLinuxTerminal(), "--title=" + appName, "--hold", "-x", javacmds.getAbsolutePath()});
+//            	Runtime.getRuntime().exec("xdg-open " + javacmds.getAbsolutePath());
             }
             else
             {
-            	SelfCommandPrompt.startJConsole(appName, onlyCompiled);//for unsupported os's use the java console
+            	SelfCommandPrompt.startJConsole(appName);//for unsupported os's use the java console
             	return;//do not exit the application so return from the method
             }
             Runtime.getRuntime().gc();
@@ -173,10 +184,70 @@ public class SelfCommandPrompt {
         }
         catch (Exception e)
         {	
-			SelfCommandPrompt.startJConsole(appName, onlyCompiled);//use JConsole as a backup in case they are on a very old os version
+			SelfCommandPrompt.startJConsole(appName);//use JConsole as a backup in case they are on a very old os version
         	e.printStackTrace();
 			System.out.println("JCONSOLE STARTING:");
 		}
+	}
+	
+	private static String[] otherTerms = new String[]
+	{
+		"cmd",//windows primary terminal
+		"powershell",//windows other terminal(bugs out)
+		"bin/bash"//mac osx
+	};
+	
+	private static String[] linux_terms = new String[]
+	{
+			"/usr/bin/gcm-calibrate",
+			"/usr/bin/gnome-terminal",
+			"/usr/bin/mosh-client",
+			"/usr/bin/mosh-server",
+			"/usr/bin/mrxvt",           
+			"/usr/bin/mrxvt-full",        
+			"/usr/bin/roxterm",          
+			"/usr/bin/rxvt-unicode",        
+			"/usr/bin/urxvt",             
+			"/usr/bin/urxvtd",
+			"/usr/bin/vinagre",
+			"/usr/bin/x-terminal-emulator",
+			"/usr/bin/xfce4-terminal",   
+			"/usr/bin/xterm",
+			//alts start here
+			"/usr/bin/Eterm",
+			"/usr/bin/gnome-terminal.wrapper",
+			"/usr/bin/koi8rxterm",
+			"/usr/bin/konsole",
+			"/usr/bin/lxterm",
+			"/usr/bin/mlterm",
+			"/usr/bin/mrxvt-full",
+			"/usr/bin/roxterm",
+			"/usr/bin/rxvt-xpm",
+			"/usr/bin/rxvt-xterm",
+			"/usr/bin/urxvt",
+			"/usr/bin/uxterm",
+			"/usr/bin/xfce4-terminal.wrapper",
+			"/usr/bin/xterm",
+			"/usr/bin/xvt"
+	};
+	
+	/**
+	 * attempts to get the default linux terminal on the os
+	 */
+	//TODO: make it so it tries to find the default terminal for the distributions lsb_release -a
+	public static String getLinuxTerminal()
+	{
+		for(String s : linux_terms)
+		{
+			try
+			{
+				Runtime.getRuntime().exec(s + " uname -r");
+				return s;
+			}
+			catch(Throwable t) {}
+		}
+		System.out.println("unable to find linux terminal report this as a bug to https://github.com/jredfox/SelfCommandPrompt/issues");
+		return null;
 	}
 
 	/**
