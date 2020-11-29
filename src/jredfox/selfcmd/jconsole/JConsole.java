@@ -31,6 +31,11 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.text.Document;
 
+import com.google.common.base.Strings;
+
+import jredfox.selfcmd.SelfCommandPrompt;
+import jredfox.selfcmd.util.OSUtil;
+
 /**
  * @author jredfox
  * @credit micah_laster for making most of the gui
@@ -256,22 +261,29 @@ public abstract class JConsole {
 	{
 		try
 		{
-			Process p = Runtime.getRuntime().exec(command);
+			String term = OSUtil.getTerminal();
+			String close = OSUtil.getExeAndClose(OSUtil.osSimpleName);
+			String termcmd = term == null ?  "" : term + " " + close + " ";
+			Process p = Runtime.getRuntime().exec(termcmd + command);//TODO: wait until the process is done
 			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line = "";
-			while ((line = reader.readLine()) != null) 
+			while ((line = reader.readLine()) != null) //TODO: improve it so it's a live stream feed until the program ends
 			{
 				System.out.println(line);
 			}
+			if(p.exitValue() != 0)
+			{
+				System.out.println("invalid command:\"" + command + "\"");
+			}
+			reader.close();
 		}
-		catch(Exception ex)
+		catch(Throwable e)
 		{
-			System.out.println(command + " is not recognised as a internal or external command");
+			e.printStackTrace();
 		}
 	}
 	
 
-	
     /**
      * split with quote ignoring support @jredfox
      */
