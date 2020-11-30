@@ -31,9 +31,6 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.text.Document;
 
-import com.google.common.base.Strings;
-
-import jredfox.selfcmd.SelfCommandPrompt;
 import jredfox.selfcmd.util.OSUtil;
 
 /**
@@ -54,8 +51,8 @@ public abstract class JConsole {
 	public Color backgroundColor = new Color(12, 12, 12);
 	public Font textFont = new Font("Consolas", Font.PLAIN, 16);
 	public Color textColor = new Color(204, 204, 204);
-	public int width = 1115;//990
-	public int height = 645;//525
+	public int width = 990;//990
+	public int height = 550;//525
 	
 	public JConsole()
 	{
@@ -85,8 +82,8 @@ public abstract class JConsole {
 		doc = console.getDocument();//TODO:unused????
 		ScrollPane = new JScrollPane(console);
 		printStream = new PrintStream(new Output(console));
-		System.setOut(printStream);//moves the text that comes from system.out. to my stream
-		System.setErr(printStream);//moves the text that comes from system.err. to my stream
+		System.setOut(this.printStream);
+		System.setErr(this.printStream);
 		//System.setIn(in);//TODO: make input stream
 		
 		frame.addWindowFocusListener(new WindowFocusListener() {
@@ -133,7 +130,9 @@ public abstract class JConsole {
 				{
 					String command = input.getText();
 					boolean isJava = isJavaCommand(JConsole.split(command,' ', '"', '"'));
-					if(!isJava && hasOsCommands())
+					boolean virtual = !isJava && runVirtualCmd(command);//don't fire clear command if the java program has done something with it
+					boolean hasRun = isJava || virtual;
+					if(!hasRun && hasOsCommands())
 					{
 						runConsoleCommand(command);
 					}
@@ -198,7 +197,7 @@ public abstract class JConsole {
 		
 		input.requestFocusInWindow();
 	}
-	
+
 	public void resize(int w, int h)
 	{
 		frame.setSize(w, h);//the window size is here
@@ -256,32 +255,38 @@ public abstract class JConsole {
     {
     	return this.osCmds;
     }
-	
-	public void runConsoleCommand(String command)
+    
+	public boolean runVirtualCmd(String command)
 	{
-		try
-		{
-			String term = OSUtil.getTerminal();
-			String close = OSUtil.getExeAndClose(OSUtil.osSimpleName);
-			String termcmd = term == null ?  "" : term + " " + close + " ";
-			Process p = Runtime.getRuntime().exec(termcmd + command);//TODO: wait until the process is done
-			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			String line = "";
-			while ((line = reader.readLine()) != null) //TODO: improve it so it's a live stream feed until the program ends
-			{
-				System.out.println(line);
-			}
-			if(p.exitValue() != 0)
-			{
-				System.out.println("invalid command:\"" + command + "\"");
-			}
-			reader.close();
-		}
-		catch(Throwable e)
-		{
-			e.printStackTrace();
-		}
+    	if(command.trim().equals("clear"))
+    	{
+    		console.setText("");
+    		return true;
+    	}
+    	return false;
 	}
+	
+    public void runConsoleCommand(String command)
+    {
+        try
+        {
+            String term = OSUtil.getTerminal();
+            String close = OSUtil.getExeAndClose(OSUtil.osSimpleName);
+            ProcessBuilder pb = new ProcessBuilder(new String[]{term, close, command});//TODO: wait until the process is done
+            Process process = pb.start();
+            BufferedReader br_log = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader br_err = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            String line1;
+            while (((line1 = br_log.readLine()) != null) || ((line1 = br_err.readLine()) != null)) 
+            {
+            	System.out.println(line1);
+            }
+        }
+        catch(Throwable e)
+        {
+            e.printStackTrace();
+        }
+    }
 	
 
     /**

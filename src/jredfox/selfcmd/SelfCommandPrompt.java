@@ -14,7 +14,7 @@ import jredfox.filededuper.util.IOUtils;
 import jredfox.selfcmd.jconsole.JConsole;
 import jredfox.selfcmd.util.OSUtil;
 /**
- * @author jredfox. Credits to Chocohead#7137 for helping
+ * @author jredfox. Credits to Chocohead#7137 for helping me find the windows start command
  * this class is a wrapper for your program. It fires command prompt and stops it from quitting without user input
  */
 public class SelfCommandPrompt {
@@ -92,7 +92,7 @@ public class SelfCommandPrompt {
 		{
 			return;
 		}
-		rebootWithTerminal(mainClass, args, appName, appId, pause);//TODO: uncomment the debug here
+		rebootWithTerminal(mainClass, args, appName, appId, pause);
 	}
 	
 	/**
@@ -112,7 +112,7 @@ public class SelfCommandPrompt {
             {
             	Runtime.getRuntime().exec("cmd /c start " + "\"" + appName + "\" " + command);//power shell isn't supported as it screws up with the java -cp command when using the gui manually
             }
-            else if(os.contains("mac") || os.contains("linux"))
+            else if(os.contains("mac"))
             {
             	File javacmds = new File(OSUtil.getAppData(), "SelfCommandPrompt/shellsripts/" + appId + ".sh");
             	System.out.println(javacmds.getAbsolutePath());
