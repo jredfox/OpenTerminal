@@ -139,6 +139,8 @@ public class SelfCommandPrompt {
             	IOUtils.makeExe(sh);
             	loadLinuxConfig();
             	Runtime.getRuntime().exec(linux_terminal + " -x " + sh.getAbsolutePath());//use the x flag to enforce it in the new window
+//            	loadLinuxConfig();
+//            	Runtime.getRuntime().exec(linux_terminal + " -x " + "--title=" + "\"" + appName + "\" " + command);//use the x flag to enforce it in the new window
             }
             else
             {
