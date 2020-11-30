@@ -112,10 +112,9 @@ public class SelfCommandPrompt {
             {
             	Runtime.getRuntime().exec("cmd /c start " + "\"" + appName + "\" " + command);//power shell isn't supported as it screws up with the java -cp command when using the gui manually
             }
-            else if(os.contains("mac"))
+            else if(os.contains("mac") || os.contains("linux"))
             {
             	File javacmds = new File(OSUtil.getAppData(), "SelfCommandPrompt/shellsripts/" + appId + ".sh");
-            	System.out.println(javacmds.getAbsolutePath());
             	List<String> cmds = new ArrayList<>();
             	cmds.add("#!/bin/bash");
             	cmds.add("set +v");
@@ -124,7 +123,10 @@ public class SelfCommandPrompt {
             	cmds.add(command);
             	IOUtils.saveFileLines(cmds, javacmds, true);
             	IOUtils.makeExe(javacmds);
-            	Runtime.getRuntime().exec("/bin/bash -c " + "osascript -e \"tell application \\\"Terminal\\\" to do script \\\"" + javacmds.getAbsolutePath() + "\\\"\"");
+            	if(os.contains("mac"))
+            		Runtime.getRuntime().exec("/bin/bash -c " + "osascript -e \"tell application \\\"Terminal\\\" to do script \\\"" + javacmds.getAbsolutePath() + "\\\"\"");
+            	else
+            		Runtime.getRuntime().exec(OSUtil.getTerminal() + " -x " + javacmds.getAbsolutePath());
             }
             else
             {
@@ -239,6 +241,9 @@ public class SelfCommandPrompt {
 		return b.toString();
 	}
 	
+	/**
+	 * incompatible with eclipse's jar in jar loader. Use this to enforce your program's directory is synced with your jar after calling runWithCMD
+	 */
 	public static void syncUserDirWithJar()
 	{
 		try 

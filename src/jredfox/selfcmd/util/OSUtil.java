@@ -6,7 +6,7 @@ import jredfox.selfcmd.thread.ShutdownThread;
 
 public class OSUtil {
 	
-	public static String osSimpleName = System.getProperty("os.name").toLowerCase();
+	private static String osName = System.getProperty("os.name").toLowerCase();
 	public static String[] windows_terminals = new String[]
 	{
 		"cmd",
@@ -63,7 +63,7 @@ public class OSUtil {
 	
 	public static String getTerminal()
 	{
-		String[] cmds = getTerminals(osSimpleName);
+		String[] cmds = getTerminals();
 		for(String cmd : cmds)
 		{
 			try 
@@ -73,27 +73,43 @@ public class OSUtil {
 			} 
 			catch (Throwable e) {}
 		}
+		System.err.println("Unable to find Os terminal for:" + System.getProperty("os.name") + " report to https://github.com/jredfox/SelfCommandPrompt/issues");
 		return null;
 	}
 
-	public static String[] getTerminals(String os)
+	public static String[] getTerminals()
 	{
-		return os.contains("windows") ? windows_terminals : os.contains("mac") ? mac_terminals : os.contains("linux") ? linux_terminals : null;
+		return isWindows() ? windows_terminals : isMac() ? mac_terminals : isLinux() ? linux_terminals : null;
 	}
 	
-	public static String getExeAndClose(String os)
+	public static String getExeAndClose()
 	{
-		return os.contains("windows") ? "/c" : os.contains("mac") ?  "-c" : os.contains("linux") ? "-x" : null;
+		return isWindows() ? "/c" : isMac() ?  "-c" : isLinux() ? "-x" : null;
+	}
+	
+	public static boolean isWindows()
+	{
+		return osName.contains("windows");
+	}
+	
+	public static boolean isMac()
+	{
+		return osName.contains("mac");
+	}
+	
+	public static boolean isLinux()
+	{
+		return osName.contains("linux");
 	}
 	
 	public static File getAppData()
 	{
-		if(osSimpleName.contains("windows"))
+		if(isWindows())
 		{
 			return new File(System.getenv("APPDATA"));
 		}
 	    String path = System.getProperty("user.home");
-	    if(osSimpleName.contains("mac"))
+	    if(isMac())
 	    	path += "/Library/Application Support";
 	    return new File(path);
 	}
