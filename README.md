@@ -1,5 +1,5 @@
 # SelfCommandPrompt
-do you have a java command line program? then this program is for you. Simply call one line in your first line of your main method. SelfCommandPrompt#runwithCMD and your done. you can now double click the jar to open command prompt terminal. Supported oses: windows, mac, linux. for other oses it opens up JConsole which is WIP and doesn't work yet.
+do you have a java command line program? then this library is for you. Simply call one line in your first line of your main method. SelfCommandPrompt#runwithCMD and your done. you can now double click the jar to open command prompt terminal. Supported oses: windows, mac, linux. for other oses it opens up JConsole which is WIP and doesn't work yet.
 
 Technical:
 opens a native command line terminal based on your os once the user double clicks the jar
