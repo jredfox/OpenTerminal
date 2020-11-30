@@ -68,7 +68,7 @@ public class OSUtil {
 		{
 			try 
 			{
-				Runtime.getRuntime().exec(cmd + " cd " + System.getProperty("user.dir"));
+				Runtime.getRuntime().exec(cmd + " " + getExeAndClose() + " cd " + System.getProperty("user.dir"));
 				return cmd;
 			} 
 			catch (Throwable e) {}
@@ -82,9 +82,12 @@ public class OSUtil {
 		return isWindows() ? windows_terminals : isMac() ? mac_terminals : isLinux() ? linux_terminals : null;
 	}
 	
+	/**
+	 * runs the command in the background by default and closes
+	 */
 	public static String getExeAndClose()
 	{
-		return isWindows() ? "/c" : isMac() ?  "-c" : isLinux() ? "-x" : null;
+		return isWindows() ? "/c" : (isMac() || isLinux()) ?  "-c" : null;
 	}
 	
 	public static boolean isWindows()

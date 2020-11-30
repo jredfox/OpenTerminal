@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import jredfox.filededuper.config.simple.MapConfig;
 import jredfox.filededuper.util.IOUtils;
 import jredfox.selfcmd.jconsole.JConsole;
 import jredfox.selfcmd.util.OSUtil;
@@ -19,7 +20,7 @@ import jredfox.selfcmd.util.OSUtil;
  */
 public class SelfCommandPrompt {
 	
-	public static final String VERSION = "1.5.1";
+	public static final String VERSION = "1.6.0";
 	
 	/**
 	 * args are [shouldPause, mainClass, programArgs]
@@ -114,7 +115,7 @@ public class SelfCommandPrompt {
             }
             else if(os.contains("mac"))
             {
-            	File sh = new File(OSUtil.getAppData(), "SelfCommandPrompt/console/" + appId + ".sh");
+            	File sh = new File(OSUtil.getAppData(), "SelfCommandPrompt/console/shellscripts/" + appId + ".sh");
             	List<String> cmds = new ArrayList<>();
             	cmds.add("#!/bin/bash");
             	cmds.add("set +v");
@@ -127,7 +128,7 @@ public class SelfCommandPrompt {
             }
             else if(os.contains("linux"))
             {
-            	File sh = new File(OSUtil.getAppData(), "SelfCommandPrompt/console/" + appId + ".sh");
+            	File sh = new File(OSUtil.getAppData(), "SelfCommandPrompt/console/shellscripts/" + appId + ".sh");
             	List<String> cmds = new ArrayList<>();
             	cmds.add("#!/bin/bash");
             	cmds.add("set +v");
@@ -136,7 +137,8 @@ public class SelfCommandPrompt {
             	cmds.add(command);
             	IOUtils.saveFileLines(cmds, sh, true);
             	IOUtils.makeExe(sh);
-        		Runtime.getRuntime().exec(OSUtil.getTerminal() + " -x " + sh.getAbsolutePath());
+            	loadLinuxConfig();
+            	Runtime.getRuntime().exec(linux_terminal + " -x " + sh.getAbsolutePath());//use the x flag to enforce it in the new window
             }
             else
             {
@@ -152,6 +154,21 @@ public class SelfCommandPrompt {
         	e.printStackTrace();
 			System.out.println("JCONSOLE STARTING:");
 		}
+	}
+
+	private static String linux_terminal = null;
+	private static void loadLinuxConfig() 
+	{
+    	MapConfig cfg = new MapConfig(new File(OSUtil.getAppData(), "SelfCommandPrompt/console/SelfCommandPrompt.cfg"));
+    	cfg.load();
+    	String terminal = cfg.get("terminal", "").trim();
+    	if(terminal.isEmpty())
+    	{
+    		terminal = OSUtil.getTerminal();//since it's a heavy process cache it to the config
+    		cfg.set("terminal", terminal);
+    	}
+    	linux_terminal = terminal;
+    	cfg.save();
 	}
 
 	/**
