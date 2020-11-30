@@ -19,7 +19,7 @@ import jredfox.selfcmd.util.OSUtil;
  */
 public class SelfCommandPrompt {
 	
-	public static final String VERSION = "1.5.0";
+	public static final String VERSION = "1.5.1";
 	
 	/**
 	 * args are [shouldPause, mainClass, programArgs]
@@ -112,21 +112,31 @@ public class SelfCommandPrompt {
             {
             	Runtime.getRuntime().exec("cmd /c start " + "\"" + appName + "\" " + command);//power shell isn't supported as it screws up with the java -cp command when using the gui manually
             }
-            else if(os.contains("mac") || os.contains("linux"))
+            else if(os.contains("mac"))
             {
-            	File javacmds = new File(OSUtil.getAppData(), "SelfCommandPrompt/shellsripts/" + appId + ".sh");
+            	File sh = new File(OSUtil.getAppData(), "SelfCommandPrompt/console/" + appId + ".sh");
             	List<String> cmds = new ArrayList<>();
             	cmds.add("#!/bin/bash");
             	cmds.add("set +v");
             	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");
             	cmds.add("cd " + getProgramDir().getAbsolutePath());//enforce same directory with mac's redirects you never know where you are
             	cmds.add(command);
-            	IOUtils.saveFileLines(cmds, javacmds, true);
-            	IOUtils.makeExe(javacmds);
-            	if(os.contains("mac"))
-            		Runtime.getRuntime().exec("/bin/bash -c " + "osascript -e \"tell application \\\"Terminal\\\" to do script \\\"" + javacmds.getAbsolutePath() + "\\\"\"");
-            	else
-            		Runtime.getRuntime().exec(OSUtil.getTerminal() + " -x " + javacmds.getAbsolutePath());
+            	IOUtils.saveFileLines(cmds, sh, true);
+            	IOUtils.makeExe(sh);
+            	Runtime.getRuntime().exec("/bin/bash -c " + "osascript -e \"tell application \\\"Terminal\\\" to do script \\\"" + sh.getAbsolutePath() + "\\\"\"");
+            }
+            else if(os.contains("linux"))
+            {
+            	File sh = new File(OSUtil.getAppData(), "SelfCommandPrompt/console/" + appId + ".sh");
+            	List<String> cmds = new ArrayList<>();
+            	cmds.add("#!/bin/bash");
+            	cmds.add("set +v");
+            	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");
+            	cmds.add("cd " + getProgramDir().getAbsolutePath());
+            	cmds.add(command);
+            	IOUtils.saveFileLines(cmds, sh, true);
+            	IOUtils.makeExe(sh);
+        		Runtime.getRuntime().exec(OSUtil.getTerminal() + " -x " + sh.getAbsolutePath());
             }
             else
             {
