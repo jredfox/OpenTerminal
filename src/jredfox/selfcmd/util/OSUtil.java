@@ -7,6 +7,10 @@ import jredfox.selfcmd.thread.ShutdownThread;
 public class OSUtil {
 	
 	private static String osName = System.getProperty("os.name").toLowerCase();
+	private static boolean isWindows = osName.contains("windows");
+	private static boolean isMac = osName.contains("mac");
+	private static boolean isLinux = osName.contains("linux");
+	
 	public static String[] windows_terminals = new String[]
 	{
 		"cmd",
@@ -90,19 +94,24 @@ public class OSUtil {
 		return isWindows() ? "/c" : (isMac() || isLinux()) ?  "-c" : null;
 	}
 	
+	public static String getLinuxNewWin()
+	{
+		return "-x";
+	}
+	
 	public static boolean isWindows()
 	{
-		return osName.contains("windows");
+		return isWindows;
 	}
 	
 	public static boolean isMac()
 	{
-		return osName.contains("mac");
+		return isMac;
 	}
 	
 	public static boolean isLinux()
 	{
-		return osName.contains("linux");
+		return isLinux;
 	}
 	
 	public static File getAppData()
@@ -124,6 +133,11 @@ public class OSUtil {
 	public static void addShutdownThread(ShutdownThread sht)
 	{
 		throw new RuntimeException("Unsupported Check back in a future version!");
+	}
+
+	public static boolean isUnsupported()
+	{
+		return !isWindows() && !isMac() && !isLinux();
 	}
 
 }

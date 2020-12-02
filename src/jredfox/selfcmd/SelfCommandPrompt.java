@@ -1,17 +1,21 @@
 package jredfox.selfcmd;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
 import jredfox.filededuper.config.simple.MapConfig;
 import jredfox.filededuper.util.IOUtils;
+import jredfox.selfcmd.cmd.ExeBuilder;
 import jredfox.selfcmd.jconsole.JConsole;
 import jredfox.selfcmd.util.OSUtil;
 /**
@@ -20,11 +24,14 @@ import jredfox.selfcmd.util.OSUtil;
  */
 public class SelfCommandPrompt {
 	
-	public static final String VERSION = "1.6.0";
+	public static final String VERSION = "2.0.0";
+	public static final String INVALID = "\"'`,";
+	public static final File selfcmd = new File(OSUtil.getAppData(), "SelfCommandPrompt");
 	
 	/**
-	 * args are [shouldPause, mainClass, programArgs]
+	 * args are [shouldPause, mainClass, programArgs...]
 	 */
+	@SuppressWarnings("resource")
 	public static void main(String[] args)
 	{
 		boolean shouldPause = Boolean.parseBoolean(args[0]);
@@ -44,18 +51,16 @@ public class SelfCommandPrompt {
 		
 		if(shouldPause)
 		{
-			Scanner old = new Scanner(System.in);
-			Scanner scanner = old.useDelimiter("\n");
+			Scanner scanner = new Scanner(System.in).useDelimiter("\n");//Warning says scanner is never closed but, useDelimiter returns itself
 			System.out.println("Press ENTER to continue:");
-			scanner.next();
-			old.close();
+			if(scanner.hasNext())
+				scanner.next();
 			scanner.close();
 		}
 	}
 
 	/**
-	 * NOTE: is WIP and doesn't take input currently use shell / batch files for unsupported oses in the mean time to run the jar
-	 * supports all platforms no need to reboot, supports debugging and all ides, and supports shutdown hooks
+	 * NOTE: this is WIP and doesn't support System.in redirect yet, and there are many other issues with it
 	 */
 	public static JConsole startJConsole(String appName)
 	{	
@@ -68,114 +73,157 @@ public class SelfCommandPrompt {
 			public boolean shutdown(){return true;}
 		};
 		console.setEnabled(true);
+		System.out.println("JCONSOLE isn't working yet. Please check back in a future version ;)");
 		return console;
 	}
 	
 	/**
-	 * reboot your application with a command prompt terminal. Note if you hard code your mainClass instead of using the above method it won't support all compilers like eclipse's jar in jar loader
-	 * NOTE: doesn't support debug function as it breaks ides connection proxies to the jvm agent's debug.
-	 * before calling this if you have jvmArguments for like ports or connections close them before rebooting
+	 * ensure your program boots up with a command prompt terminal either a native configurable os terminal or JConsole.
+	 * If you hard code your main class it won't support wrappers like eclipe's jar in jar loader.
+	 * if you have connections in jvm args close them before reboot !SelfCommandPrompt#hasJConsole()
+	 * @Since 2.0.0
 	 */
-	public static void runwithCMD(String[] args, String appName, String appId, boolean onlyCompiled, boolean pause)
+	public static void runwithCMD(String appId, String appName, String[] args)
 	{
-		runwithCMD(getMainClass(), args, appName, appId, onlyCompiled, pause);
+		runWithCMD(appId, appName, args, false, true);
 	}
 	
 	/**
-	 * reboot your application with a command prompt terminal. Note if you hard code your mainClass instead of using the above method it won't support all compilers like eclipse's jar in jar loader
-	 * NOTE: doesn't support debug function as it breaks ides connection proxies to the jvm agent's debug.
-	 * before calling this if you have jvmArguments for like ports or connections close them before rebooting
+	 * ensure your program boots up with a command prompt terminal either a native configurable os terminal or JConsole.
+	 * If you hard code your main class it won't support wrappers like eclipe's jar in jar loader.
+	 * if you have connections in jvm args close them before reboot !SelfCommandPrompt#hasJConsole()
+	 * @Since 2.0.0
 	 */
-	public static void runwithCMD(Class<?> mainClass, String[] args, String appName, String appId, boolean onlyCompiled, boolean pause) 
+	public static void runWithCMD(String appId, String appName, String[] args, boolean onlyCompiled, boolean pause)
+	{
+		runWithCMD(appId, appName, getMainClass(), args, onlyCompiled, pause);
+	}
+	
+	/**
+	 * ensure your program boots up with a command prompt terminal either a native configurable os terminal or JConsole.
+	 * If you hard code your main class it won't support wrappers like eclipe's jar in jar loader.
+	 * if you have connections in jvm args close them before reboot !SelfCommandPrompt#hasJConsole()
+	 * @Since 2.0.0
+	 */
+	public static void runWithCMD(String appId, String appName, Class<?> mainClass, String[] args, boolean onlyCompiled, boolean pause) 
 	{
 		boolean compiled = isCompiled(mainClass);
-		if(!compiled && onlyCompiled || compiled && System.console() != null || isDebugMode() || SelfCommandPrompt.class.getName().equals(getMainClassName()))
+		if(!compiled && onlyCompiled || compiled && System.console() != null || isDebugMode())
 		{
 			return;
 		}
-		rebootWithTerminal(mainClass, args, appName, appId, pause);
+		
+		syncConfig(appId);//in decompiled will get parsed twice once per boot this is because System.console cannot be detected properly for non eclipse ides if it needs to reboot or not with the native terminal
+        if(hasJConsole())
+        {
+        	startJConsole(appName);
+        	return;
+        }
+        
+        //don't reboot if the main class is already our wrapper. It's here so jconsole can start if the program was rebooted using SelfCommandPrompt#reboot
+        if(SelfCommandPrompt.class.getName().equals(getMainClassName()) )
+        {
+        	return;
+        }
+        
+		try
+		{
+			rebootWithTerminal(appId, appName, mainClass, args, pause);
+		}
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+			startJConsole(appName);
+		}
 	}
 	
 	/**
-	 * this method is a directly calls commands to reboot your app with a command prompt terminal. 
-	 * do not call this directly without if statements it will recursively reboot infinitely
+	 * reboot with the original arguments the program had been instantiated with
 	 */
-	public static void rebootWithTerminal(Class<?> mainClass, String[] args, String appName, String appId, boolean pause)
+	public static void reboot(String appId, String appName) throws IOException
 	{
-        try
-        {
-        	String str = getProgramArgs(args, " ");
-            String argsStr = " " + mainClass.getName() + (str.isEmpty() ? "" : " " + str);
-            String jvmArgs = getJVMArgs();
-            String os = System.getProperty("os.name").toLowerCase();
-            String command = "java " + (jvmArgs.isEmpty() ? "" : jvmArgs + " ") + "-cp " + System.getProperty("java.class.path") + " " + SelfCommandPrompt.class.getName() + " " + pause + argsStr;
-            if(os.contains("windows"))
-            {
-            	Runtime.getRuntime().exec("cmd /c start " + "\"" + appName + "\" " + command);//power shell isn't supported as it screws up with the java -cp command when using the gui manually
-            }
-            else if(os.contains("mac"))
-            {
-            	File sh = new File(OSUtil.getAppData(), "SelfCommandPrompt/console/shellscripts/" + appId + ".sh");
-            	List<String> cmds = new ArrayList<>();
-            	cmds.add("#!/bin/bash");
-            	cmds.add("set +v");
-            	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");
-            	cmds.add("cd " + getProgramDir().getAbsolutePath());//enforce same directory with mac's redirects you never know where you are
-            	cmds.add(command);
-            	IOUtils.saveFileLines(cmds, sh, true);
-            	IOUtils.makeExe(sh);
-            	Runtime.getRuntime().exec("/bin/bash -c " + "osascript -e \"tell application \\\"Terminal\\\" to do script \\\"" + sh.getAbsolutePath() + "\\\"\"");
-            }
-            else if(os.contains("linux"))
-            {
-            	File sh = new File(OSUtil.getAppData(), "SelfCommandPrompt/console/shellscripts/" + appId + ".sh");
-            	List<String> cmds = new ArrayList<>();
-            	cmds.add("#!/bin/bash");
-            	cmds.add("set +v");
-            	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");
-            	cmds.add("cd " + getProgramDir().getAbsolutePath());
-            	cmds.add(command);
-            	IOUtils.saveFileLines(cmds, sh, true);
-            	IOUtils.makeExe(sh);
-            	loadLinuxConfig();
-            	Runtime.getRuntime().exec(linux_terminal + " -x " + sh.getAbsolutePath());//use the x flag to enforce it in the new window
-//            	loadLinuxConfig();
-//            	Runtime.getRuntime().exec(linux_terminal + " -x " + "--title=" + "\"" + appName + "\" " + command);//use the x flag to enforce it in the new window
-            }
-            else
-            {
-            	SelfCommandPrompt.startJConsole(appName);//for unsupported os's use the java console
-            	return;//do not exit the application so return from the method
-            }
-            Runtime.getRuntime().gc();
-            System.exit(0);
-        }
-        catch (Exception e)
-        {	
-			SelfCommandPrompt.startJConsole(appName);//use JConsole as a backup in case they are on a very old os version
-        	e.printStackTrace();
-			System.out.println("JCONSOLE STARTING:");
-		}
-	}
-
-	private static String linux_terminal = null;
-	private static void loadLinuxConfig() 
-	{
-    	MapConfig cfg = new MapConfig(new File(OSUtil.getAppData(), "SelfCommandPrompt/console/SelfCommandPrompt.cfg"));
-    	cfg.load();
-    	String terminal = cfg.get("terminal", "").trim();
-    	if(terminal.isEmpty())
-    	{
-    		terminal = OSUtil.getTerminal();//since it's a heavy process cache it to the config
-    		cfg.set("terminal", terminal);
-    	}
-    	linux_terminal = terminal;
-    	cfg.save();
+		syncConfig(appId);
+		ExeBuilder builder = new ExeBuilder();
+		builder.addCommand("java");
+		builder.addCommand(getJVMArgs());
+		String sunCmd = System.getProperty("sun.java.command");
+		boolean isCp = !new File(split(sunCmd, ' ', '"', '"')[0]).exists();
+		builder.addCommand(isCp ? "-cp" : "-jar");
+		if(isCp)
+			builder.addCommand("\"" + System.getProperty("java.class.path") + "\"");
+		builder.addCommand(sunCmd);
+		String command = builder.toString();
+		if(hasJConsole())
+			Runtime.getRuntime().exec(terminal + " " + OSUtil.getExeAndClose() + " " + command);
+		else
+			runInNewTerminal(appId, appName, "reboot", command);
+		shutdown();
 	}
 
 	/**
-	 * checks if the jar is compiled based on the main class
-	 * @throws UnsupportedEncodingException 
+	 * do not call this directly without checks or it will just keep rebooting and only in the terminal
+	 */
+	public static void rebootWithTerminal(String appId, String appName, Class<?> mainClass, String[] args, boolean pause) throws IOException
+	{
+    	if(containsAny(appId, INVALID))
+    		throw new RuntimeException("appId contains illegal parsing characters:(" + appId + "), invalid:" + INVALID);
+    	
+            String libs = System.getProperty("java.class.path");
+            if(containsAny(libs, INVALID))
+            	throw new RuntimeException("one or more LIBRARIES contains illegal parsing characters:(" + libs + "), invalid:" + INVALID);
+            
+            ExeBuilder builder = new ExeBuilder();
+        	builder.addCommand("java");
+        	builder.addCommand(getJVMArgs());
+        	builder.addCommand("-cp");
+        	builder.addCommand("\"" + libs + "\"");
+        	builder.addCommand(SelfCommandPrompt.class.getName());
+        	builder.addCommand(String.valueOf(pause));
+        	builder.addCommand(mainClass.getName());
+        	builder.addCommand(programArgs(args));
+        	String command = builder.toString();
+        	runInNewTerminal(appId, appName, appId, command);
+        	shutdown();
+	}
+	
+	/**
+	 * runs a command in a new terminal window.
+	 * the sh name is the file name you want the shell script stored. The appId is to locate your folder
+	 * @Since 2.0.0
+	 */
+	public static void runInNewTerminal(String appId, String appName, String shName, String command) throws IOException
+	{
+        if(OSUtil.isWindows())
+        {
+        	Runtime.getRuntime().exec(terminal + " " + OSUtil.getExeAndClose() + " start " + "\"" + appName + "\" " + command);//power shell isn't supported as it screws up with the java -cp command when using the gui manually
+        }
+        else if(OSUtil.isMac())
+        {
+        	File sh = new File(getAppdata(appId), shName + ".sh");
+        	List<String> cmds = new ArrayList<>();
+        	cmds.add("#!/bin/bash");
+        	cmds.add("set +v");
+        	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");
+        	cmds.add("cd " + getProgramDir().getAbsolutePath());//enforce same directory with mac's redirects you never know where you are
+        	cmds.add(command);
+        	IOUtils.saveFileLines(cmds, sh, true);
+        	IOUtils.makeExe(sh);
+        	Runtime.getRuntime().exec(terminal + " " + OSUtil.getExeAndClose() + " osascript -e \"tell application \\\"Terminal\\\" to do script \\\"" + sh.getAbsolutePath() + "\\\"\"");
+        }
+        else if(OSUtil.isLinux())
+        {
+        	Runtime.getRuntime().exec(terminal + " " + OSUtil.getLinuxNewWin() + " --title=" + "\"" + appName + "\" " + command);
+        }
+	}
+	
+	public static void shutdown()
+	{
+		System.gc();
+		System.exit(0);
+	}
+
+	/**
+	 * checks if the jar is compiled based on the main class 
 	 */
 	public static boolean isCompiled()
 	{
@@ -184,7 +232,6 @@ public class SelfCommandPrompt {
 	
 	/**
 	 * checks per class if the jar is compiled
-	 * @throws UnsupportedEncodingException 
 	 */
 	public static boolean isCompiled(Class<?> mainClass)
 	{
@@ -203,14 +250,16 @@ public class SelfCommandPrompt {
 	/**
 	 * get a file from a class
 	 */
-	public static File getFileFromClass(Class<?> clazz) throws UnsupportedEncodingException
+	public static File getFileFromClass(Class<?> clazz) throws UnsupportedEncodingException, RuntimeException
 	{
 		String jarPath = clazz.getProtectionDomain().getCodeSource().getLocation().getPath();//get the path of the currently running jar
 		String fileName = URLDecoder.decode(jarPath, "UTF-8").substring(1);
+		if(fileName.contains(INVALID))
+			throw new RuntimeException("jar file contains invalid parsing chars:" + fileName);
 		return new File(fileName);
 	}
 	
-	public static String getJVMArgs()
+	public static String getJVMArgsAsString()
 	{
 		RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
 		List<String> arguments = runtimeMxBean.getInputArguments();
@@ -224,6 +273,12 @@ public class SelfCommandPrompt {
 			index++;
 		}
 		return b.toString();
+	}
+	
+	public static List<String> getJVMArgs()
+	{
+		RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
+		return runtimeMxBean.getInputArguments();
 	}
 	
 	public static boolean isDebugMode()
@@ -254,20 +309,13 @@ public class SelfCommandPrompt {
 		return mainClass;
 	}
 	
-	public static String getProgramArgs(String[] args, String sep) 
+	public static String[] programArgs(String[] args) 
 	{
-		if(args == null)
-			return null;
-		StringBuilder b = new StringBuilder();
-		int index = 0;
-		for(String s : args)
+		for(int i=0;i<args.length; i++)
 		{
-			String q = s.contains(" ") ? "\"" : "";
-			s = index + 1 != args.length ? (q + s + q + sep) : (q + s + q);
-			b.append(s);
-			index++;
+			args[i] = "\"" + args[i] + "\"";
 		}
-		return b.toString();
+		return args;
 	}
 	
 	/**
@@ -303,5 +351,103 @@ public class SelfCommandPrompt {
 	public static File getProgramDir()
 	{
 		return new File(System.getProperty("user.dir"));
+	}
+	
+	//Start APP VARS_____________________________
+	
+	public static boolean hasJConsole() 
+	{
+		return useJConsole || OSUtil.isUnsupported();
+	}
+	
+	/**
+	 * returns the appdata contained in %appdata%/SelfCommandPrompt/appId
+	 */
+	private static File getAppdata(String appId)
+	{
+		return new File(selfcmd, appId);
+	}
+
+	public static String terminal;
+	public static boolean useJConsole;
+	/**
+	 * configurable per app
+	 */
+	public static void syncConfig(String appId) 
+	{
+    	MapConfig cfg = new MapConfig(new File(getAppdata(appId), "console.cfg"));
+    	cfg.load();
+    	
+    	//load the terminal string
+    	String cfgTerm = cfg.get("terminal", "").trim();
+    	if(cfgTerm.isEmpty())
+    	{
+    		cfgTerm = OSUtil.getTerminal();//since it's a heavy process cache it to the config
+    		cfg.set("terminal", cfgTerm);
+    	}
+    	terminal = cfgTerm;
+    	
+    	useJConsole= cfg.get("useJConsole", false);//if user prefers JConsole over natives
+    	cfg.save();
+	}
+
+	//End APP VARS_________________________________
+	
+	/**
+	 * split with quote ignoring support
+	 */
+	public static String[] split(String str, char sep, char lquote, char rquote) 
+	{
+		if(str.isEmpty())
+			return new String[]{str};
+		List<String> list = new ArrayList<>();
+		boolean inside = false;
+		for(int i = 0; i < str.length(); i += 1)
+		{
+			String a = str.substring(i, i + 1);
+			String prev = i == 0 ? "a" : str.substring(i-1, i);
+			boolean escape = prev.charAt(0) ==  '\\';
+			if(a.equals("" + lquote) && !escape || a.equals("" + rquote) && !escape)
+			{
+				inside = !inside;
+			}
+			if(a.equals("" + sep) && !inside)
+			{
+				String section = str.substring(0, i);
+				list.add(section);
+				str = str.substring(i + ("" + sep).length(), str.length());
+				i = -1;
+			}
+		}
+		list.add(str);//add the rest of the string
+		return toArray(list, String.class);
+	}
+	
+	public static <T> T[] toArray(Collection<T> col, Class<T> clazz)
+	{
+	    @SuppressWarnings("unchecked")
+		T[] li = (T[]) Array.newInstance(clazz, col.size());
+	    int index = 0;
+	    for(T obj : col)
+	    {
+	        li[index++] = obj;
+	    }
+	    return li;
+	}
+	
+	public static boolean containsAny(String string, String invalid) 
+	{
+		if(string.isEmpty())
+			return invalid.isEmpty();
+		
+		for(int i=0; i < string.length(); i++)
+		{
+			String s = string.substring(i, i + 1);
+			if(invalid.contains(s))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 }
