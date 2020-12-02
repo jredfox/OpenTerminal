@@ -27,6 +27,16 @@ public class SelfCommandPrompt {
 	public static final String VERSION = "2.0.0";
 	public static final String INVALID = "\"'`,";
 	public static final File selfcmd = new File(OSUtil.getAppData(), "SelfCommandPrompt");
+	public static String wrappedAppId;
+	public static String wrappedAppName;
+	public static Class<?> wrappedAppClass;
+	public static String[] wrappedAppArgs;
+	public static boolean wrappedPause;
+	
+	static
+	{
+		syncConfig();
+	}
 	
 	/**
 	 * args are [shouldPause, mainClass, programArgs...]
@@ -39,6 +49,7 @@ public class SelfCommandPrompt {
 		try
 		{
 			Class<?> mainClass = Class.forName(args[1]);
+			wrappedAppClass = mainClass;
 			String[] programArgs = new String[args.length - 2];
 			System.arraycopy(args, 2, programArgs, 0, programArgs.length);
 			Method method = mainClass.getMethod("main", String[].class);
@@ -62,7 +73,7 @@ public class SelfCommandPrompt {
 	/**
 	 * NOTE: this is WIP and doesn't support System.in redirect yet, and there are many other issues with it
 	 */
-	public static JConsole startJConsole(String appName)
+	public static JConsole startJConsole(String appId, String appName)
 	{	
 		JConsole console = new JConsole(appName)
 		{
@@ -80,10 +91,10 @@ public class SelfCommandPrompt {
 	/**
 	 * ensure your program boots up with a command prompt terminal either a native configurable os terminal or JConsole.
 	 * If you hard code your main class it won't support wrappers like eclipe's jar in jar loader.
-	 * if you have connections in jvm args close them before reboot !SelfCommandPrompt#hasJConsole()
+	 * if you have connections in jvm args close them before reboot if SelfCommandPrompt#hasJConsole() returns false
 	 * @Since 2.0.0
 	 */
-	public static void runwithCMD(String appId, String appName, String[] args)
+	public static void runWithCMD(String appId, String appName, String[] args)
 	{
 		runWithCMD(appId, appName, args, false, true);
 	}
@@ -107,22 +118,16 @@ public class SelfCommandPrompt {
 	 */
 	public static void runWithCMD(String appId, String appName, Class<?> mainClass, String[] args, boolean onlyCompiled, boolean pause) 
 	{
+		cacheApp(appId, appName, mainClass, args, pause);
 		boolean compiled = isCompiled(mainClass);
-		if(!compiled && onlyCompiled || compiled && System.console() != null || isDebugMode())
+		if(!compiled && onlyCompiled || compiled && System.console() != null || isDebugMode() || SelfCommandPrompt.class.getName().equals(getMainClassName()) )
 		{
 			return;
 		}
 		
-		syncConfig();//in decompiled will get parsed twice once per boot this is because System.console cannot be detected properly for non eclipse ides if it needs to reboot or not with the native terminal
         if(hasJConsole())
         {
-        	startJConsole(appName);
-        	return;
-        }
-        
-        //don't reboot if the main class is already our wrapper. It's here so jconsole can start if the program was rebooted using SelfCommandPrompt#reboot
-        if(SelfCommandPrompt.class.getName().equals(getMainClassName()) )
-        {
+        	startJConsole(appId, appName);
         	return;
         }
         
@@ -133,35 +138,53 @@ public class SelfCommandPrompt {
 		catch (IOException e) 
 		{
 			e.printStackTrace();
-			startJConsole(appName);
+			startJConsole(appId, appName);
 		}
-	}
-	
-	/**
-	 * reboot with the original arguments the program had been instantiated with
-	 */
-	public static void reboot(String appId, String appName) throws IOException
-	{
-		syncConfig();
-		ExeBuilder builder = new ExeBuilder();
-		builder.addCommand("java");
-		builder.addCommand(getJVMArgs());
-		String sunCmd = System.getProperty("sun.java.command");
-		boolean isCp = !new File(split(sunCmd, ' ', '"', '"')[0]).exists();
-		builder.addCommand(isCp ? "-cp" : "-jar");
-		if(isCp)
-			builder.addCommand("\"" + System.getProperty("java.class.path") + "\"");
-		builder.addCommand(sunCmd);
-		String command = builder.toString();
-		if(hasJConsole())
-			runInTerminal(command);
-		else
-			runInNewTerminal(appId, appName, "reboot", command);//make it so when it reboots it doesn't have to reboot to get command prompt terminal
-		shutdown();
 	}
 
 	/**
-	 * do not call this directly without checks or it will just keep rebooting and only in the terminal
+	 * reboot the program. config sync enabled
+	 */
+	public static void reboot() throws IOException
+	{
+		reboot(wrappedAppId, wrappedAppName, wrappedAppClass, wrappedAppArgs, wrappedPause);
+	}
+	
+	/**
+	 * reboot the program with new args. config sync enabled
+	 */
+	public static void reboot(String[] newArgs) throws IOException
+	{
+		reboot(wrappedAppId, wrappedAppName, wrappedAppClass, newArgs, wrappedPause);
+	}
+	
+	/**
+	 * reboot the program. config sync enabled
+	 */
+	public static void reboot(String appId, String appName, Class<?> mainClass, String[] args, boolean pause) throws IOException
+	{
+		syncConfig();
+		ExeBuilder builder = new ExeBuilder();
+		if(hasJConsole())
+		{
+			builder.addCommand("java");
+			builder.addCommand(getJVMArgs());
+			builder.addCommand("-cp");
+			builder.addCommand("\"" + System.getProperty("java.class.path") + "\"");
+			builder.addCommand(mainClass.getName());
+			builder.addCommand(programArgs(args));
+			String command = builder.toString();
+			runInTerminal(command);
+			shutdown();
+		}
+		else
+		{
+			rebootWithTerminal(appId, appName, mainClass, args, pause);
+		}
+	}
+
+	/**
+	 * do not call this directly without checks or it will just keep rebooting and only in the terminal. Doesn't call {@link SelfCommandPrompt#cacheApp(String, String, Class, String[], boolean)}
 	 */
 	public static void rebootWithTerminal(String appId, String appName, Class<?> mainClass, String[] args, boolean pause) throws IOException
 	{
@@ -187,7 +210,7 @@ public class SelfCommandPrompt {
 	}
 	
 	/**
-	 * run a command in the same terminal assuming your not using the start command equalivent for your os
+	 * enforces it to run in the command prompt terminal as sometimes it doesn't work without it
 	 */
 	public static void runInTerminal(String command) throws IOException
 	{
@@ -267,22 +290,6 @@ public class SelfCommandPrompt {
 		return new File(fileName);
 	}
 	
-	public static String getJVMArgsAsString()
-	{
-		RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
-		List<String> arguments = runtimeMxBean.getInputArguments();
-		StringBuilder b = new StringBuilder();
-		String sep = " ";
-		int index = 0;
-		for(String s : arguments)
-		{
-			s = index + 1 != arguments.size() ? s + sep : s;
-			b.append(s);
-			index++;
-		}
-		return b.toString();
-	}
-	
 	public static List<String> getJVMArgs()
 	{
 		RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
@@ -346,21 +353,6 @@ public class SelfCommandPrompt {
 		System.setProperty("user.dir", file.getAbsolutePath());
 	}
 	
-	/**
-	 * get a file extension. Note directories do not have file extensions
-	 */
-	public static String getExtension(File file) 
-	{
-		String name = file.getName();
-		int index = name.lastIndexOf('.');
-		return index != -1 && !file.isDirectory() ? name.substring(index + 1) : "";
-	}
-	
-	public static File getProgramDir()
-	{
-		return new File(System.getProperty("user.dir"));
-	}
-	
 	//Start APP VARS_____________________________
 	
 	public static boolean hasJConsole() 
@@ -379,7 +371,7 @@ public class SelfCommandPrompt {
 	public static String terminal;
 	public static boolean useJConsole;
 	/**
-	 * configurable per app
+	 * syncs the global terminal and the boolean for useJConsole
 	 */
 	public static void syncConfig() 
 	{
@@ -398,8 +390,35 @@ public class SelfCommandPrompt {
     	useJConsole= cfg.get("useJConsole", false);//if user prefers JConsole over natives
     	cfg.save();
 	}
+	
+	public static void cacheApp(String appId, String appName, Class<?> mainClass, String[] args, boolean pause) 
+	{
+		if(wrappedAppId == null) 
+		{
+			wrappedAppId = appId;
+			wrappedAppName = appName;
+			wrappedAppClass = wrappedAppClass == null ? mainClass : wrappedAppClass;
+			wrappedAppArgs = args;
+			wrappedPause = pause;
+		}
+	}
 
 	//End APP VARS_________________________________
+	
+	/**
+	 * get a file extension. Note directories do not have file extensions
+	 */
+	public static String getExtension(File file) 
+	{
+		String name = file.getName();
+		int index = name.lastIndexOf('.');
+		return index != -1 && !file.isDirectory() ? name.substring(index + 1) : "";
+	}
+	
+	public static File getProgramDir()
+	{
+		return new File(System.getProperty("user.dir"));
+	}
 	
 	/**
 	 * split with quote ignoring support
