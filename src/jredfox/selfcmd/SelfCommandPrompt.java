@@ -154,9 +154,9 @@ public class SelfCommandPrompt {
 		builder.addCommand(sunCmd);
 		String command = builder.toString();
 		if(hasJConsole())
-			Runtime.getRuntime().exec(terminal + " " + OSUtil.getExeAndClose() + " " + command);
+			runInTerminal(command);
 		else
-			runInNewTerminal(appId, appName, "reboot", command);
+			runInNewTerminal(appId, appName, "reboot", command);//make it so when it reboots it doesn't have to reboot to get command prompt terminal
 		shutdown();
 	}
 
@@ -184,6 +184,14 @@ public class SelfCommandPrompt {
         	String command = builder.toString();
         	runInNewTerminal(appId, appName, appId, command);
         	shutdown();
+	}
+	
+	/**
+	 * run a command in the same terminal assuming your not using the start command equalivent for your os
+	 */
+	public static void runInTerminal(String command) throws IOException
+	{
+		Runtime.getRuntime().exec(terminal + " " + OSUtil.getExeAndClose() + " " + command);
 	}
 	
 	/**
