@@ -94,6 +94,9 @@ public class OSUtil {
 		return isWindows() ? "/c" : (isMac() || isLinux()) ?  "-c" : null;
 	}
 	
+	/**
+	 * returns the linux execute in new window flag
+	 */
 	public static String getLinuxNewWin()
 	{
 		return "-x";
