@@ -113,7 +113,7 @@ public class SelfCommandPrompt {
 			return;
 		}
 		
-		syncConfig(appId);//in decompiled will get parsed twice once per boot this is because System.console cannot be detected properly for non eclipse ides if it needs to reboot or not with the native terminal
+		syncConfig();//in decompiled will get parsed twice once per boot this is because System.console cannot be detected properly for non eclipse ides if it needs to reboot or not with the native terminal
         if(hasJConsole())
         {
         	startJConsole(appName);
@@ -142,7 +142,7 @@ public class SelfCommandPrompt {
 	 */
 	public static void reboot(String appId, String appName) throws IOException
 	{
-		syncConfig(appId);
+		syncConfig();
 		ExeBuilder builder = new ExeBuilder();
 		builder.addCommand("java");
 		builder.addCommand(getJVMArgs());
@@ -373,9 +373,9 @@ public class SelfCommandPrompt {
 	/**
 	 * configurable per app
 	 */
-	public static void syncConfig(String appId) 
+	public static void syncConfig() 
 	{
-    	MapConfig cfg = new MapConfig(new File(getAppdata(appId), "console.cfg"));
+    	MapConfig cfg = new MapConfig(new File(selfcmd, "console.cfg"));
     	cfg.load();
     	
     	//load the terminal string
