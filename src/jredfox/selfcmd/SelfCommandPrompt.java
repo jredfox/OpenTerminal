@@ -91,7 +91,7 @@ public class SelfCommandPrompt {
 	/**
 	 * ensure your program boots up with a command prompt terminal either a native configurable os terminal or JConsole.
 	 * If you hard code your main class it won't support wrappers like eclipe's jar in jar loader.
-	 * if you have connections in jvm args close them before reboot if SelfCommandPrompt#hasJConsole() returns false
+	 * if you have connections in jvm args close them before reboot if {@link SelfCommandPrompt#hasJConsole()} returns false
 	 * @Since 2.0.0
 	 */
 	public static void runWithCMD(String appId, String appName, String[] args)
