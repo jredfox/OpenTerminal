@@ -19,7 +19,7 @@ import jredfox.selfcmd.cmd.ExeBuilder;
 import jredfox.selfcmd.jconsole.JConsole;
 import jredfox.selfcmd.util.OSUtil;
 /**
- * @author jredfox. Credits to Chocohead#7137 for helping me find the windows start command
+ * @author jredfox. Credits to Chocohead#7137 for helping me find the windows start command & System.getProperty("java.class.path);
  * this class is a wrapper for your program. It fires command prompt and stops it from quitting without user input
  */
 public class SelfCommandPrompt {
@@ -226,33 +226,32 @@ public class SelfCommandPrompt {
 	{
         if(OSUtil.isWindows())
         {
-        	Runtime.getRuntime().exec(terminal + " " + OSUtil.getExeAndClose() + " start " + "\"" + appName + "\" " + command);//power shell isn't supported as it screws up with the java -cp command when using the gui manually
+        	Runtime.getRuntime().exec(terminal + " " + OSUtil.getExeAndClose() + " start " + "\"" + appName + "\" " + command);
         }
         else if(OSUtil.isMac())
         {
         	File sh = new File(getAppdata(appId), shName + ".sh");
         	List<String> cmds = new ArrayList<>();
         	cmds.add("#!/bin/bash");
-        	cmds.add("set +v");
-        	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");
-        	cmds.add("cd " + getProgramDir().getAbsolutePath());//enforce same directory with mac's redirects you never know where you are
-        	cmds.add(command);
-        	IOUtils.saveFileLines(cmds, sh, true);
-        	IOUtils.makeExe(sh);
+        	cmds.add("set +v");//@Echo off
+        	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");//Title
+        	cmds.add("cd " + getProgramDir().getAbsolutePath());//set the proper directory
+        	cmds.add(command);//actual command
+        	IOUtils.saveFileLines(cmds, sh, true);//save the file
+        	IOUtils.makeExe(sh);//make it executable
         	Runtime.getRuntime().exec(terminal + " " + OSUtil.getExeAndClose() + " osascript -e \"tell application \\\"Terminal\\\" to do script \\\"" + sh.getAbsolutePath() + "\\\"\"");
         }
         else if(OSUtil.isLinux())
         {
-        	//apprently linux wants to open the -x in a new tab instead of a new window unless it's a shellscript so force it in a new window
         	File sh = new File(getAppdata(appId), shName + ".sh");
         	List<String> cmds = new ArrayList<>();
         	cmds.add("#!/bin/bash");
-        	cmds.add("set +v");
-        	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");
-        	cmds.add("cd " + getProgramDir().getAbsolutePath());
-        	cmds.add(command);
-        	IOUtils.saveFileLines(cmds, sh, true);
-        	IOUtils.makeExe(sh);
+        	cmds.add("set +v");//@Echo off
+        	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");//Title
+        	cmds.add("cd " + getProgramDir().getAbsolutePath());//set the proper directory
+        	cmds.add(command);//actual command
+        	IOUtils.saveFileLines(cmds, sh, true);//save the file
+        	IOUtils.makeExe(sh);//make it executable
         	Runtime.getRuntime().exec(terminal + " " + OSUtil.getLinuxNewWin() + " " + sh.getAbsolutePath());
         }
 	}
@@ -403,14 +402,11 @@ public class SelfCommandPrompt {
 	
 	public static void cacheApp(String appId, String appName, Class<?> mainClass, String[] args, boolean pause) 
 	{
-		if(wrappedAppId == null) 
-		{
-			wrappedAppId = appId;
-			wrappedAppName = appName;
-			wrappedAppClass = wrappedAppClass == null ? mainClass : wrappedAppClass;
-			wrappedAppArgs = args;
-			wrappedPause = pause;
-		}
+		wrappedAppId = appId;
+		wrappedAppName = appName;
+		wrappedAppClass = SelfCommandPrompt.class.equals(mainClass) ? wrappedAppClass : mainClass;
+		wrappedAppArgs = args;
+		wrappedPause = pause;
 	}
 
 	//End APP VARS_________________________________
