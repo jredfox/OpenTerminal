@@ -120,7 +120,7 @@ public class SelfCommandPrompt {
 	{
 		cacheApp(appId, appName, mainClass, args, pause);
 		boolean compiled = isCompiled(mainClass);
-		if(!compiled && onlyCompiled || compiled && System.console() != null || isDebugMode() || SelfCommandPrompt.class.getName().equals(getMainClassName()) )
+		if(!compiled && onlyCompiled || compiled && System.console() != null || isDebugMode() || isWrapped())
 		{
 			return;
 		}
@@ -364,17 +364,26 @@ public class SelfCommandPrompt {
 	
 	//Start APP VARS_____________________________
 	
-	public static boolean hasJConsole() 
+	/**
+	 * @return if the main class is SelfCommandPrompt
+	 * @Since 2.0.0-rc.6
+	 */
+	public static boolean isWrapped() 
 	{
-		return useJConsole || OSUtil.isUnsupported();
+		return SelfCommandPrompt.class.getName().equals(getMainClassName());
 	}
 	
 	/**
 	 * returns the appdata contained in %appdata%/SelfCommandPrompt/appId
 	 */
-	private static File getAppdata(String appId)
+	public static File getAppdata(String appId)
 	{
 		return new File(selfcmd, appId);
+	}
+	
+	public static boolean hasJConsole() 
+	{
+		return useJConsole || OSUtil.isUnsupported();
 	}
 
 	public static String terminal;
