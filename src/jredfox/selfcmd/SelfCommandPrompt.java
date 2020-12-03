@@ -13,7 +13,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
+import jredfox.filededuper.command.Command;
+import jredfox.filededuper.command.ParamList;
 import jredfox.filededuper.config.simple.MapConfig;
+import jredfox.filededuper.util.DeDuperUtil;
 import jredfox.filededuper.util.IOUtils;
 import jredfox.selfcmd.cmd.ExeBuilder;
 import jredfox.selfcmd.jconsole.JConsole;
@@ -170,7 +173,7 @@ public class SelfCommandPrompt {
 			builder.addCommand("java");
 			builder.addCommand(getJVMArgs());
 			builder.addCommand("-cp");
-			builder.addCommand("\"" + System.getProperty("java.class.path") + "\"");
+			builder.addCommand("\"" + System.getProperty("java.class.path") + "\"");//doesn't need to check parsing chars cause this is a generic reboot and if it reboots with terminal it will catch the error on boot
 			builder.addCommand(mainClass.getName());
 			builder.addCommand(programArgs(args));
 			String command = builder.toString();
@@ -256,6 +259,108 @@ public class SelfCommandPrompt {
         }
 	}
 	
+	/**
+	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input
+	 * @since 2.0.0-rc.7
+	 */	
+	public static String[] wrapWithCMD(String[] argsInit)
+	{
+		return wrapWithCMD("", argsInit);
+	}
+	
+	/**
+	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input
+	 * @since 2.0.0-rc.7
+	 */	
+	public static String[] wrapWithCMD(String msg, String[] argsInit)
+	{
+		Class<?> mainClass = getMainClass();
+		String appId = mainClass.getName().replaceAll("\\.", "/");
+		return wrapWithCMD(msg, appId, appId, mainClass, argsInit);
+	}
+	
+	/**
+	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input
+	 * @since 2.0.0-rc.7
+	 */	
+	public static String[] wrapWithCMD(String msg, String appId, String appName, String[] argsInit)
+	{
+		return wrapWithCMD(msg, appId, appName, getMainClass(), argsInit);
+	}
+	
+	/**
+	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input
+	 * @since 2.0.0-rc.7
+	 */	
+	public static String[] wrapWithCMD(String msg, String appId, String appName, Class<?> mainClass, String[] argsInit)
+	{
+		SelfCommandPrompt.runWithCMD(appId, appName, argsInit);
+		boolean shouldScan = argsInit.length == 0;
+		if(!msg.isEmpty() && shouldScan)
+			System.out.println(msg);
+		String[] newArgs = shouldScan ? Command.fixArgs(DeDuperUtil.split(Command.getScanner().nextLine(), ' ', '"', '"')) : argsInit;
+		if(isEmpty(newArgs, true))
+			newArgs = new String[0];//if args are empty from the user simulate it
+		return newArgs;
+	}
+	
+	/**
+	 * execute an external jar file. doesn't enforce {@link SelfCommandPrompt#runWithCMD(String, String, String[])} or {@link SelfCommandPrompt#wrapWithCMD(String[])} before executing
+	 * WIP: doesn't work yet fully
+	 */
+	public static void exeJar(String[] jvmArgs, File[] libs, String mainClass, String[] args)
+	{
+		ExeBuilder builder = new ExeBuilder();
+		builder.addCommand("java");
+		builder.addCommand("-cp");
+		if(jvmArgs.length != 0)
+			builder.addCommand(jvmArgs);
+		builder.addCommand("\"" + getClassPath(libs) + "\"");
+		builder.addCommand(mainClass);
+		builder.addCommand(args);
+		String command = builder.toString();
+		try
+		{
+			runInTerminal(command);
+		}
+		catch(IOException e) 
+		{
+			System.out.println("unable to exe jar in terminal this is bad!");
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * get a class path from a list of files
+	 * WIP: doesn't work fully yet
+	 */
+	public static String getClassPath(File[] libs) 
+	{
+		StringBuilder builder = new StringBuilder();
+		int index = 0;
+		for(File f : libs)
+		{
+			
+			builder.append(index + 1 != libs.length ? f + File.pathSeparator : f);
+			index++;
+		}
+		return builder.toString();
+	}
+
+	/**
+	 * returns if the entire array is empty and whether or not to trim it before hand
+	 */
+	public static boolean isEmpty(String[] arr, boolean trim) 
+	{
+		for(String s : arr)
+		{
+			s = trim ? s.trim() : s;
+			if(!s.isEmpty())
+				return false;
+		}
+		return true;
+	}
+
 	public static void shutdown()
 	{
 		System.gc();
