@@ -5,4 +5,7 @@ Technical:
 - SelfCommandPrompt#runWithCMD opens a native command line terminal based on your os once the user double clicks the jar
 - SelfCommandPrompt#wrapWithCMD opens a native command line terminal, gets user args(if any) by user input on user double clicking the jar
 
+Disadvanteges:
+- on jar double click the args are always 0 by default and user will have to input the entrie commmand each time. To get around this you could load a config on initial boot to fix the args and save them somewhere.
+
 This program is free of charge and open source. On top of that you are also allowed to embedd this into your application programs but, I ask that you update when bugs are fixed
