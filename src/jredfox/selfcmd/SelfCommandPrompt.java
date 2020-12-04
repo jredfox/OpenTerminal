@@ -9,6 +9,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
@@ -18,7 +19,7 @@ import jredfox.filededuper.command.ParamList;
 import jredfox.filededuper.config.simple.MapConfig;
 import jredfox.filededuper.util.DeDuperUtil;
 import jredfox.filededuper.util.IOUtils;
-import jredfox.selfcmd.cmd.ExeBuilder;
+import jredfox.selfcmd.exe.ExeBuilder;
 import jredfox.selfcmd.jconsole.JConsole;
 import jredfox.selfcmd.util.OSUtil;
 /**
@@ -27,14 +28,16 @@ import jredfox.selfcmd.util.OSUtil;
  */
 public class SelfCommandPrompt {
 	
-	public static final String VERSION = "2.0.0";
+	public static final String VERSION = "2.0.0-rc.9";
 	public static final String INVALID = "\"'`,";
 	public static final File selfcmd = new File(OSUtil.getAppData(), "SelfCommandPrompt");
+	public static final Scanner scanner = new Scanner(System.in);
 	public static String wrappedAppId;
 	public static String wrappedAppName;
 	public static Class<?> wrappedAppClass;
 	public static String[] wrappedAppArgs;
 	public static boolean wrappedPause;
+	public static JConsole jconsole;
 	
 	static
 	{
@@ -78,6 +81,8 @@ public class SelfCommandPrompt {
 	 */
 	public static JConsole startJConsole(String appId, String appName)
 	{	
+		if(jconsole != null)
+			throw new RuntimeException("jconsole has already started!");
 		JConsole console = new JConsole(appName)
 		{
 			@Override
@@ -87,8 +92,9 @@ public class SelfCommandPrompt {
 			public boolean shutdown(){return true;}
 		};
 		console.setEnabled(true);
+		jconsole = console;
 		System.out.println("JCONSOLE isn't working yet. Please check back in a future version ;)");
-		return console;
+		return jconsole;
 	}
 	
 	/**
@@ -123,7 +129,7 @@ public class SelfCommandPrompt {
 	{
 		cacheApp(appId, appName, mainClass, args, pause);
 		boolean compiled = isCompiled(mainClass);
-		if(!compiled && onlyCompiled || compiled && System.console() != null || isDebugMode() || isWrapped())
+		if(!compiled && onlyCompiled || compiled && System.console() != null || isDebugMode() || isWrapped() || jconsole != null)
 		{
 			return;
 		}
@@ -173,7 +179,8 @@ public class SelfCommandPrompt {
 			builder.addCommand("java");
 			builder.addCommand(getJVMArgs());
 			builder.addCommand("-cp");
-			builder.addCommand("\"" + System.getProperty("java.class.path") + "\"");//doesn't need to check parsing chars cause this is a generic reboot and if it reboots with terminal it will catch the error on boot
+			String q = OSUtil.getQuote();
+			builder.addCommand(q + System.getProperty("java.class.path") + q);//doesn't need to check parsing chars cause this is a generic reboot and if it reboots with terminal it will catch the error on boot
 			builder.addCommand(mainClass.getName());
 			builder.addCommand(programArgs(args));
 			String command = builder.toString();
@@ -202,7 +209,8 @@ public class SelfCommandPrompt {
         	builder.addCommand("java");
         	builder.addCommand(getJVMArgs());
         	builder.addCommand("-cp");
-        	builder.addCommand("\"" + libs + "\"");
+        	String q = OSUtil.getQuote();
+        	builder.addCommand(q + libs + q);
         	builder.addCommand(SelfCommandPrompt.class.getName());
         	builder.addCommand(String.valueOf(pause));
         	builder.addCommand(mainClass.getName());
@@ -269,8 +277,9 @@ public class SelfCommandPrompt {
 	}
 	
 	/**
-	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input
-	 * @since 2.0.0-rc.7
+	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input.
+	 * escape sequences are \char to have actual quotes in the jvm args cross platform
+	 * @since 2.0.0-rc.8
 	 */	
 	public static String[] wrapWithCMD(String msg, String[] argsInit)
 	{
@@ -280,85 +289,41 @@ public class SelfCommandPrompt {
 	}
 	
 	/**
-	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input
-	 * @since 2.0.0-rc.7
-	 */	
+	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input.
+	 * escape sequences are \char to have actual quotes in the jvm args cross platform
+	 * @since 2.0.0-rc.8
+	 */		
 	public static String[] wrapWithCMD(String msg, String appId, String appName, String[] argsInit)
 	{
 		return wrapWithCMD(msg, appId, appName, getMainClass(), argsInit);
 	}
 	
 	/**
-	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input
-	 * @since 2.0.0-rc.7
+	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input.
+	 * escape sequences are \char to have actual quotes in the jvm args cross platform
+	 * @since 2.0.0-rc.9
 	 */	
 	public static String[] wrapWithCMD(String msg, String appId, String appName, Class<?> mainClass, String[] argsInit)
 	{
-		SelfCommandPrompt.runWithCMD(appId, appName, argsInit);
+		SelfCommandPrompt.runWithCMD(appId, appName, mainClass, argsInit, false, true);
 		boolean shouldScan = argsInit.length == 0;
 		if(!msg.isEmpty() && shouldScan)
 			System.out.println(msg);
-		String[] newArgs = shouldScan ? Command.fixArgs(DeDuperUtil.split(Command.getScanner().nextLine(), ' ', '"', '"')) : argsInit;
-		if(isEmpty(newArgs, true))
-			newArgs = new String[0];//if args are empty from the user simulate it
-		return newArgs;
-	}
-	
-	/**
-	 * execute an external jar file. doesn't enforce {@link SelfCommandPrompt#runWithCMD(String, String, String[])} or {@link SelfCommandPrompt#wrapWithCMD(String[])} before executing
-	 * WIP: doesn't work yet fully
-	 */
-	public static void exeJar(String[] jvmArgs, File[] libs, String mainClass, String[] args)
-	{
-		ExeBuilder builder = new ExeBuilder();
-		builder.addCommand("java");
-		builder.addCommand("-cp");
-		if(jvmArgs.length != 0)
-			builder.addCommand(jvmArgs);
-		builder.addCommand("\"" + getClassPath(libs) + "\"");
-		builder.addCommand(mainClass);
-		builder.addCommand(args);
-		String command = builder.toString();
-		try
-		{
-			runInTerminal(command);
-		}
-		catch(IOException e) 
-		{
-			System.out.println("unable to exe jar in terminal this is bad!");
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * get a class path from a list of files
-	 * WIP: doesn't work fully yet
-	 */
-	public static String getClassPath(File[] libs) 
-	{
-		StringBuilder builder = new StringBuilder();
-		int index = 0;
-		for(File f : libs)
-		{
-			
-			builder.append(index + 1 != libs.length ? f + File.pathSeparator : f);
-			index++;
-		}
-		return builder.toString();
+		
+		return shouldScan ? parseCommandLine(scanner.nextLine()) : argsInit;
 	}
 
-	/**
-	 * returns if the entire array is empty and whether or not to trim it before hand
-	 */
-	public static boolean isEmpty(String[] arr, boolean trim) 
+	public static String[] parseCommandLine(String line) 
 	{
-		for(String s : arr)
+		String[] args = split(line, ' ', '"', '"');
+		List<String> arr = new ArrayList<>(args.length);
+		for(String s : args)
 		{
-			s = trim ? s.trim() : s;
-			if(!s.isEmpty())
-				return false;
+			String arg = parseQuotes(s.trim(), '"', '"');
+			if(!arg.isEmpty())
+				arr.add(arg);
 		}
-		return true;
+		return toArray(arr, String.class);
 	}
 
 	public static void shutdown()
@@ -440,9 +405,11 @@ public class SelfCommandPrompt {
 	
 	public static String[] programArgs(String[] args) 
 	{
+		String q = OSUtil.getQuote();
+		String esc = OSUtil.getEsc();
 		for(int i=0;i<args.length; i++)
 		{
-			args[i] = "\"" + args[i] + "\"";
+			args[i] = q + args[i].replaceAll(q, esc) + q;//wrap the jvm args to the native terminal quotes and escape quotes
 		}
 		return args;
 	}
@@ -526,6 +493,20 @@ public class SelfCommandPrompt {
 	//End APP VARS_________________________________
 	
 	/**
+	 * returns if the entire array is empty and whether or not to trim it before hand
+	 */
+	public static boolean isEmpty(String[] arr, boolean trim) 
+	{
+		for(String s : arr)
+		{
+			s = trim ? s.trim() : s;
+			if(!s.isEmpty())
+				return false;
+		}
+		return true;
+	}
+	
+	/**
 	 * get a file extension. Note directories do not have file extensions
 	 */
 	public static String getExtension(File file) 
@@ -568,6 +549,50 @@ public class SelfCommandPrompt {
 		}
 		list.add(str);//add the rest of the string
 		return toArray(list, String.class);
+	}
+	
+	public static String parseQuotes(String s, char lq, char rq) 
+	{
+		return parseQuotes(s, 0, lq, rq);
+	}
+
+	public static String parseQuotes(String s, int index, char lq, char rq)
+	{
+		StringBuilder builder = new StringBuilder();
+		char prev = 'a';
+		int count = 0;
+		boolean hasQuote = hasQuote(s.substring(index, s.length()), lq);
+		for(int i=index;i<s.length();i++)
+		{
+			String c = s.substring(i, i + 1);
+			boolean escaped = prev == '\\';
+			if(hasQuote && !escaped && (count == 0 && c.equals("" + lq) || count == 1 && c.equals("" + rq)))
+			{
+				count++;
+				if(count == 2)
+					break;
+				prev = c.charAt(0);//set previous before skipping
+				continue;
+			}
+			if(!hasQuote || count == 1)
+			{
+				builder.append(c);
+			}
+			prev = c.charAt(0);//set the previous char here
+		}
+		return lq == rq ? builder.toString().replaceAll("\\\\" + lq, "" + lq) : builder.toString().replaceAll("\\\\" + lq, "" + lq).replaceAll("\\\\" + rq, "" + rq);
+	}
+
+	public static boolean hasQuote(String str, char lq) 
+	{
+		char prev = 'a';
+		for(char c : str.toCharArray())
+		{
+			if(c == lq && prev != '\\')
+				return true;
+			prev = c;
+		}
+		return false;
 	}
 	
 	public static <T> T[] toArray(Collection<T> col, Class<T> clazz)

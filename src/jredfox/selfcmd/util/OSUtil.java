@@ -143,4 +143,20 @@ public class OSUtil {
 		return !isWindows() && !isMac() && !isLinux();
 	}
 
+	/**
+	 * @return the terminal's quote
+	 */
+	public static String getQuote() 
+	{
+		return "\"";
+	}
+
+	/**
+	 * @return the escape sequence to preserve characters
+	 */
+	public static String getEsc() 
+	{
+		return "\\\"";
+	}
+
 }

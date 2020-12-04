@@ -1,4 +1,4 @@
-package jredfox.selfcmd.cmd;
+package jredfox.selfcmd.exe;
 
 import java.util.ArrayList;
 import java.util.Collection;

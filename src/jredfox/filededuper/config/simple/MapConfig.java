@@ -9,6 +9,7 @@ import java.util.TreeMap;
 
 import jredfox.filededuper.util.DeDuperUtil;
 import jredfox.filededuper.util.IOUtils;
+import jredfox.selfcmd.SelfCommandPrompt;
 
 /**
  * a Config that will only support key=value
@@ -165,7 +166,7 @@ public class MapConfig {
 		else if(types[6].equals(type))
 			return Boolean.parseBoolean(value);
 		else if(types[7].equals(type))
-			return DeDuperUtil.parseQuotes(value, 0, "\"");
+			return SelfCommandPrompt.parseQuotes(value, '"', '"');
 		
 		return null;
 	}
