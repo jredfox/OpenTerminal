@@ -3,7 +3,7 @@ do you have a java command line program? then this library is for you. Simply ca
 
 Technical:
 - SelfCommandPrompt#runWithCMD opens a native command line terminal based on your os once the user double clicks the jar
-- SelfCommandPrompt#wrapWithCMD opens a native command line terminal, gets user args(if any) by user input on user double clicking the jar
+- SelfCommandPrompt#wrapWithCMD opens a native command line terminal, gets user args(if any) before executing a strictly command line jar that doesn't handle 0 args with a scanner.
 
 Disadvanteges:
 - on jar double click the args are always 0 by default and user will have to input the entrie commmand each time. A solution is being worked on
