@@ -7,6 +7,5 @@ Technical:
 
 Disadvanteges:
 - on jar double click the args are always 0 by default and user will have to input the entrie commmand each time. This particuallar issue isn't really fixable due to the java PrintStream api always enforcing the text is not editable. I may find a way around this but, it's an issue with the language itself rn. So I simply just can't do System.out.printInput(String text) since it doesn't exist yet.
-- there is no tabbing function / keybinds fucntion yet. I have an idea of how to get it working but, it may require fixing the above issue first. This is due to java api not supporting keybind functions for console's and ides.
 
 This program is free of charge and open source. On top of that you are also allowed to embedd this into your application programs but, I ask that you update when bugs are fixed
