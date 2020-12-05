@@ -159,4 +159,18 @@ public class OSUtil {
 		return "\\\"";
 	}
 
+	/**
+	 * test if your terminal string is actually your terminal
+	 */
+	public static boolean isTerminalValid(String term) 
+	{
+		try 
+		{
+			Runtime.getRuntime().exec(term + " " + getExeAndClose() + " cd " + System.getProperty("user.dir"));
+			return true;
+		} 
+		catch (Throwable e) {}
+		return false;
+	}
+
 }

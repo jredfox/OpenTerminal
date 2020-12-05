@@ -9,15 +9,11 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
-import jredfox.filededuper.command.Command;
-import jredfox.filededuper.command.ParamList;
 import jredfox.filededuper.config.simple.MapConfig;
-import jredfox.filededuper.util.DeDuperUtil;
 import jredfox.filededuper.util.IOUtils;
 import jredfox.selfcmd.exe.ExeBuilder;
 import jredfox.selfcmd.jconsole.JConsole;
@@ -28,7 +24,7 @@ import jredfox.selfcmd.util.OSUtil;
  */
 public class SelfCommandPrompt {
 	
-	public static final String VERSION = "2.0.0";
+	public static final String VERSION = "2.0.1";
 	public static final String INVALID = "\"'`,";
 	public static final File selfcmd = new File(OSUtil.getAppData(), "SelfCommandPrompt");
 	public static final Scanner scanner = new Scanner(System.in);
@@ -266,7 +262,7 @@ public class SelfCommandPrompt {
         	Runtime.getRuntime().exec(terminal + " " + OSUtil.getLinuxNewWin() + " " + sh.getAbsolutePath());
         }
 	}
-	
+
 	/**
 	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input
 	 * @since 2.0.0-rc.7
@@ -301,11 +297,21 @@ public class SelfCommandPrompt {
 	/**
 	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input.
 	 * escape sequences are \char to have actual quotes in the jvm args cross platform
-	 * @since 2.0.0-rc.9
+	 * @since 2.0.0
 	 */	
 	public static String[] wrapWithCMD(String msg, String appId, String appName, Class<?> mainClass, String[] argsInit)
 	{
-		SelfCommandPrompt.runWithCMD(appId, appName, mainClass, argsInit, false, true);
+		return wrapWithCMD(msg, appId, appName, mainClass, argsInit, false, true);
+	}
+	
+	/**
+	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input.
+	 * escape sequences are \char to have actual quotes in the jvm args cross platform
+	 * @since 2.0.1
+	 */	
+	public static String[] wrapWithCMD(String msg, String appId, String appName, Class<?> mainClass, String[] argsInit, boolean onlyCompiled, boolean pause)
+	{
+		SelfCommandPrompt.runWithCMD(appId, appName, mainClass, argsInit, onlyCompiled, pause);
 		boolean shouldScan = argsInit.length == 0;
 		if(!msg.isEmpty() && shouldScan)
 			System.out.print(msg);//don't enforce line feed
@@ -408,9 +414,7 @@ public class SelfCommandPrompt {
 		String q = OSUtil.getQuote();
 		String esc = OSUtil.getEsc();
 		for(int i=0;i<args.length; i++)
-		{
-			args[i] = q + args[i].replaceAll(q, esc) + q;//wrap the jvm args to the native terminal quotes and escape quotes
-		}
+			args[i] =  q + args[i].replaceAll(q, esc + q) + q;//wrap the jvm args to the native terminal quotes and escape quotes
 		return args;
 	}
 	
@@ -467,10 +471,9 @@ public class SelfCommandPrompt {
 	{
     	MapConfig cfg = new MapConfig(new File(selfcmd, "console.cfg"));
     	cfg.load();
-    	
     	//load the terminal string
     	String cfgTerm = cfg.get("terminal", "").trim();
-    	if(cfgTerm.isEmpty())
+    	if(cfgTerm.isEmpty() || !OSUtil.isTerminalValid(cfgTerm))
     	{
     		cfgTerm = OSUtil.getTerminal();//since it's a heavy process cache it to the config
     		cfg.set("terminal", cfgTerm);
@@ -491,20 +494,6 @@ public class SelfCommandPrompt {
 	}
 
 	//End APP VARS_________________________________
-	
-	/**
-	 * returns if the entire array is empty and whether or not to trim it before hand
-	 */
-	public static boolean isEmpty(String[] arr, boolean trim) 
-	{
-		for(String s : arr)
-		{
-			s = trim ? s.trim() : s;
-			if(!s.isEmpty())
-				return false;
-		}
-		return true;
-	}
 	
 	/**
 	 * get a file extension. Note directories do not have file extensions
@@ -565,20 +554,26 @@ public class SelfCommandPrompt {
 		for(int i=index;i<s.length();i++)
 		{
 			String c = s.substring(i, i + 1);
+			char firstChar = c.charAt(0);
+			if(firstChar == '\\' && prev == '\\')
+			{
+				prev = '/';
+				firstChar = '/';//escape the escape
+			}
 			boolean escaped = prev == '\\';
 			if(hasQuote && !escaped && (count == 0 && c.equals("" + lq) || count == 1 && c.equals("" + rq)))
 			{
 				count++;
 				if(count == 2)
 					break;
-				prev = c.charAt(0);//set previous before skipping
+				prev = firstChar;//set previous before skipping
 				continue;
 			}
 			if(!hasQuote || count == 1)
 			{
 				builder.append(c);
 			}
-			prev = c.charAt(0);//set the previous char here
+			prev = firstChar;//set the previous char here
 		}
 		return lq == rq ? builder.toString().replaceAll("\\\\" + lq, "" + lq) : builder.toString().replaceAll("\\\\" + lq, "" + lq).replaceAll("\\\\" + rq, "" + rq);
 	}
