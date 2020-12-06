@@ -140,10 +140,10 @@ public class SelfCommandPrompt {
 		{
 			rebootWithTerminal(appId, appName, mainClass, args, pause);
 		}
-		catch (IOException e) 
+		catch (IOException e)
 		{
-			e.printStackTrace();
 			startJConsole(appId, appName);
+			e.printStackTrace();
 		}
 	}
 

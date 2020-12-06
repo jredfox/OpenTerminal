@@ -80,6 +80,20 @@ public class OSUtil {
 		System.err.println("Unable to find Os terminal for:" + System.getProperty("os.name") + " report to https://github.com/jredfox/SelfCommandPrompt/issues");
 		return null;
 	}
+	
+	/**
+	 * test if your terminal string is actually your terminal
+	 */
+	public static boolean isTerminalValid(String term) 
+	{
+		try 
+		{
+			Runtime.getRuntime().exec(term + " " + getExeAndClose() + " cd " + System.getProperty("user.dir"));
+			return true;
+		} 
+		catch (Throwable e) {}
+		return false;
+	}
 
 	public static String[] getTerminals()
 	{
@@ -102,6 +116,22 @@ public class OSUtil {
 		return "-x";
 	}
 	
+	/**
+	 * @return the terminal's quote
+	 */
+	public static String getQuote() 
+	{
+		return "\"";
+	}
+
+	/**
+	 * @return the escape sequence to preserve characters
+	 */
+	public static String getEsc() 
+	{
+		return "\\\"";
+	}
+	
 	public static boolean isWindows()
 	{
 		return isWindows;
@@ -115,6 +145,11 @@ public class OSUtil {
 	public static boolean isLinux()
 	{
 		return isLinux;
+	}
+	
+	public static boolean isUnsupported()
+	{
+		return !isWindows() && !isMac() && !isLinux();
 	}
 	
 	public static File getAppData()
@@ -136,41 +171,6 @@ public class OSUtil {
 	public static void addShutdownThread(ShutdownThread sht)
 	{
 		throw new RuntimeException("Unsupported Check back in a future version!");
-	}
-
-	public static boolean isUnsupported()
-	{
-		return !isWindows() && !isMac() && !isLinux();
-	}
-
-	/**
-	 * @return the terminal's quote
-	 */
-	public static String getQuote() 
-	{
-		return "\"";
-	}
-
-	/**
-	 * @return the escape sequence to preserve characters
-	 */
-	public static String getEsc() 
-	{
-		return "\\\"";
-	}
-
-	/**
-	 * test if your terminal string is actually your terminal
-	 */
-	public static boolean isTerminalValid(String term) 
-	{
-		try 
-		{
-			Runtime.getRuntime().exec(term + " " + getExeAndClose() + " cd " + System.getProperty("user.dir"));
-			return true;
-		} 
-		catch (Throwable e) {}
-		return false;
 	}
 
 }
