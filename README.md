@@ -6,6 +6,6 @@ Technical:
 - SelfCommandPrompt#wrapWithCMD opens a native command line terminal, gets user args(if any) before executing a strictly command line jar that doesn't handle 0 args with a scanner.
 
 Disadvanteges:
-- on jar double click the args are always 0 by default and user will have to input the entrie commmand each time. This particuallar issue isn't really fixable due to the java PrintStream api always enforcing the text is not editable. I may find a way around this but, it's an issue with the language itself rn. So I simply just can't do System.out.setInput(String text) since it doesn't exist yet.
+- on jar double click the args are always 0 by default and user will have to input the entrie commmand each time. This issue is on my todo list. It will require per os and per program support. If I support ides they are going to be only the major ones and it won't be garenteed to work.
 
 This program is free of charge and open source. On top of that you are also allowed to embedd this into your application programs but, I ask that you update when bugs are fixed
