@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ import jredfox.selfcmd.util.OSUtil;
  */
 public class SelfCommandPrompt {
 	
-	public static final String VERSION = "2.0.1";
+	public static final String VERSION = "2.0.2";
 	public static final String INVALID = "\"'`,";
 	public static final File selfcmd = new File(OSUtil.getAppData(), "SelfCommandPrompt");
 	public static final Scanner scanner = new Scanner(System.in);
@@ -57,6 +58,13 @@ public class SelfCommandPrompt {
 			Method method = mainClass.getMethod("main", String[].class);
 			method.invoke(null, new Object[]{programArgs});
 		}
+		catch(InvocationTargetException e)
+		{
+			if(e.getCause() != null)
+				e.getCause().printStackTrace();
+			else
+				e.printStackTrace();
+		}
 		catch(Throwable t)
 		{
 			t.printStackTrace();
@@ -66,9 +74,7 @@ public class SelfCommandPrompt {
 		{
 			Scanner scanner = new Scanner(System.in).useDelimiter("\n");//Warning says scanner is never closed but, useDelimiter returns itself
 			System.out.println("Press ENTER to continue:");
-			if(scanner.hasNext())
-				scanner.next();
-			scanner.close();
+			scanner.next();
 		}
 	}
 
