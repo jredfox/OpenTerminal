@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import jredfox.filededuper.config.simple.MapConfig;
+import jredfox.filededuper.util.DeDuperUtil;
 import jredfox.filededuper.util.IOUtils;
 import jredfox.selfcmd.exe.ExeBuilder;
 import jredfox.selfcmd.jconsole.JConsole;
@@ -25,7 +26,7 @@ import jredfox.selfcmd.util.OSUtil;
  */
 public class SelfCommandPrompt {
 	
-	public static final String VERSION = "2.0.2";
+	public static final String VERSION = "2.0.3";
 	public static final String INVALID = "\"'`,";
 	public static final File selfcmd = new File(OSUtil.getAppData(), "SelfCommandPrompt");
 	public static final Scanner scanner = new Scanner(System.in);
@@ -51,8 +52,8 @@ public class SelfCommandPrompt {
 		
 		try
 		{
+			System.setProperty("selfcmd.mainclass", args[1]);//because eclipse's jar in jar loader sets a class loader it wipes static fields set a system property instead
 			Class<?> mainClass = Class.forName(args[1]);
-			wrappedAppClass = mainClass;
 			String[] programArgs = new String[args.length - 2];
 			System.arraycopy(args, 2, programArgs, 0, programArgs.length);
 			Method method = mainClass.getMethod("main", String[].class);
@@ -97,6 +98,18 @@ public class SelfCommandPrompt {
 		jconsole = console;
 		System.out.println("JCONSOLE isn't working yet. Please check back in a future version ;)");
 		return jconsole;
+	}
+	
+	/**
+	 * ensure your program boots up with a command prompt terminal either a native configurable os terminal or JConsole.
+	 * If you hard code your main class it won't support wrappers like eclipe's jar in jar loader.
+	 * if you have connections in jvm args close them before reboot if {@link SelfCommandPrompt#hasJConsole()} returns false
+	 * @Since 2.0.3
+	 */
+	public static void runWithCMD(String[] args)
+	{
+		String appId = suggestAppId();
+		runWithCMD(appId, appId, args);
 	}
 	
 	/**
@@ -285,9 +298,8 @@ public class SelfCommandPrompt {
 	 */	
 	public static String[] wrapWithCMD(String msg, String[] argsInit)
 	{
-		Class<?> mainClass = getMainClass();
-		String appId = mainClass.getName().replaceAll("\\.", "/");
-		return wrapWithCMD(msg, appId, appId, mainClass, argsInit);
+		String appId = suggestAppId();
+		return wrapWithCMD(msg, appId, appId, argsInit);
 	}
 	
 	/**
@@ -336,6 +348,30 @@ public class SelfCommandPrompt {
 				arr.add(arg);
 		}
 		return toArray(arr, String.class);
+	}
+	
+	/**
+	 * return the suggested appId based on the main class name
+	 */
+	public static String suggestAppId()
+	{
+		return suggestAppId(getMainClassName());
+	}
+	
+	/**
+	 * return the suggested appId based on the main class name
+	 */
+	public static String suggestAppId(Class<?> clazz)
+	{
+		return suggestAppId(clazz.getName());
+	}
+	
+	/**
+	 * return the suggested appId based on the main class name
+	 */
+	public static String suggestAppId(String name)
+	{
+		return name.replaceAll("\\.", "/");
 	}
 
 	public static void shutdown()
@@ -446,6 +482,15 @@ public class SelfCommandPrompt {
 	
 	//Start APP VARS_____________________________
 	
+	public static void cacheApp(String appId, String appName, Class<?> mainClass, String[] args, boolean pause) 
+	{
+		wrappedAppId = appId;
+		wrappedAppName = appName;
+		wrappedAppClass = SelfCommandPrompt.class.equals(mainClass) ? getClass(System.getProperty("selfcmd.mainclass")) : mainClass;
+		wrappedAppArgs = args;
+		wrappedPause = pause;
+	}
+	
 	/**
 	 * @return if the main class is SelfCommandPrompt
 	 * @Since 2.0.0-rc.6
@@ -488,15 +533,6 @@ public class SelfCommandPrompt {
     	
     	useJConsole= cfg.get("useJConsole", false);//if user prefers JConsole over natives
     	cfg.save();
-	}
-	
-	public static void cacheApp(String appId, String appName, Class<?> mainClass, String[] args, boolean pause) 
-	{
-		wrappedAppId = appId;
-		wrappedAppName = appName;
-		wrappedAppClass = SelfCommandPrompt.class.equals(mainClass) ? wrappedAppClass : mainClass;
-		wrappedAppArgs = args;
-		wrappedPause = pause;
 	}
 
 	//End APP VARS_________________________________
@@ -622,5 +658,18 @@ public class SelfCommandPrompt {
 			}
 		}
 		return false;
+	}
+	
+	public static Class<?> getClass(String name) 
+	{
+		try 
+		{
+			return Class.forName(name);
+		} 
+		catch (Throwable t) 
+		{
+			t.printStackTrace();
+		}
+		return null;
 	}
 }
