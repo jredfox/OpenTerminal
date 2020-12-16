@@ -26,7 +26,7 @@ import jredfox.selfcmd.util.OSUtil;
  */
 public class SelfCommandPrompt {
 	
-	public static final String VERSION = "2.0.3";
+	public static final String VERSION = "2.1.0";
 	public static final String INVALID = "\"'`,";
 	public static final File selfcmd = new File(OSUtil.getAppData(), "SelfCommandPrompt");
 	public static final Scanner scanner = new Scanner(System.in);
@@ -106,10 +106,10 @@ public class SelfCommandPrompt {
 	 * if you have connections in jvm args close them before reboot if {@link SelfCommandPrompt#hasJConsole()} returns false
 	 * @Since 2.0.3
 	 */
-	public static void runWithCMD(String[] args)
+	public static String[] runWithCMD(String[] args)
 	{
 		String appId = suggestAppId();
-		runWithCMD(appId, appId, args);
+		return runWithCMD(appId, appId, args);
 	}
 	
 	/**
@@ -118,9 +118,9 @@ public class SelfCommandPrompt {
 	 * if you have connections in jvm args close them before reboot if {@link SelfCommandPrompt#hasJConsole()} returns false
 	 * @Since 2.0.0
 	 */
-	public static void runWithCMD(String appId, String appName, String[] args)
+	public static String[] runWithCMD(String appId, String appName, String[] args)
 	{
-		runWithCMD(appId, appName, args, false, true);
+		return runWithCMD(appId, appName, args, false, true);
 	}
 	
 	/**
@@ -129,9 +129,9 @@ public class SelfCommandPrompt {
 	 * if you have connections in jvm args close them before reboot !SelfCommandPrompt#hasJConsole()
 	 * @Since 2.0.0
 	 */
-	public static void runWithCMD(String appId, String appName, String[] args, boolean onlyCompiled, boolean pause)
+	public static String[] runWithCMD(String appId, String appName, String[] args, boolean onlyCompiled, boolean pause)
 	{
-		runWithCMD(appId, appName, getMainClass(), args, onlyCompiled, pause);
+		return runWithCMD(appId, appName, getMainClass(), args, onlyCompiled, pause);
 	}
 	
 	/**
@@ -140,19 +140,26 @@ public class SelfCommandPrompt {
 	 * if you have connections in jvm args close them before reboot !SelfCommandPrompt#hasJConsole()
 	 * @Since 2.0.0
 	 */
-	public static void runWithCMD(String appId, String appName, Class<?> mainClass, String[] args, boolean onlyCompiled, boolean pause) 
+	public static String[] runWithCMD(String appId, String appName, Class<?> mainClass, String[] args, boolean onlyCompiled, boolean pause) 
 	{
 		cacheApp(appId, appName, mainClass, args, pause);
+		//run in the background if ordered to by an external process
+		if(args.length != 0 && (args[0].equals("background") || args[0].equalsIgnoreCase("runInBackground")))
+		{
+			String[] newArgs = new String[args.length - 1];
+			System.arraycopy(args, 1, newArgs, 0, newArgs.length);
+			return newArgs;
+		}
 		boolean compiled = isCompiled(mainClass);
 		if(!compiled && onlyCompiled || compiled && System.console() != null || isDebugMode() || isWrapped() || jconsole != null)
 		{
-			return;
+			return args;
 		}
 		
         if(hasJConsole())
         {
         	startJConsole(appId, appName);
-        	return;
+        	return args;
         }
         
 		try
@@ -164,6 +171,7 @@ public class SelfCommandPrompt {
 			startJConsole(appId, appName);
 			e.printStackTrace();
 		}
+		return args;
 	}
 
 	/**
@@ -309,17 +317,17 @@ public class SelfCommandPrompt {
 	 */		
 	public static String[] wrapWithCMD(String msg, String appId, String appName, String[] argsInit)
 	{
-		return wrapWithCMD(msg, appId, appName, getMainClass(), argsInit);
+		return wrapWithCMD(msg, appId, appName, argsInit, false, true);
 	}
 	
 	/**
 	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input.
 	 * escape sequences are \char to have actual quotes in the jvm args cross platform
-	 * @since 2.0.0
+	 * @since 2.1.0
 	 */	
-	public static String[] wrapWithCMD(String msg, String appId, String appName, Class<?> mainClass, String[] argsInit)
+	public static String[] wrapWithCMD(String msg, String appId, String appName, String[] argsInit, boolean onlyCompiled, boolean pause)
 	{
-		return wrapWithCMD(msg, appId, appName, mainClass, argsInit, false, true);
+		return wrapWithCMD(msg, appId, appName, getMainClass(), argsInit, onlyCompiled, pause);
 	}
 	
 	/**
@@ -329,7 +337,7 @@ public class SelfCommandPrompt {
 	 */	
 	public static String[] wrapWithCMD(String msg, String appId, String appName, Class<?> mainClass, String[] argsInit, boolean onlyCompiled, boolean pause)
 	{
-		SelfCommandPrompt.runWithCMD(appId, appName, mainClass, argsInit, onlyCompiled, pause);
+		argsInit = SelfCommandPrompt.runWithCMD(appId, appName, mainClass, argsInit, onlyCompiled, pause);
 		boolean shouldScan = argsInit.length == 0;
 		if(!msg.isEmpty() && shouldScan)
 			System.out.print(msg);//don't enforce line feed
