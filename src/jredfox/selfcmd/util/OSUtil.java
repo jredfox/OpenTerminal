@@ -1,7 +1,14 @@
 package jredfox.selfcmd.util;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
+import jredfox.filededuper.util.DeDuperUtil;
+import jredfox.selfcmd.SelfCommandPrompt;
 import jredfox.selfcmd.thread.ShutdownThread;
 
 public class OSUtil {
@@ -171,6 +178,109 @@ public class OSUtil {
 	public static void addShutdownThread(ShutdownThread sht)
 	{
 		throw new RuntimeException("Unsupported Check back in a future version!");
+	}
+	
+	/**
+	 * doesn't call {@link OSUtil#toOSFile(File)} this is simply a method if you don't need the whole process. Re-written from Evil Notch Lib
+	 */
+	public static File toWinFile(File file)
+	{
+		if(possiblyReserved(file))
+		{
+			List<String> paths = new ArrayList<>(15);
+			File fpath = file;
+			while(fpath != null)
+			{
+				String fileName = FileUtils.getTrueName(fpath);
+				String filtered = isReserved(fileName) ? ( (fileName.contains(".") ? SelfCommandPrompt.inject(fileName, '.', '_') : fileName + "_") + DeDuperUtil.getExtensionFull(fpath)) : (fpath.getParent() != null ? fpath.getName() : fpath.getPath());
+				paths.add(filtered);
+				fpath = fpath.getParentFile();
+			}
+			StringBuilder builder = new StringBuilder();
+			int size = paths.size();
+			for(int i= size - 1; i >= 0; i--)
+			{
+				String s = paths.get(i);
+				builder.append(s + (i == 0 || i == size - 1 ? "" : File.separator));
+			}
+			return new File(builder.toString());
+		}
+		return file;
+	}
+
+	/**
+	 * converts the file to a cross platform file if needed. Re-written from Evil Notch Lib
+	 */
+	public static File toOSFile(File file)
+	{
+		String invalid = "*/<>?\":|";//java replaces trailing "\" or "/" and you can't get a file name with "/\" in java so don't check it
+		if(SelfCommandPrompt.containsAny(file.getPath(), invalid))
+		{
+			file = filter(file, invalid);
+		}
+		return toWinFile(file);
+	}
+
+	public static File filter(File file, String invalid) 
+	{
+		List<String> paths = new ArrayList<>(15);
+		File fpath = file;
+		while(fpath != null)
+		{
+			File newPath = fpath.getParentFile();
+			String filtered = newPath == null ? fpath.getPath() : filter(fpath.getName(), invalid);
+			if(!filtered.isEmpty())
+				paths.add(filtered);
+			fpath = newPath;
+		}
+		StringBuilder builder = new StringBuilder();
+		int size = paths.size();
+		for(int i=size - 1; i >= 0; i--)
+		{
+			String s = paths.get(i);
+			builder.append(s + (i == 0 || i == size - 1 ? "" : File.separator));
+		}
+		return new File(builder.toString());
+	}
+
+	public static String filter(String name, String invalid) 
+	{
+		StringBuilder b = new StringBuilder();
+		for(int i = 0; i < name.length(); i++)
+		{
+			String c = name.substring(i, i + 1);
+			if(!invalid.contains(c))
+				b.append(c);
+		}
+		return b.toString();
+	}
+
+	public static final String[] winReserved = new String[] 
+	{
+		"CON", "PRN", "AUX", "NUL",
+		"COM0", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+		"LPT0", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
+	};
+	
+	public static boolean isReserved(String name)
+	{
+		for(String r : winReserved)
+		{
+			if(name.equalsIgnoreCase(r) || name.startsWith(r + "."))
+				return true;
+		}
+		return false;
+	}
+	
+	public static boolean possiblyReserved(File file) 
+	{
+		String path = file.getPath();
+		for(String s : winReserved)
+		{
+			if(path.contains(s))
+				return true;
+		}
+		return false;
 	}
 
 }

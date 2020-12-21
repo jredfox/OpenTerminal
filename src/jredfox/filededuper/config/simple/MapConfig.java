@@ -114,9 +114,9 @@ public class MapConfig {
 	
 	public void parseLine(String line) 
 	{
-		String[] reg = DeDuperUtil.splitFirst(line, ':');
+		String[] reg = SelfCommandPrompt.splitFirst(line, ':', '"', '"');
 		String type = reg[0].trim();
-		reg = DeDuperUtil.splitFirst(reg[1], this.sep);
+		reg = SelfCommandPrompt.splitFirst(reg[1], this.sep, '"', '"');
 		String key = reg[0].trim();
 		String value = reg[1].trim();
 		Object parsed = this.parseObj(type, value);

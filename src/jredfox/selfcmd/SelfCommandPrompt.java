@@ -26,16 +26,18 @@ import jredfox.selfcmd.util.OSUtil;
  */
 public class SelfCommandPrompt {
 	
-	public static final String VERSION = "2.1.0";
-	public static final String INVALID = "\"'`,";
+	public static final String VERSION = "2.1.2";
+	public static final String INVALID = OSUtil.getQuote() + "'`,";
 	public static final File selfcmd = new File(OSUtil.getAppData(), "SelfCommandPrompt");
 	public static final Scanner scanner = new Scanner(System.in);
+	public static JConsole jconsole;
 	public static String wrappedAppId;
 	public static String wrappedAppName;
 	public static Class<?> wrappedAppClass;
 	public static String[] wrappedAppArgs;
 	public static boolean wrappedPause;
-	public static JConsole jconsole;
+	public static String background;
+	public static boolean sameWindow;
 	
 	static
 	{
@@ -52,8 +54,9 @@ public class SelfCommandPrompt {
 		
 		try
 		{
-			System.setProperty("selfcmd.mainclass", args[1]);//because eclipse's jar in jar loader sets a class loader it wipes static fields set a system property instead
-			Class<?> mainClass = Class.forName(args[1]);
+			String className = args[1];
+			System.setProperty("selfcmd.mainclass", className);//because eclipse's jar in jar loader sets a class loader it wipes static fields set a system property instead
+			Class<?> mainClass = Class.forName(className);
 			String[] programArgs = new String[args.length - 2];
 			System.arraycopy(args, 2, programArgs, 0, programArgs.length);
 			Method method = mainClass.getMethod("main", String[].class);
@@ -85,7 +88,7 @@ public class SelfCommandPrompt {
 	public static JConsole startJConsole(String appId, String appName)
 	{	
 		if(jconsole != null)
-			throw new RuntimeException("jconsole has already started!");
+			return jconsole;
 		JConsole console = new JConsole(appName)
 		{
 			@Override
@@ -143,16 +146,20 @@ public class SelfCommandPrompt {
 	public static String[] runWithCMD(String appId, String appName, Class<?> mainClass, String[] args, boolean onlyCompiled, boolean pause) 
 	{
 		cacheApp(appId, appName, mainClass, args, pause);
+		String bg = args.length != 0 ? args[0] : "";
 		//run in the background if ordered to by an external process
-		if(args.length != 0 && (args[0].equals("background") || args[0].equalsIgnoreCase("runInBackground")))
+		if(isBackground(bg))
 		{
+			background = bg;
+			sameWindow = true;
 			String[] newArgs = new String[args.length - 1];
 			System.arraycopy(args, 1, newArgs, 0, newArgs.length);
 			return newArgs;
 		}
 		boolean compiled = isCompiled(mainClass);
-		if(!compiled && onlyCompiled || compiled && System.console() != null || isDebugMode() || isWrapped() || jconsole != null)
+		if(!compiled && onlyCompiled || compiled && System.console() != null || isDebugMode() || isWrapped())
 		{
+			sameWindow = true;
 			return args;
 		}
 		
@@ -196,24 +203,37 @@ public class SelfCommandPrompt {
 	public static void reboot(String appId, String appName, Class<?> mainClass, String[] args, boolean pause) throws IOException
 	{
 		syncConfig();
-		ExeBuilder builder = new ExeBuilder();
-		if(hasJConsole())
+		if(hasJConsole() || sameWindow)
 		{
-			builder.addCommand("java");
-			builder.addCommand(getJVMArgs());
-			builder.addCommand("-cp");
-			String q = OSUtil.getQuote();
-			builder.addCommand(q + System.getProperty("java.class.path") + q);//doesn't need to check parsing chars cause this is a generic reboot and if it reboots with terminal it will catch the error on boot
-			builder.addCommand(mainClass.getName());
-			builder.addCommand(programArgs(args));
-			String command = builder.toString();
-			runInTerminal(command);
-			shutdown();
+			rebootNormally(mainClass, args);
 		}
 		else
 		{
 			rebootWithTerminal(appId, appName, mainClass, args, pause);
 		}
+	}
+
+	/**
+	 * reboot a java application normally with original args
+	 * @since 2.1.1
+	 */
+	public static void rebootNormally(Class<?> mainClass, String[] args) throws IOException 
+	{
+        String libs = System.getProperty("java.class.path");
+        if(containsAny(libs, INVALID))
+        	throw new RuntimeException("one or more LIBRARIES contains illegal parsing characters:(" + libs + "), invalid:" + INVALID);
+        
+		ExeBuilder builder = new ExeBuilder();
+		builder.addCommand("java");
+		builder.addCommand(getJVMArgs());
+		builder.addCommand("-cp");
+		String q = OSUtil.getQuote();
+		builder.addCommand(q + libs + q);//doesn't need to check parsing chars cause this is a generic reboot and if it reboots with terminal it will catch the error on boot
+		builder.addCommand(mainClass.getName());
+		builder.addCommand(programArgs(args));
+		String command = builder.toString();
+		runInTerminal(command);
+		shutdown();
 	}
 
 	/**
@@ -273,6 +293,7 @@ public class SelfCommandPrompt {
         	cmds.add(command);//actual command
         	IOUtils.saveFileLines(cmds, sh, true);//save the file
         	IOUtils.makeExe(sh);//make it executable
+        	System.out.println(terminal + " " + OSUtil.getExeAndClose() + " osascript -e \"tell application \\\"Terminal\\\" to do script \\\"" + sh.getAbsolutePath() + "\\\"\"");
         	Runtime.getRuntime().exec(terminal + " " + OSUtil.getExeAndClose() + " osascript -e \"tell application \\\"Terminal\\\" to do script \\\"" + sh.getAbsolutePath() + "\\\"\"");
         }
         else if(OSUtil.isLinux())
@@ -344,18 +365,73 @@ public class SelfCommandPrompt {
 		
 		return shouldScan ? parseCommandLine(scanner.nextLine()) : argsInit;
 	}
-
-	public static String[] parseCommandLine(String line) 
+	
+	public static String[] parseCommandLine(String line)
 	{
-		String[] args = split(line, ' ', '"', '"');
-		List<String> arr = new ArrayList<>(args.length);
-		for(String s : args)
+		return parseCommandLine(line, '\\', '"');
+	}
+
+	public static String[] parseCommandLine(String line, char esq, char q)
+	{
+		List<String> args = new ArrayList<>();
+		StringBuilder builder = new StringBuilder();
+		String previous = "";
+		boolean quoted = false;
+		String replaceEsq = esq == '\\' ? "\\\\" : "" + esq;
+		for(int index = 0; index < line.length(); index++)
 		{
-			String arg = parseQuotes(s.trim(), '"', '"');
-			if(!arg.isEmpty())
-				arr.add(arg);
+			String character = line.substring(index, index + 1);
+			String compare = character;
+			
+			//escape the escape sequence
+			if(previous.equals("" + esq) && compare.equals("" + esq))
+			{
+				previous = "aa";
+				compare = "aa";
+			}
+			
+			boolean escaped = previous.equals("" + esq);
+			
+			if(!escaped && compare.equals("" + q))
+				quoted = !quoted;
+			
+			if(!quoted && compare.equals(" "))
+			{
+				args.add(replaceAll(builder.toString(), q, "", esq).replaceAll(replaceEsq + q, "" + q));
+				builder = new StringBuilder();
+				previous = compare;
+				continue;
+			}
+			builder.append(character);
+			previous = compare;
 		}
-		return toArray(arr, String.class);
+		if(!builder.toString().isEmpty())
+			args.add(replaceAll(builder.toString(), q, "", esq).replaceAll(replaceEsq + q, "" + q));
+		
+		return DeDuperUtil.toArray(args, String.class);
+	}
+
+	public static String replaceAll(String str, char what, String with, char esq)
+	{
+		if(what == '§')
+			throw new IllegalArgumentException("unsupported opperend:" + what);
+		StringBuilder builder = new StringBuilder();
+		String previous = "";
+		for(int index = 0; index < str.length(); index++)
+		{
+			String character = str.substring(index, index + 1);
+			if(previous.equals("" + esq) && character.equals("" + esq))
+			{
+				previous = "§";
+				character = "§";
+			}
+			boolean escaped = previous.equals("" + esq);
+			previous = character;
+			if(!escaped && character.equals("" + what))
+				character = with;
+			builder.append(character);
+		}
+		return builder.toString();
 	}
 	
 	/**
@@ -461,6 +537,14 @@ public class SelfCommandPrompt {
 	
 	public static String[] programArgs(String[] args) 
 	{
+		//append the background arg if it doesn't exist
+		if(background != null && (args.length == 0 || !isBackground(args[0])) )
+		{
+			String[] newArgs = new String[args.length + 1];
+			newArgs[0] = background;
+			System.arraycopy(args, 0, newArgs, 1, args.length);
+			args = newArgs;
+		}
 		String q = OSUtil.getQuote();
 		String esc = OSUtil.getEsc();
 		for(int i=0;i<args.length; i++)
@@ -468,6 +552,11 @@ public class SelfCommandPrompt {
 		return args;
 	}
 	
+	public static boolean isBackground(String arg)
+	{
+		return arg.equals("background") || arg.equalsIgnoreCase("runInBackground") || arg.equalsIgnoreCase("runInTheBackground");
+	}
+
 	/**
 	 * incompatible with eclipse's jar in jar loader. Use this to enforce your program's directory is synced with your jar after calling runWithCMD
 	 */
@@ -518,7 +607,7 @@ public class SelfCommandPrompt {
 	
 	public static boolean hasJConsole() 
 	{
-		return useJConsole || OSUtil.isUnsupported();
+		return useJConsole || OSUtil.isUnsupported() || jconsole != null;
 	}
 
 	public static String terminal;
@@ -544,51 +633,6 @@ public class SelfCommandPrompt {
 	}
 
 	//End APP VARS_________________________________
-	
-	/**
-	 * get a file extension. Note directories do not have file extensions
-	 */
-	public static String getExtension(File file) 
-	{
-		String name = file.getName();
-		int index = name.lastIndexOf('.');
-		return index != -1 && !file.isDirectory() ? name.substring(index + 1) : "";
-	}
-	
-	public static File getProgramDir()
-	{
-		return new File(System.getProperty("user.dir"));
-	}
-	
-	/**
-	 * split with quote ignoring support
-	 */
-	public static String[] split(String str, char sep, char lquote, char rquote) 
-	{
-		if(str.isEmpty())
-			return new String[]{str};
-		List<String> list = new ArrayList<>();
-		boolean inside = false;
-		for(int i = 0; i < str.length(); i += 1)
-		{
-			String a = str.substring(i, i + 1);
-			String prev = i == 0 ? "a" : str.substring(i-1, i);
-			boolean escape = prev.charAt(0) ==  '\\';
-			if(a.equals("" + lquote) && !escape || a.equals("" + rquote) && !escape)
-			{
-				inside = !inside;
-			}
-			if(a.equals("" + sep) && !inside)
-			{
-				String section = str.substring(0, i);
-				list.add(section);
-				str = str.substring(i + ("" + sep).length(), str.length());
-				i = -1;
-			}
-		}
-		list.add(str);//add the rest of the string
-		return toArray(list, String.class);
-	}
 	
 	public static String parseQuotes(String s, char lq, char rq) 
 	{
@@ -640,6 +684,21 @@ public class SelfCommandPrompt {
 		return false;
 	}
 	
+	/**
+	 * get a file extension. Note directories do not have file extensions
+	 */
+	public static String getExtension(File file) 
+	{
+		String name = file.getName();
+		int index = name.lastIndexOf('.');
+		return index != -1 && !file.isDirectory() ? name.substring(index + 1) : "";
+	}
+	
+	public static File getProgramDir()
+	{
+		return new File(System.getProperty("user.dir"));
+	}
+	
 	public static <T> T[] toArray(Collection<T> col, Class<T> clazz)
 	{
 	    @SuppressWarnings("unchecked")
@@ -650,6 +709,57 @@ public class SelfCommandPrompt {
 	        li[index++] = obj;
 	    }
 	    return li;
+	}
+	
+	public static String[] splitFirst(String str, char sep, char lquote, char rquote)
+	{
+		return split(str, 1, sep, lquote, rquote);
+	}
+	
+	public static String[] split(String str, char sep, char lquote, char rquote) 
+	{
+		return split(str, -1, sep, lquote, rquote);
+	}
+	
+	/**
+	 * split with quote ignoring support
+	 * @param limit is the amount of times it will attempt to split
+	 */
+	public static String[] split(String str, int limit, char sep, char lquote, char rquote) 
+	{
+		if(str.isEmpty())
+			return new String[]{str};
+		List<String> list = new ArrayList<>();
+		boolean inside = false;
+		int count = 0;
+		for(int i = 0; i < str.length(); i += 1)
+		{
+			if(limit != -1 && count >= limit)
+				break;
+			String a = str.substring(i, i + 1);
+			char firstChar = a.charAt(0);
+			char prev = i == 0 ? 'a' : str.substring(i-1, i).charAt(0);
+			boolean escape = prev == '\\';
+			if(firstChar == '\\' && prev == '\\')
+			{
+				prev = '/';
+				firstChar = '/';//escape the escape
+			}
+			if(!escape && (a.equals("" + lquote) || a.equals("" + rquote)))
+			{
+				inside = !inside;
+			}
+			if(a.equals("" + sep) && !inside)
+			{
+				String section = str.substring(0, i);
+				list.add(section);
+				str = str.substring(i + ("" + sep).length());
+				i = -1;
+				count++;
+			}
+		}
+		list.add(str);//add the rest of the string
+		return toArray(list, String.class);
 	}
 	
 	public static boolean containsAny(String string, String invalid) 
@@ -666,6 +776,12 @@ public class SelfCommandPrompt {
 			}
 		}
 		return false;
+	}
+	
+	public static String inject(String str, char before, char toInject)
+	{
+		int index = str.indexOf(before);
+		return index != -1 ? str.substring(0, index) + toInject + str.substring(index) : str;
 	}
 	
 	public static Class<?> getClass(String name) 
