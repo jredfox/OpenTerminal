@@ -2,10 +2,7 @@ package jredfox.selfcmd.util;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import jredfox.filededuper.util.DeDuperUtil;
 import jredfox.selfcmd.SelfCommandPrompt;
@@ -26,7 +23,7 @@ public class OSUtil {
 	
 	public static String[] mac_terminals = new String[]
 	{
-		"bin/bash"	
+		"/bin/bash"	
 	};
 	
 	public static String[] linux_terminals = new String[]
@@ -213,7 +210,7 @@ public class OSUtil {
 	 */
 	public static File toOSFile(File file)
 	{
-		String invalid = "*/<>?\":|";//java replaces trailing "\" or "/" and you can't get a file name with "/\" in java so don't check it
+		String invalid = "*/<>?\":|'";//java replaces trailing "\" or "/" and you can't get a file name with "/\" in java so don't check it
 		if(SelfCommandPrompt.containsAny(file.getPath(), invalid))
 		{
 			file = filter(file, invalid);
@@ -266,7 +263,7 @@ public class OSUtil {
 	{
 		for(String r : winReserved)
 		{
-			if(name.equalsIgnoreCase(r) || name.startsWith(r + "."))
+			if(name.equalsIgnoreCase(r) || name.startsWith(r.toUpperCase() + "."))
 				return true;
 		}
 		return false;
@@ -274,7 +271,7 @@ public class OSUtil {
 	
 	public static boolean possiblyReserved(File file) 
 	{
-		String path = file.getPath();
+		String path = file.getPath().toUpperCase();
 		for(String s : winReserved)
 		{
 			if(path.contains(s))

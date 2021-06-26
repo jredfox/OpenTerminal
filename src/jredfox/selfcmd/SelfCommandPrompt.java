@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
+import jredfox.filededuper.Main;
 import jredfox.filededuper.config.simple.MapConfig;
 import jredfox.filededuper.util.DeDuperUtil;
 import jredfox.filededuper.util.IOUtils;
@@ -284,17 +285,24 @@ public class SelfCommandPrompt {
         }
         else if(OSUtil.isMac())
         {
-        	File sh = new File(getAppdata(appId), shName + ".sh");
+        	File appdata = getAppdata(appId);
+        	File sh = new File(appdata, shName + ".sh");
         	List<String> cmds = new ArrayList<>();
         	cmds.add("#!/bin/bash");
         	cmds.add("set +v");//@Echo off
         	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");//Title
-        	cmds.add("cd " + getProgramDir().getAbsolutePath());//set the proper directory
+        	cmds.add("cd " + getProgramDir().getAbsolutePath().replaceAll(" ", "\\ "));//set the proper directory
         	cmds.add(command);//actual command
         	IOUtils.saveFileLines(cmds, sh, true);//save the file
         	IOUtils.makeExe(sh);//make it executable
-        	System.out.println(terminal + " " + OSUtil.getExeAndClose() + " osascript -e \"tell application \\\"Terminal\\\" to do script \\\"" + sh.getAbsolutePath() + "\\\"\"");
-        	Runtime.getRuntime().exec(terminal + " " + OSUtil.getExeAndClose() + " osascript -e \"tell application \\\"Terminal\\\" to do script \\\"" + sh.getAbsolutePath() + "\\\"\"");
+        	
+        	File launchSh = new File(appdata, "run.sh");
+        	List<String> li = new ArrayList<>();
+        	li.add("#!/bin/bash");
+        	li.add("osascript -e \"tell application \\\"Terminal\\\" to do script \\\"" + sh.getAbsolutePath().replaceAll(" ", "\\\\ ") + "\\\"\"");
+        	IOUtils.saveFileLines(li, launchSh, true);
+        	IOUtils.makeExe(launchSh);
+        	Runtime.getRuntime().exec(terminal + " " + OSUtil.getExeAndClose() + " " + launchSh.getAbsolutePath().replaceAll(" ", "\\ "));
         }
         else if(OSUtil.isLinux())
         {
