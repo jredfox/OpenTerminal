@@ -14,9 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
-import jredfox.filededuper.Main;
 import jredfox.filededuper.config.simple.MapConfig;
-import jredfox.filededuper.util.DeDuperUtil;
 import jredfox.filededuper.util.IOUtils;
 import jredfox.selfcmd.exe.ExeBuilder;
 import jredfox.selfcmd.jconsole.JConsole;
@@ -416,7 +414,7 @@ public class SelfCommandPrompt {
 		if(!builder.toString().isEmpty())
 			args.add(replaceAll(builder.toString(), q, "", esq).replaceAll(replaceEsq + q, "" + q));
 		
-		return DeDuperUtil.toArray(args, String.class);
+		return SelfCommandPrompt.toArray(args, String.class);
 	}
 
 	public static String replaceAll(String str, char what, String with, char esq)
@@ -768,6 +766,12 @@ public class SelfCommandPrompt {
 		}
 		list.add(str);//add the rest of the string
 		return toArray(list, String.class);
+	}
+	
+	public static String getExtensionFull(File file) 
+	{
+		String ext = getExtension(file);
+		return ext.isEmpty() ? "" : "." + ext;
 	}
 	
 	public static boolean containsAny(String string, String invalid) 

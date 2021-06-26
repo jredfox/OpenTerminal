@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import jredfox.filededuper.util.DeDuperUtil;
 import jredfox.selfcmd.SelfCommandPrompt;
 import jredfox.selfcmd.thread.ShutdownThread;
 
@@ -189,7 +188,7 @@ public class OSUtil {
 			while(fpath != null)
 			{
 				String fileName = FileUtils.getTrueName(fpath);
-				String filtered = isReserved(fileName) ? ( (fileName.contains(".") ? SelfCommandPrompt.inject(fileName, '.', '_') : fileName + "_") + DeDuperUtil.getExtensionFull(fpath)) : (fpath.getParent() != null ? fpath.getName() : fpath.getPath());
+				String filtered = isReserved(fileName) ? ( (fileName.contains(".") ? SelfCommandPrompt.inject(fileName, '.', '_') : fileName + "_") + SelfCommandPrompt.getExtensionFull(fpath)) : (fpath.getParent() != null ? fpath.getName() : fpath.getPath());
 				paths.add(filtered);
 				fpath = fpath.getParentFile();
 			}
