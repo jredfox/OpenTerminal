@@ -1,5 +1,5 @@
 # SelfCommandPrompt
-do you have a java command line program? then this library is for you. Simply call SelfCommandPrompt#runWithCMD that handle 0 args or SelfCommandPrompt#wrapWithCMD to get wrapped args before executing. Tested on (windows 10, mac osx 2016, linux(mint & ubuntu)
+do you have a java command line program? then this library is for you. Simply call SelfCommandPrompt#runWithCMD for a program that handles 0 args or SelfCommandPrompt#wrapWithCMD to get wrapped args before executing. Tested on (windows 10, mac osx 2016, linux(mint & ubuntu)
 
 Features:
 - SelfCommandPrompt#runWithCMD opens a native command line terminal based on your os once the user double clicks the jar
