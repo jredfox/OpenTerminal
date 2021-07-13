@@ -1,9 +1,10 @@
-package jredfox.selfcmd.util;
+package jredfox.common.os;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import jredfox.common.file.FileUtils;
 import jredfox.selfcmd.SelfCommandPrompt;
 import jredfox.selfcmd.thread.ShutdownThread;
 
@@ -262,7 +263,7 @@ public class OSUtil {
 	{
 		for(String r : winReserved)
 		{
-			if(name.equalsIgnoreCase(r) || name.startsWith(r.toUpperCase() + "."))
+			if(name.equalsIgnoreCase(r) || name.toUpperCase().startsWith(r + "."))
 				return true;
 		}
 		return false;

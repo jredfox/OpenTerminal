@@ -13,22 +13,25 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
-import jredfox.filededuper.config.simple.MapConfig;
-import jredfox.filededuper.util.IOUtils;
+import jredfox.common.config.MapConfig;
+import jredfox.common.io.IOUtils;
+import jredfox.common.log.printer.LogPrinter;
+import jredfox.common.os.OSUtil;
 import jredfox.selfcmd.exe.ExeBuilder;
 import jredfox.selfcmd.jconsole.JConsole;
-import jredfox.selfcmd.util.OSUtil;
 /**
  * @author jredfox. Credits to Chocohead#7137 for helping me find the windows start command & System.getProperty("java.class.path);
  * this class is a wrapper for your program. It fires command prompt and stops it from quitting without user input
  */
 public class SelfCommandPrompt {
 	
-	public static final String VERSION = "2.1.2";
+	public static final String VERSION = "2.2.0";
 	public static final String INVALID = OSUtil.getQuote() + "'`,";
 	public static final File selfcmd = new File(OSUtil.getAppData(), "SelfCommandPrompt");
 	public static final Scanner scanner = new Scanner(System.in);
+	public static LogPrinter printer;
 	public static JConsole jconsole;
 	public static String wrappedAppId;
 	public static String wrappedAppName;
@@ -50,7 +53,6 @@ public class SelfCommandPrompt {
 	public static void main(String[] args)
 	{
 		boolean shouldPause = Boolean.parseBoolean(args[0]);
-		
 		try
 		{
 			String className = args[1];
@@ -172,10 +174,10 @@ public class SelfCommandPrompt {
 		{
 			rebootWithTerminal(appId, appName, mainClass, args, pause);
 		}
-		catch (IOException e)
+		catch (Throwable t)
 		{
 			startJConsole(appId, appName);
-			e.printStackTrace();
+			t.printStackTrace();
 		}
 		return args;
 	}
@@ -202,7 +204,7 @@ public class SelfCommandPrompt {
 	public static void reboot(String appId, String appName, Class<?> mainClass, String[] args, boolean pause) throws IOException
 	{
 		syncConfig();
-		if(hasJConsole() || sameWindow)
+		if(hasJConsole())
 		{
 			rebootNormally(mainClass, args);
 		}
@@ -265,9 +267,23 @@ public class SelfCommandPrompt {
 	/**
 	 * enforces it to run in the command prompt terminal as sometimes it doesn't work without it
 	 */
-	public static void runInTerminal(String command) throws IOException
+	public static Process runInTerminal(String command) throws IOException
 	{
-		Runtime.getRuntime().exec(terminal + " " + OSUtil.getExeAndClose() + " " + command);
+		return run(terminal + " " + OSUtil.getExeAndClose() + " " + command);
+	}
+	
+	public static Process run(String command) throws IOException
+	{
+        StringTokenizer st = new StringTokenizer(command);
+        String[] cmdarray = new String[st.countTokens()];
+        for (int i = 0; st.hasMoreTokens(); i++)
+            cmdarray[i] = st.nextToken();
+		return run(cmdarray);
+	}
+	
+	public static Process run(String[] cmdarray) throws IOException
+	{
+        return new ProcessBuilder(cmdarray).inheritIO().start();
 	}
 	
 	/**
@@ -279,7 +295,7 @@ public class SelfCommandPrompt {
 	{
         if(OSUtil.isWindows())
         {
-        	Runtime.getRuntime().exec(terminal + " " + OSUtil.getExeAndClose() + " start " + "\"" + appName + "\" " + command);
+        	runInTerminal(" start " + "\"" + appName + "\" " + command);
         }
         else if(OSUtil.isMac())
         {
@@ -289,7 +305,7 @@ public class SelfCommandPrompt {
         	cmds.add("#!/bin/bash");
         	cmds.add("set +v");//@Echo off
         	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");//Title
-        	cmds.add("cd " + getProgramDir().getAbsolutePath().replaceAll(" ", "\\ "));//set the proper directory
+//        	cmds.add("cd " + getProgramDir().getAbsolutePath().replaceAll(" ", "\\ "));//set the proper directory
         	cmds.add(command);//actual command
         	IOUtils.saveFileLines(cmds, sh, true);//save the file
         	IOUtils.makeExe(sh);//make it executable
@@ -300,7 +316,7 @@ public class SelfCommandPrompt {
         	li.add("osascript -e \"tell application \\\"Terminal\\\" to do script \\\"" + sh.getAbsolutePath().replaceAll(" ", "\\\\ ") + "\\\"\"");
         	IOUtils.saveFileLines(li, launchSh, true);
         	IOUtils.makeExe(launchSh);
-        	Runtime.getRuntime().exec(terminal + " " + OSUtil.getExeAndClose() + " " + launchSh.getAbsolutePath().replaceAll(" ", "\\ "));
+        	runInTerminal(launchSh.getAbsolutePath().replaceAll(" ", "\\ "));
         }
         else if(OSUtil.isLinux())
         {
@@ -309,11 +325,11 @@ public class SelfCommandPrompt {
         	cmds.add("#!/bin/bash");
         	cmds.add("set +v");//@Echo off
         	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");//Title
-        	cmds.add("cd " + getProgramDir().getAbsolutePath());//set the proper directory
+//        	cmds.add("cd " + getProgramDir().getAbsolutePath());//set the proper directory
         	cmds.add(command);//actual command
         	IOUtils.saveFileLines(cmds, sh, true);//save the file
         	IOUtils.makeExe(sh);//make it executable
-        	Runtime.getRuntime().exec(terminal + " " + OSUtil.getLinuxNewWin() + " " + sh.getAbsolutePath());
+        	run(terminal + " " + OSUtil.getLinuxNewWin() + " " + sh.getAbsolutePath());
         }
 	}
 
@@ -543,14 +559,6 @@ public class SelfCommandPrompt {
 	
 	public static String[] programArgs(String[] args) 
 	{
-		//append the background arg if it doesn't exist
-		if(background != null && (args.length == 0 || !isBackground(args[0])) )
-		{
-			String[] newArgs = new String[args.length + 1];
-			newArgs[0] = background;
-			System.arraycopy(args, 0, newArgs, 1, args.length);
-			args = newArgs;
-		}
 		String q = OSUtil.getQuote();
 		String esc = OSUtil.getEsc();
 		for(int i=0;i<args.length; i++)

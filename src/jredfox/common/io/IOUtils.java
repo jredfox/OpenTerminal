@@ -1,4 +1,4 @@
-package jredfox.filededuper.util;
+package jredfox.common.io;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

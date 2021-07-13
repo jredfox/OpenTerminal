@@ -31,7 +31,7 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.text.Document;
 
-import jredfox.selfcmd.util.OSUtil;
+import jredfox.common.os.OSUtil;
 
 /**
  * @author jredfox

@@ -1,4 +1,4 @@
-package jredfox.filededuper.config.simple;
+package jredfox.common.config;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import jredfox.filededuper.util.IOUtils;
+import jredfox.common.io.IOUtils;
 import jredfox.selfcmd.SelfCommandPrompt;
 
 /**
@@ -66,6 +66,7 @@ public class MapConfig {
 		list.put(key, value);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T> T get(String key, T init)
 	{
 		if(key.contains("" + this.sep))

@@ -1,4 +1,4 @@
-package jredfox.selfcmd.util;
+package jredfox.common.file;
 
 import java.io.File;
 
