@@ -49,7 +49,6 @@ public class SelfCommandPrompt {
 	/**
 	 * args are [shouldPause, mainClass, programArgs...]
 	 */
-	@SuppressWarnings("resource")
 	public static void main(String[] args)
 	{
 		boolean shouldPause = Boolean.parseBoolean(args[0]);
@@ -77,9 +76,8 @@ public class SelfCommandPrompt {
 		
 		if(shouldPause)
 		{
-			Scanner scanner = new Scanner(System.in).useDelimiter("\n");//Warning says scanner is never closed but, useDelimiter returns itself
 			System.out.println("Press ENTER to continue:");
-			scanner.next();
+			scanner.nextLine();
 		}
 	}
 
