@@ -301,20 +301,43 @@ public class SelfCommandPrompt {
         	File sh = new File(appdata, shName + ".sh");
         	List<String> cmds = new ArrayList<>();
         	cmds.add("#!/bin/bash");
+        	cmds.add("clear && printf '\\e[3J'");//clear the console
         	cmds.add("set +v");//@Echo off
         	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");//Title
-//        	cmds.add("cd " + getProgramDir().getAbsolutePath().replaceAll(" ", "\\ "));//set the proper directory
+        	cmds.add("cd " + getProgramDir().getAbsolutePath().replaceAll(" ", "\\ "));//set the proper directory
         	cmds.add(command);//actual command
         	IOUtils.saveFileLines(cmds, sh, true);//save the file
         	IOUtils.makeExe(sh);//make it executable
+        
+        	File as = new File(appdata, shName + ".applescript").getAbsoluteFile();
+        	File cas = new File(appdata, shName + ".scpt").getAbsoluteFile();
         	
-        	File launchSh = new File(appdata, "run.sh");
-        	List<String> li = new ArrayList<>();
-        	li.add("#!/bin/bash");
-        	li.add("osascript -e \"tell application \\\"Terminal\\\" to do script \\\"" + sh.getAbsolutePath().replaceAll(" ", "\\\\ ") + "\\\"\"");
-        	IOUtils.saveFileLines(li, launchSh, true);
-        	IOUtils.makeExe(launchSh);
-        	runInTerminal(launchSh.getAbsolutePath().replaceAll(" ", "\\ "));
+        	//generate the compiled applescript
+        	if(!cas.exists())
+        	{
+        		List<String> osa = new ArrayList<>(11);
+        		String shPath = sh.getAbsolutePath().replaceAll(" ", "\\\\\\\\ ");
+        		osa.add("if application \"Terminal\" is running then");
+        		osa.add("	tell application \"Terminal\"");
+        		osa.add("do script \"" + shPath + "\"");
+        		osa.add("		activate");
+        		osa.add("	end tell");
+        		osa.add("else");
+        		osa.add("	tell application \"Terminal\"");
+        		osa.add("do script \"" + shPath + "\"" + " in window 0");
+        		osa.add("		activate");
+        		osa.add("	end tell");
+        		osa.add("end if");
+        		IOUtils.saveFileLines(osa, as, true);
+        		Process p = run(new String[]{terminal, OSUtil.getExeAndClose(), "osacompile -o \"" + cas.getAbsolutePath() + "\"" + " \"" + as.getAbsolutePath() + "\""});
+           		IOUtils.makeExe(as);
+        		while(p.isAlive())
+        		{
+        			;
+        		}
+        		IOUtils.makeExe(cas);
+        	}
+        	run(new String[]{terminal, OSUtil.getExeAndClose(), "osascript " + cas.getAbsolutePath().replaceAll(" ", "\\\\ ")});
         }
         else if(OSUtil.isLinux())
         {
@@ -323,7 +346,6 @@ public class SelfCommandPrompt {
         	cmds.add("#!/bin/bash");
         	cmds.add("set +v");//@Echo off
         	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");//Title
-//        	cmds.add("cd " + getProgramDir().getAbsolutePath());//set the proper directory
         	cmds.add(command);//actual command
         	IOUtils.saveFileLines(cmds, sh, true);//save the file
         	IOUtils.makeExe(sh);//make it executable
