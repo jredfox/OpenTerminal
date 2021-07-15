@@ -262,22 +262,24 @@ public class SelfCommandPrompt {
         	shutdown();
 	}
 	
-	/**
-	 * enforces it to run in the command prompt terminal as sometimes it doesn't work without it
-	 */
-	public static Process runInTerminal(String command) throws IOException
-	{
-		return run(terminal + " " + OSUtil.getExeAndClose() + " " + command);
-	}
-	
-	public static Process run(String command) throws IOException
-	{
+    /**
+     * enforces it to run in the command prompt terminal as sometimes it doesn't work without it
+     */
+    public static Process runInTerminal(String command) throws IOException
+    {
+        return runInTerminal(OSUtil.getExeAndClose(), command);
+    }
+    
+    public static Process runInTerminal(String flag, String command) throws IOException
+    {
         StringTokenizer st = new StringTokenizer(command);
-        String[] cmdarray = new String[st.countTokens()];
+        String[] cmdarray = new String[st.countTokens() + 2];
+        cmdarray[0] = terminal;
+        cmdarray[1] = flag;
         for (int i = 0; st.hasMoreTokens(); i++)
-            cmdarray[i] = st.nextToken();
-		return run(cmdarray);
-	}
+            cmdarray[i + 2] = st.nextToken().replaceAll("%20", " ");
+        return run(cmdarray);
+    }
 	
 	public static Process run(String[] cmdarray) throws IOException
 	{
@@ -349,7 +351,7 @@ public class SelfCommandPrompt {
         	cmds.add(command);//actual command
         	IOUtils.saveFileLines(cmds, sh, true);//save the file
         	IOUtils.makeExe(sh);//make it executable
-        	run(terminal + " " + OSUtil.getLinuxNewWin() + " " + sh.getAbsolutePath());
+        	runInTerminal(OSUtil.getLinuxNewWin(), sh.getAbsolutePath().replaceAll(" ", "%20"));
         }
 	}
 
