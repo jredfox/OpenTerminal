@@ -30,6 +30,8 @@ public class SelfCommandPrompt {
 	public static final String VERSION = "2.2.0";
 	public static final String INVALID = OSUtil.getQuote() + "'`,";
 	public static final File selfcmd = new File(OSUtil.getAppData(), "SelfCommandPrompt");
+	public static final File closeMe = new File(selfcmd, "closeMe.scpt");
+	public static final File closeMeAS = new File(selfcmd, "closeMe.applescript");
 	public static final Scanner scanner = new Scanner(System.in);
 	public static LogPrinter printer;
 	public static JConsole jconsole;
@@ -299,6 +301,7 @@ public class SelfCommandPrompt {
         }
         else if(OSUtil.isMac())
         {
+        	checkCloseMe();
         	File appdata = getAppdata(appId);
         	File sh = new File(appdata, shName + ".sh");
         	List<String> cmds = new ArrayList<>();
@@ -308,6 +311,9 @@ public class SelfCommandPrompt {
         	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");//Title
         	cmds.add("cd " + getProgramDir().getAbsolutePath().replaceAll(" ", "\\ "));//set the proper directory
         	cmds.add(command);//actual command
+        	cmds.add("echo -n -e \"\\033]0;" + "_closeMe_" + "\\007\"");//set the title to prepare for the close command
+        	cmds.add("osascript " + closeMe.getPath().replaceAll(" ", "\\\\ ") + " & exit");
+//        	cmds.add("osascript -e 'tell application \"Terminal\" to close (every window whose name contains \"_closeMe_\")' & exit");
         	IOUtils.saveFileLines(cmds, sh, true);//save the file
         	IOUtils.makeExe(sh);//make it executable
         
@@ -354,6 +360,22 @@ public class SelfCommandPrompt {
         	runInTerminal(OSUtil.getLinuxNewWin(), sh.getAbsolutePath().replaceAll(" ", "%20"));
         }
 	}
+	
+    public static void checkCloseMe() throws IOException
+    {
+        if(!closeMe.exists())
+        {
+            List<String> l = new ArrayList<>(1);
+            l.add("tell application \"Terminal\" to close (every window whose name contains \"_closeMe_\")");
+            IOUtils.saveFileLines(l, closeMeAS, true);
+            Process p = run(new String[]{terminal, OSUtil.getExeAndClose(), "osacompile -o \"" + closeMe.getPath() + "\"" + " \"" + closeMeAS.getPath() + "\""});
+            while(p.isAlive())
+            {
+                ;
+            }
+            IOUtils.makeExe(closeMe);
+        }
+    }
 
 	/**
 	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input
