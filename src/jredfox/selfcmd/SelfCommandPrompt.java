@@ -2,13 +2,13 @@ package jredfox.selfcmd;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URLDecoder;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -26,6 +26,12 @@ import jredfox.selfcmd.jconsole.JConsole;
  * this class is a wrapper for your program. It fires command prompt and stops it from quitting without user input
  */
 public class SelfCommandPrompt {
+	
+	
+	static
+	{
+		patchUserDir();
+	}
 	
 	public static final String VERSION = "2.2.0";
 	public static final String INVALID = OSUtil.getQuote() + "'`,";
@@ -80,6 +86,17 @@ public class SelfCommandPrompt {
 		{
 			System.out.println("Press ENTER to continue:");
 			scanner.nextLine();
+		}
+	}
+
+	public static void patchUserDir() 
+	{
+		String sunCmd = System.getProperty("sun.java.command");
+		File sunFile = new File(sunCmd);
+		if(sunFile.exists())
+		{
+			setUserDir(sunFile.getParentFile());
+			System.out.println("patched user.dir to jar:" + System.getProperty("user.dir"));
 		}
 	}
 
@@ -309,7 +326,7 @@ public class SelfCommandPrompt {
         	cmds.add("clear && printf '\\e[3J'");//clear the console
         	cmds.add("set +v");//@Echo off
         	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");//Title
-        	cmds.add("cd " + getProgramDir().getAbsolutePath().replaceAll(" ", "\\ "));//set the proper directory
+        	cmds.add("cd " + getProgramDir().getAbsolutePath().replaceAll(" ", "\\\\ "));//set the proper directory
         	cmds.add(command);//actual command
         	cmds.add("echo -n -e \"\\033]0;" + "_closeMe_" + "\\007\"");//set the title to prepare for the close command
         	cmds.add("osascript " + closeMe.getPath().replaceAll(" ", "\\\\ ") + " & exit");
@@ -479,7 +496,7 @@ public class SelfCommandPrompt {
 
 	public static String replaceAll(String str, char what, String with, char esq)
 	{
-		if(what == '§')
+		if(what == 'ï¿½')
 			throw new IllegalArgumentException("unsupported opperend:" + what);
 		StringBuilder builder = new StringBuilder();
 		String previous = "";
@@ -488,8 +505,8 @@ public class SelfCommandPrompt {
 			String character = str.substring(index, index + 1);
 			if(previous.equals("" + esq) && character.equals("" + esq))
 			{
-				previous = "§";
-				character = "§";
+				previous = "ï¿½";
+				character = "ï¿½";
 			}
 			boolean escaped = previous.equals("" + esq);
 			previous = character;
@@ -545,10 +562,9 @@ public class SelfCommandPrompt {
 	{
 		try 
 		{
-			File file = getFileFromClass(mainClass);
-			return getExtension(file).equals("jar") || getMainClassName().endsWith("jarinjarloader.JarRsrcLoader");
-		} 
-		catch (UnsupportedEncodingException e) 
+			return getMainClassName().endsWith("jarinjarloader.JarRsrcLoader") || getExtension(getFileFromClass(mainClass)).equals("jar");
+		}
+		catch (RuntimeException e) 
 		{
 			e.printStackTrace();
 		}
@@ -557,14 +573,30 @@ public class SelfCommandPrompt {
 	
 	/**
 	 * get a file from a class
+	 * @throws URISyntaxException 
 	 */
-	public static File getFileFromClass(Class<?> clazz) throws UnsupportedEncodingException, RuntimeException
+	public static File getFileFromClass(Class<?> clazz) throws RuntimeException
 	{
-		String jarPath = clazz.getProtectionDomain().getCodeSource().getLocation().getPath();//get the path of the currently running jar
-		String fileName = URLDecoder.decode(jarPath, "UTF-8").substring(1);
+		URL jarURL = clazz.getProtectionDomain().getCodeSource().getLocation();//get the path of the currently running jar
+		File file = getFile(jarURL);
+		String fileName = file.getPath();
 		if(fileName.contains(INVALID))
 			throw new RuntimeException("jar file contains invalid parsing chars:" + fileName);
-		return new File(fileName);
+		return file;
+	}
+	
+	public static File getFile(URL url)
+	{
+		try
+		{
+			return new File(url.toURI());
+		}
+		catch(URISyntaxException e){}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public static List<String> getJVMArgs()
@@ -616,15 +648,16 @@ public class SelfCommandPrompt {
 	}
 
 	/**
-	 * incompatible with eclipse's jar in jar loader. Use this to enforce your program's directory is synced with your jar after calling runWithCMD
+	 * incompatible with eclipse's jar in jar loader. Use this to enforce your program's directory is synced with your jar after calling runWithCMD. If using eclipse's jar in jar loader call the safe method which only fires on double click essentially
 	 */
 	public static void syncUserDirWithJar()
 	{
 		try 
 		{
 			setUserDir(getFileFromClass(getMainClass()).getParentFile());
+			System.out.println("synced user.dir with jar:" + System.getProperty("user.dir"));
 		}
-		catch (UnsupportedEncodingException e) 
+		catch (Exception e) 
 		{
 			e.printStackTrace();
 		}

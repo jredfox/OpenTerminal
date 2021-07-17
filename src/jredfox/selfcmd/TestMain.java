@@ -2,29 +2,20 @@ package jredfox.selfcmd;
 
 import java.io.File;
 import java.io.IOException;
-
-import jredfox.common.log.printer.LogPrinter;
-import jredfox.common.log.printer.Printer;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 
 public class TestMain {
 	
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args) throws IOException, RuntimeException, URISyntaxException
 	{
 		args = SelfCommandPrompt.runWithCMD("test_app", "Test App", args);
-		Printer l = new LogPrinter(new File("log- " + System.currentTimeMillis() + ".txt"), System.out, System.err, false, true);
-		l.load();
-		long ms = System.currentTimeMillis();
-		while(System.currentTimeMillis() - ms < 1000)
-		{
-			;
-		}
-		
-		if(args.length == 0)
-		{
-			System.out.println("rebooting");
-			SelfCommandPrompt.reboot(new String[]{""});
-		}
-		System.out.println("finished");
+		System.out.println(System.getProperty("process.jar"));
+		System.out.println(new File("").getAbsolutePath());
+		System.out.println(new File(".").getCanonicalPath());
+		System.out.println(Paths.get(System.getProperty("user.dir")).toAbsolutePath());
+		System.out.println("user.dir:" + System.getProperty("user.dir"));
+		System.out.println("debug:" + System.getProperty("java.class.path"));
 	}
 
 }
