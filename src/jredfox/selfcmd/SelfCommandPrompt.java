@@ -612,12 +612,33 @@ public class SelfCommandPrompt {
 	
 	public static String getMainClassName()
 	{
+		String mc = System.getProperty("selfcmd.mainclass");
+		return mc != null ? mc : getJVMClassName();
+	}
+	
+	public static String getJVMClassName()
+	{
 		StackTraceElement[] stack = Thread.currentThread().getStackTrace();
 		StackTraceElement main = stack[stack.length - 1];
 		String actualMain = main.getClassName();
 		return actualMain;
 	}
 	
+	public static Class<?> getJVMClass()
+	{
+		Class<?> mainClass = null;
+		try 
+		{
+			String className = getJVMClassName();
+			mainClass = Class.forName(className);
+		} 
+		catch (ClassNotFoundException e1) 
+		{
+			e1.printStackTrace();
+		}
+		return mainClass;
+	}
+
 	public static Class<?> getMainClass()
 	{
 		Class<?> mainClass = null;
@@ -685,7 +706,7 @@ public class SelfCommandPrompt {
 	 */
 	public static boolean isWrapped() 
 	{
-		return SelfCommandPrompt.class.getName().equals(getMainClassName());
+		return SelfCommandPrompt.class.getName().equals(getJVMClassName());
 	}
 	
 	/**
