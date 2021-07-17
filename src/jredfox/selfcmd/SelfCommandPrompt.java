@@ -30,7 +30,8 @@ public class SelfCommandPrompt {
 	
 	static
 	{
-		patchUserDir();
+		if(System.console() == null)
+			patchUserDir();
 	}
 	
 	public static final String VERSION = "2.2.0";
@@ -496,7 +497,7 @@ public class SelfCommandPrompt {
 
 	public static String replaceAll(String str, char what, String with, char esq)
 	{
-		if(what == 'ï¿½')
+		if(what == '§')
 			throw new IllegalArgumentException("unsupported opperend:" + what);
 		StringBuilder builder = new StringBuilder();
 		String previous = "";
@@ -505,8 +506,8 @@ public class SelfCommandPrompt {
 			String character = str.substring(index, index + 1);
 			if(previous.equals("" + esq) && character.equals("" + esq))
 			{
-				previous = "ï¿½";
-				character = "ï¿½";
+				previous = "§";
+				character = "§";
 			}
 			boolean escaped = previous.equals("" + esq);
 			previous = character;
