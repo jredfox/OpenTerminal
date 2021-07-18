@@ -30,8 +30,6 @@ public class SelfCommandPrompt {
 	public static final String VERSION = "2.2.0";
 	public static final String INVALID = OSUtil.getQuote() + "'`,";
 	public static final File selfcmd = new File(OSUtil.getAppData(), "SelfCommandPrompt");
-	public static final File closeMe = new File(selfcmd, "closeMe.scpt");
-	public static final File closeMeAS = new File(selfcmd, "closeMe.applescript");
 	public static final Scanner scanner = new Scanner(System.in);
 	public static LogPrinter printer;
 	public static JConsole jconsole;
@@ -43,6 +41,11 @@ public class SelfCommandPrompt {
 	public static String background;
 	public static boolean sameWindow;
 	public static boolean setDir;
+	
+	//macOs support
+	public static final File scripts = new File(selfcmd, "scripts");
+	public static final File closeMe = new File(scripts, "closeMe.scpt");
+	public static final File startScpt = new File(scripts, "start.scpt");
 	
 	static
 	{
@@ -321,7 +324,7 @@ public class SelfCommandPrompt {
         }
         else if(OSUtil.isMac())
         {
-        	checkCloseMe();
+        	genAS();
         	File appdata = getAppdata(appId);
         	File sh = new File(appdata, shName + ".sh");
         	List<String> cmds = new ArrayList<>();
@@ -336,36 +339,8 @@ public class SelfCommandPrompt {
 //        	cmds.add("osascript -e 'tell application \"Terminal\" to close (every window whose name contains \"_closeMe_\")' & exit");
         	IOUtils.saveFileLines(cmds, sh, true);//save the file
         	IOUtils.makeExe(sh);//make it executable
-        
-        	File as = new File(appdata, shName + ".applescript").getAbsoluteFile();
-        	File cas = new File(appdata, shName + ".scpt").getAbsoluteFile();
         	
-        	//generate the compiled applescript
-        	if(!cas.exists())
-        	{
-        		List<String> osa = new ArrayList<>(11);
-        		String shPath = sh.getAbsolutePath().replaceAll(" ", "\\\\\\\\ ");
-        		osa.add("if application \"Terminal\" is running then");
-        		osa.add("	tell application \"Terminal\"");
-        		osa.add("do script \"" + shPath + "\"");
-        		osa.add("		activate");
-        		osa.add("	end tell");
-        		osa.add("else");
-        		osa.add("	tell application \"Terminal\"");
-        		osa.add("do script \"" + shPath + "\"" + " in window 0");
-        		osa.add("		activate");
-        		osa.add("	end tell");
-        		osa.add("end if");
-        		IOUtils.saveFileLines(osa, as, true);
-        		Process p = run(new String[]{terminal, OSUtil.getExeAndClose(), "osacompile -o \"" + cas.getAbsolutePath() + "\"" + " \"" + as.getAbsolutePath() + "\""});
-           		IOUtils.makeExe(as);
-        		while(p.isAlive())
-        		{
-        			;
-        		}
-        		IOUtils.makeExe(cas);
-        	}
-        	run(new String[]{terminal, OSUtil.getExeAndClose(), "osascript " + cas.getAbsolutePath().replaceAll(" ", "\\\\ ")});
+        	run(new String[]{terminal, OSUtil.getExeAndClose(), "osascript " + startScpt.getAbsolutePath().replaceAll(" ", "\\\\ ") + " \"" + sh.getPath().replaceAll(" ", "\\\\ ") + "\""});
         }
         else if(OSUtil.isLinux())
         {
@@ -381,8 +356,11 @@ public class SelfCommandPrompt {
         }
 	}
 	
-    public static void checkCloseMe() throws IOException
+    public static void genAS() throws IOException
     {
+    	File closeMeAS = new File(scripts, "closeMe.applescript");
+    	
+    	//generate the closeMe script
         if(!closeMe.exists())
         {
             List<String> l = new ArrayList<>(1);
@@ -395,6 +373,36 @@ public class SelfCommandPrompt {
             }
             IOUtils.makeExe(closeMe);
         }
+        
+        File startAS = new File(scripts, "start.applescript");
+    	
+        //generate the start script
+    	if(!startScpt.exists())
+    	{
+    		List<String> osa = new ArrayList<>(11);
+    		osa.add("on run argv");
+    		osa.add("	set input to first item of argv");
+    		osa.add("	if application \"Terminal\" is running then");
+    		osa.add("		tell application \"Terminal\"");
+    		osa.add("			do script input");
+    		osa.add("			activate");
+    		osa.add("		end tell");
+    		osa.add("	else");
+    		osa.add("		tell application \"Terminal\"");
+    		osa.add("			do script input in window 0");
+    		osa.add("			activate");
+    		osa.add("		end tell");
+    		osa.add("	end if");
+    		osa.add("end run");
+    		IOUtils.saveFileLines(osa, startAS, true);
+    		Process p = run(new String[]{terminal, OSUtil.getExeAndClose(), "osacompile -o \"" + startScpt.getPath() + "\"" + " \"" + startAS.getPath() + "\""});
+       		IOUtils.makeExe(startAS);
+    		while(p.isAlive())
+    		{
+    			;
+    		}
+    		IOUtils.makeExe(startScpt);
+    	}
     }
 
 	/**
