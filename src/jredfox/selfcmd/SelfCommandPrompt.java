@@ -30,8 +30,6 @@ public class SelfCommandPrompt {
 	public static final String VERSION = "2.2.0";
 	public static final String INVALID = OSUtil.getQuote() + "'`,";
 	public static final File selfcmd = new File(OSUtil.getAppData(), "SelfCommandPrompt");
-	public static final File closeMe = new File(selfcmd, "closeMe.scpt");
-	public static final File closeMeAS = new File(selfcmd, "closeMe.applescript");
 	public static final Scanner scanner = new Scanner(System.in);
 	public static LogPrinter printer;
 	public static JConsole jconsole;
@@ -42,6 +40,12 @@ public class SelfCommandPrompt {
 	public static boolean wrappedPause;
 	public static String background;
 	public static boolean sameWindow;
+	public static boolean setDir;
+	
+	//macOs support
+	public static final File scripts = new File(selfcmd, "scripts");
+	public static final File closeMe = new File(scripts, "closeMe.scpt");
+	public static final File start = new File(scripts, "start.scpt");
 	
 	static
 	{
@@ -180,7 +184,8 @@ public class SelfCommandPrompt {
 			return args;
 		}
 		
-		patchUserDir();
+		if(!setDir)
+			patchUserDir();//if user hasn't overrident the directory patch it
 		
         if(hasJConsole())
         {
@@ -319,7 +324,7 @@ public class SelfCommandPrompt {
         }
         else if(OSUtil.isMac())
         {
-        	checkCloseMe();
+        	genAS();
         	File appdata = getAppdata(appId);
         	File sh = new File(appdata, shName + ".sh");
         	List<String> cmds = new ArrayList<>();
@@ -327,43 +332,13 @@ public class SelfCommandPrompt {
         	cmds.add("clear && printf '\\e[3J'");//clear the console
         	cmds.add("set +v");//@Echo off
         	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");//Title
-        	cmds.add("cd " + getProgramDir().getAbsolutePath().replaceAll(" ", "\\\\ "));//set the proper directory
+        	cmds.add("cd " + getProgramDir().getPath().replaceAll(" ", "\\\\ "));//set the proper directory
         	cmds.add(command);//actual command
         	cmds.add("echo -n -e \"\\033]0;" + "_closeMe_" + "\\007\"");//set the title to prepare for the close command
         	cmds.add("osascript " + closeMe.getPath().replaceAll(" ", "\\\\ ") + " & exit");
-//        	cmds.add("osascript -e 'tell application \"Terminal\" to close (every window whose name contains \"_closeMe_\")' & exit");
         	IOUtils.saveFileLines(cmds, sh, true);//save the file
         	IOUtils.makeExe(sh);//make it executable
-        
-        	File as = new File(appdata, shName + ".applescript").getAbsoluteFile();
-        	File cas = new File(appdata, shName + ".scpt").getAbsoluteFile();
-        	
-        	//generate the compiled applescript
-        	if(!cas.exists())
-        	{
-        		List<String> osa = new ArrayList<>(11);
-        		String shPath = sh.getAbsolutePath().replaceAll(" ", "\\\\\\\\ ");
-        		osa.add("if application \"Terminal\" is running then");
-        		osa.add("	tell application \"Terminal\"");
-        		osa.add("do script \"" + shPath + "\"");
-        		osa.add("		activate");
-        		osa.add("	end tell");
-        		osa.add("else");
-        		osa.add("	tell application \"Terminal\"");
-        		osa.add("do script \"" + shPath + "\"" + " in window 0");
-        		osa.add("		activate");
-        		osa.add("	end tell");
-        		osa.add("end if");
-        		IOUtils.saveFileLines(osa, as, true);
-        		Process p = run(new String[]{terminal, OSUtil.getExeAndClose(), "osacompile -o \"" + cas.getAbsolutePath() + "\"" + " \"" + as.getAbsolutePath() + "\""});
-           		IOUtils.makeExe(as);
-        		while(p.isAlive())
-        		{
-        			;
-        		}
-        		IOUtils.makeExe(cas);
-        	}
-        	run(new String[]{terminal, OSUtil.getExeAndClose(), "osascript " + cas.getAbsolutePath().replaceAll(" ", "\\\\ ")});
+        	runInTerminal("osascript " + start.getPath().replaceAll(" ", "\\\\ ") + " \"" + sh.getPath().replaceAll(" ", "\\\\ ") + "\"");
         }
         else if(OSUtil.isLinux())
         {
@@ -379,21 +354,52 @@ public class SelfCommandPrompt {
         }
 	}
 	
-    public static void checkCloseMe() throws IOException
+    public static void genAS() throws IOException
     {
-        if(!closeMe.exists())
-        {
-            List<String> l = new ArrayList<>(1);
-            l.add("tell application \"Terminal\" to close (every window whose name contains \"_closeMe_\")");
-            IOUtils.saveFileLines(l, closeMeAS, true);
-            Process p = run(new String[]{terminal, OSUtil.getExeAndClose(), "osacompile -o \"" + closeMe.getPath() + "\"" + " \"" + closeMeAS.getPath() + "\""});
-            while(p.isAlive())
-            {
-                ;
-            }
-            IOUtils.makeExe(closeMe);
-        }
+    	//generate closeMe script
+    	if(!closeMe.exists())
+    	{
+    		 List<String> l = new ArrayList<>(1);
+             l.add("tell application \"Terminal\" to close (every window whose name contains \"_closeMe_\")");
+             compileAS(l, closeMe, new File(scripts, "closeMe.applescript"));
+    	}
+        
+        //generate the start script
+    	if(!start.exists())
+    	{
+    		List<String> osa = new ArrayList<>(11);
+    		osa.add("on run argv");
+    		osa.add("	set input to first item of argv");
+    		osa.add("	if application \"Terminal\" is running then");
+    		osa.add("		tell application \"Terminal\"");
+    		osa.add("			do script input");
+    		osa.add("			activate");
+    		osa.add("		end tell");
+    		osa.add("	else");
+    		osa.add("		tell application \"Terminal\"");
+    		osa.add("			do script input in window 0");
+    		osa.add("			activate");
+    		osa.add("		end tell");
+    		osa.add("	end if");
+    		osa.add("end run");
+    		compileAS(osa, start, new File(scripts, "start.applescript"));
+    	}
     }
+
+    /**
+     * compile an applescript. can only run on macOs
+     */
+	public static void compileAS(List<String> osa, File scpt, File applescript) throws IOException
+	{
+		IOUtils.saveFileLines(osa, applescript, true);
+		Process p = run(new String[]{terminal, OSUtil.getExeAndClose(), "osacompile -o \"" + scpt.getPath() + "\"" + " \"" + applescript.getPath() + "\""});
+   		IOUtils.makeExe(applescript);
+		IOUtils.makeExe(scpt);
+		while(p.isAlive())
+		{
+			;
+		}
+	}
 
 	/**
 	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input
@@ -497,7 +503,7 @@ public class SelfCommandPrompt {
 
 	public static String replaceAll(String str, char what, String with, char esq)
 	{
-		if(what == 'ï¿½')
+		if(what == '§')
 			throw new IllegalArgumentException("unsupported opperend:" + what);
 		StringBuilder builder = new StringBuilder();
 		String previous = "";
@@ -506,8 +512,8 @@ public class SelfCommandPrompt {
 			String character = str.substring(index, index + 1);
 			if(previous.equals("" + esq) && character.equals("" + esq))
 			{
-				previous = "ï¿½";
-				character = "ï¿½";
+				previous = "§";
+				character = "§";
 			}
 			boolean escaped = previous.equals("" + esq);
 			previous = character;
@@ -687,6 +693,7 @@ public class SelfCommandPrompt {
 	
 	public static void setUserDir(File file)
 	{
+		setDir = true;
 		System.setProperty("user.dir", file.getAbsolutePath());
 	}
 	
