@@ -323,7 +323,8 @@ public class SelfCommandPrompt {
         	builder.addCommand(mainClass.getName());
         	builder.addCommand(programArgs(args));
         	String command = builder.toString();
-        	runInNewTerminal(appId, appName, appId, command);
+        	String shName = appId.contains("/") ? getLastSplit(appId, "/") : appId;
+            runInNewTerminal(appId, appName, shName, command);
         	shutdown();
 	}
 	
@@ -908,6 +909,12 @@ public class SelfCommandPrompt {
 		list.add(str);//add the rest of the string
 		return toArray(list, String.class);
 	}
+	
+	public static String getLastSplit(String str, String sep) 
+    {
+        String[] arr = str.split(sep);
+        return arr[arr.length - 1];
+    }
 	
 	public static String getExtensionFull(File file) 
 	{
