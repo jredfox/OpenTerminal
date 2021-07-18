@@ -42,6 +42,7 @@ public class SelfCommandPrompt {
 	public static boolean wrappedPause;
 	public static String background;
 	public static boolean sameWindow;
+	public static boolean setDir;
 	
 	static
 	{
@@ -180,7 +181,8 @@ public class SelfCommandPrompt {
 			return args;
 		}
 		
-		patchUserDir();
+		if(!setDir)
+			patchUserDir();//if user hasn't overrident the directory patch it
 		
         if(hasJConsole())
         {
@@ -687,6 +689,7 @@ public class SelfCommandPrompt {
 	
 	public static void setUserDir(File file)
 	{
+		setDir = true;
 		System.setProperty("user.dir", file.getAbsolutePath());
 	}
 	
