@@ -513,7 +513,7 @@ public class SelfCommandPrompt {
 			if(previous.equals("" + esq) && character.equals("" + esq))
 			{
 				previous = "§";
-				character = "§";
+				character = "§"; 
 			}
 			boolean escaped = previous.equals("" + esq);
 			previous = character;
