@@ -87,22 +87,6 @@ public class SelfCommandPrompt {
 	}
 
 	/**
-	 * fix user.dir on macOs from jar double click. Difference between this and syncUserWithJar is that this is safe with Jar In Jar loader
-	 * MUST BE CALLED BEFORE {@link SelfCommandPrompt#runWithCMD(String, String, Class, String[], boolean, boolean)}
-	 * NOTE: changes behavior of double clicking jars for some OS's jarFile#getParentFile while on linux default user.dir equals user.home
-	 */
-	public static void patchUserDir() 
-	{
-		String sunCmd = System.getProperty("sun.java.command");
-		File sunFile = new File(sunCmd);
-		if(sunFile.exists())
-		{
-			setUserDir(sunFile.getParentFile());
-			System.out.println("patched user.dir to jar:" + System.getProperty("user.dir"));
-		}
-	}
-
-	/**
 	 * NOTE: this is WIP and doesn't support System.in redirect yet, and there are many other issues with it
 	 */
 	public static JConsole startJConsole(String appId, String appName)
@@ -204,6 +188,62 @@ public class SelfCommandPrompt {
 		}
 		return args;
 	}
+	
+
+	/**
+	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input
+	 * @since 2.0.0-rc.7
+	 */	
+	public static String[] wrapWithCMD(String[] argsInit)
+	{
+		return wrapWithCMD("", argsInit);
+	}
+	
+	/**
+	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input.
+	 * escape sequences are \char to have actual quotes in the jvm args cross platform
+	 * @since 2.0.0-rc.9
+	 */	
+	public static String[] wrapWithCMD(String msg, String[] argsInit)
+	{
+		String appId = suggestAppId();
+		return wrapWithCMD(msg, appId, appId, argsInit);
+	}
+	
+	/**
+	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input.
+	 * escape sequences are \char to have actual quotes in the jvm args cross platform
+	 * @since 2.0.0-rc.9
+	 */		
+	public static String[] wrapWithCMD(String msg, String appId, String appName, String[] argsInit)
+	{
+		return wrapWithCMD(msg, appId, appName, argsInit, false, true);
+	}
+	
+	/**
+	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input.
+	 * escape sequences are \char to have actual quotes in the jvm args cross platform
+	 * @since 2.1.0
+	 */	
+	public static String[] wrapWithCMD(String msg, String appId, String appName, String[] argsInit, boolean onlyCompiled, boolean pause)
+	{
+		return wrapWithCMD(msg, appId, appName, getMainClass(), argsInit, onlyCompiled, pause);
+	}
+	
+	/**
+	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input.
+	 * escape sequences are \char to have actual quotes in the jvm args cross platform
+	 * @since 2.0.1
+	 */	
+	public static String[] wrapWithCMD(String msg, String appId, String appName, Class<?> mainClass, String[] argsInit, boolean onlyCompiled, boolean pause)
+	{
+		argsInit = SelfCommandPrompt.runWithCMD(appId, appName, mainClass, argsInit, onlyCompiled, pause);
+		boolean shouldScan = argsInit.length == 0;
+		if(!msg.isEmpty() && shouldScan)
+			System.out.print(msg);//don't enforce line feed
+		
+		return shouldScan ? parseCommandLine(scanner.nextLine()) : argsInit;
+	}
 
 	/**
 	 * reboot the program. config sync enabled
@@ -287,28 +327,6 @@ public class SelfCommandPrompt {
         	shutdown();
 	}
 	
-    /**
-     * enforces it to run in the command prompt terminal as sometimes it doesn't work without it
-     */
-    public static Process runInTerminal(String command) throws IOException
-    {
-        return runInTerminal(OSUtil.getExeAndClose(), command);
-    }
-    
-    public static Process runInTerminal(String flag, String command) throws IOException
-    {
-        String[] cmdarray = new String[3];
-        cmdarray[0] = terminal;
-        cmdarray[1] = flag;
-        cmdarray[2] = command;
-        return run(cmdarray);
-    }
-	
-    public static Process run(String[] cmdarray) throws IOException
-    {
-        return new ProcessBuilder(cmdarray).inheritIO().directory(getProgramDir()).start();
-    }
-	
 	/**
 	 * runs a command in a new terminal window.
 	 * the sh name is the file name you want the shell script stored. The appId is to locate your folder
@@ -351,6 +369,31 @@ public class SelfCommandPrompt {
         	runInTerminal(OSUtil.getLinuxNewWin(), sh.getAbsolutePath().replaceAll(" ", "%20"));
         }
 	}
+	
+    /**
+     * enforces it to run in the command prompt terminal as sometimes it doesn't work without it
+     */
+    public static Process runInTerminal(String command) throws IOException
+    {
+        return runInTerminal(OSUtil.getExeAndClose(), command);
+    }
+    
+    /**
+     * enforces it to run in the command prompt terminal as sometimes it doesn't work without it
+     */
+    public static Process runInTerminal(String flag, String command) throws IOException
+    {
+        String[] cmdarray = new String[3];
+        cmdarray[0] = terminal;
+        cmdarray[1] = flag;
+        cmdarray[2] = command;
+        return run(cmdarray);
+    }
+	
+    public static Process run(String[] cmdarray) throws IOException
+    {
+        return new ProcessBuilder(cmdarray).inheritIO().directory(getProgramDir()).start();
+    }
 	
     public static void genAS() throws IOException
     {
@@ -397,61 +440,6 @@ public class SelfCommandPrompt {
 		{
 			;
 		}
-	}
-
-	/**
-	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input
-	 * @since 2.0.0-rc.7
-	 */	
-	public static String[] wrapWithCMD(String[] argsInit)
-	{
-		return wrapWithCMD("", argsInit);
-	}
-	
-	/**
-	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input.
-	 * escape sequences are \char to have actual quotes in the jvm args cross platform
-	 * @since 2.0.0-rc.9
-	 */	
-	public static String[] wrapWithCMD(String msg, String[] argsInit)
-	{
-		String appId = suggestAppId();
-		return wrapWithCMD(msg, appId, appId, argsInit);
-	}
-	
-	/**
-	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input.
-	 * escape sequences are \char to have actual quotes in the jvm args cross platform
-	 * @since 2.0.0-rc.9
-	 */		
-	public static String[] wrapWithCMD(String msg, String appId, String appName, String[] argsInit)
-	{
-		return wrapWithCMD(msg, appId, appName, argsInit, false, true);
-	}
-	
-	/**
-	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input.
-	 * escape sequences are \char to have actual quotes in the jvm args cross platform
-	 * @since 2.1.0
-	 */	
-	public static String[] wrapWithCMD(String msg, String appId, String appName, String[] argsInit, boolean onlyCompiled, boolean pause)
-	{
-		return wrapWithCMD(msg, appId, appName, getMainClass(), argsInit, onlyCompiled, pause);
-	}
-	
-	/**
-	 * execute your command line jar without redesigning your program to use java.util.Scanner to take input.
-	 * escape sequences are \char to have actual quotes in the jvm args cross platform
-	 * @since 2.0.1
-	 */	
-	public static String[] wrapWithCMD(String msg, String appId, String appName, Class<?> mainClass, String[] argsInit, boolean onlyCompiled, boolean pause)
-	{
-		argsInit = SelfCommandPrompt.runWithCMD(appId, appName, mainClass, argsInit, onlyCompiled, pause);
-		boolean shouldScan = argsInit.length == 0;
-		if(!msg.isEmpty() && shouldScan)
-			System.out.print(msg);//don't enforce line feed
-		
-		return shouldScan ? parseCommandLine(scanner.nextLine()) : argsInit;
 	}
 	
 	public static String[] parseCommandLine(String line)
@@ -567,7 +555,7 @@ public class SelfCommandPrompt {
 	{
 		try 
 		{
-			return getMainClassName().endsWith("jarinjarloader.JarRsrcLoader") || getExtension(getFileFromClass(mainClass)).equals("jar");
+			return isEclipseJarInJar() || getExtension(getFileFromClass(mainClass)).equals("jar");
 		}
 		catch (RuntimeException e) 
 		{
@@ -576,12 +564,18 @@ public class SelfCommandPrompt {
 		return false;
 	}
 	
+	private static boolean isEclipseJarInJar()
+	{
+		return getMainClassName().endsWith("jarinjarloader.JarRsrcLoader");
+	}
+
 	/**
 	 * get a file from a class
 	 * @throws URISyntaxException 
 	 */
 	public static File getFileFromClass(Class<?> clazz) throws RuntimeException
 	{
+		clazz = isEclipseJarInJar() ? loadSyClass(clazz.getName(), false) : clazz;
 		URL jarURL = clazz.getProtectionDomain().getCodeSource().getLocation();//get the path of the currently running jar
 		File file = getFile(jarURL);
 		String fileName = file.getPath();
@@ -590,6 +584,19 @@ public class SelfCommandPrompt {
 		return file;
 	}
 	
+	public static Class<?> loadSyClass(String name, boolean init)
+	{
+		try 
+		{
+			return Class.forName(name, init, ClassLoader.getSystemClassLoader());
+		} 
+		catch (Throwable t)
+		{
+			t.printStackTrace();
+		}
+		return null;
+	}
+
 	public static File getFile(URL url)
 	{
 		try
@@ -671,6 +678,22 @@ public class SelfCommandPrompt {
 	public static boolean isBackground(String arg)
 	{
 		return arg.equals("background") || arg.equalsIgnoreCase("runInBackground") || arg.equalsIgnoreCase("runInTheBackground");
+	}
+	
+	/**
+	 * fix user.dir on macOs from jar double click. Difference between this and syncUserWithJar is that this is only patches it if there is no custom arguments providing native batch/shell script behavior
+	 * MUST BE CALLED BEFORE {@link SelfCommandPrompt#runWithCMD(String, String, Class, String[], boolean, boolean)}
+	 * NOTE: changes behavior of double clicking jars for some OS's jarFile#getParentFile while on linux default user.dir equals user.home
+	 */
+	public static void patchUserDir() 
+	{
+		String sunCmd = System.getProperty("sun.java.command");
+		File sunFile = new File(sunCmd);
+		if(sunFile.exists())
+		{
+			setUserDir(sunFile.getParentFile());
+			System.out.println("patched user.dir to jar:" + System.getProperty("user.dir"));
+		}
 	}
 
 	/**
