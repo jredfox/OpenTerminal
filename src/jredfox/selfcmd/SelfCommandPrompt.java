@@ -169,7 +169,7 @@ public class SelfCommandPrompt {
 		}
 		
 		if(!setDir)
-			patchUserDir();//if user hasn't overrident the directory patch it
+			patchUserDir();//if user hasn't overridden the directory patch it
 		
         if(hasJConsole())
         {
