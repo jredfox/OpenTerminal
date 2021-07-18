@@ -693,7 +693,7 @@ public class SelfCommandPrompt {
 		if(sunFile.exists())
 		{
 			setUserDir(sunFile.getParentFile());
-			System.out.println("patched user.dir to jar:" + System.getProperty("user.dir"));
+//			System.out.println("patched user.dir to jar:" + System.getProperty("user.dir"));
 		}
 	}
 
@@ -706,7 +706,7 @@ public class SelfCommandPrompt {
 		try 
 		{
 			setUserDir(getFileFromClass(getMainClass()).getParentFile());
-			System.out.println("synced user.dir with jar:" + System.getProperty("user.dir"));
+//			System.out.println("synced user.dir with jar:" + System.getProperty("user.dir"));
 		}
 		catch (Exception e) 
 		{
