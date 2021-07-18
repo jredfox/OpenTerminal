@@ -27,13 +27,6 @@ import jredfox.selfcmd.jconsole.JConsole;
  */
 public class SelfCommandPrompt {
 	
-	
-	static
-	{
-		if(System.console() == null)
-			patchUserDir();
-	}
-	
 	public static final String VERSION = "2.2.0";
 	public static final String INVALID = OSUtil.getQuote() + "'`,";
 	public static final File selfcmd = new File(OSUtil.getAppData(), "SelfCommandPrompt");
@@ -90,6 +83,10 @@ public class SelfCommandPrompt {
 		}
 	}
 
+	/**
+	 * fix user.dir on macOs from jar double click. Difference between this and syncUserWithJar is that this is safe with Jar In Jar loader
+	 * NOTE: changes behavior of double clicking jars for some OS's jarFile#getParentFile while on linux default user.dir equals user.home
+	 */
 	public static void patchUserDir() 
 	{
 		String sunCmd = System.getProperty("sun.java.command");
@@ -175,12 +172,15 @@ public class SelfCommandPrompt {
 			System.arraycopy(args, 1, newArgs, 0, newArgs.length);
 			return newArgs;
 		}
+		
 		boolean compiled = isCompiled(mainClass);
 		if(!compiled && onlyCompiled || compiled && System.console() != null || isDebugMode() || isWrapped())
 		{
 			sameWindow = true;
 			return args;
 		}
+		
+		patchUserDir();
 		
         if(hasJConsole())
         {
@@ -301,10 +301,10 @@ public class SelfCommandPrompt {
         return run(cmdarray);
     }
 	
-	public static Process run(String[] cmdarray) throws IOException
-	{
-        return new ProcessBuilder(cmdarray).inheritIO().start();
-	}
+    public static Process run(String[] cmdarray) throws IOException
+    {
+        return new ProcessBuilder(cmdarray).inheritIO().directory(getProgramDir()).start();
+    }
 	
 	/**
 	 * runs a command in a new terminal window.
@@ -497,7 +497,7 @@ public class SelfCommandPrompt {
 
 	public static String replaceAll(String str, char what, String with, char esq)
 	{
-		if(what == '§')
+		if(what == 'ï¿½')
 			throw new IllegalArgumentException("unsupported opperend:" + what);
 		StringBuilder builder = new StringBuilder();
 		String previous = "";
@@ -506,8 +506,8 @@ public class SelfCommandPrompt {
 			String character = str.substring(index, index + 1);
 			if(previous.equals("" + esq) && character.equals("" + esq))
 			{
-				previous = "§";
-				character = "§";
+				previous = "ï¿½";
+				character = "ï¿½";
 			}
 			boolean escaped = previous.equals("" + esq);
 			previous = character;
