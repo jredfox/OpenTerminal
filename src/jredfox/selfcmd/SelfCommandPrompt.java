@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
-import java.util.StringTokenizer;
 
 import jredfox.common.config.MapConfig;
 import jredfox.common.io.IOUtils;
@@ -89,6 +88,7 @@ public class SelfCommandPrompt {
 
 	/**
 	 * fix user.dir on macOs from jar double click. Difference between this and syncUserWithJar is that this is safe with Jar In Jar loader
+	 * MUST BE CALLED BEFORE {@link SelfCommandPrompt#runWithCMD(String, String, Class, String[], boolean, boolean)}
 	 * NOTE: changes behavior of double clicking jars for some OS's jarFile#getParentFile while on linux default user.dir equals user.home
 	 */
 	public static void patchUserDir() 
@@ -674,7 +674,8 @@ public class SelfCommandPrompt {
 	}
 
 	/**
-	 * incompatible with eclipse's jar in jar loader. Use this to enforce your program's directory is synced with your jar after calling runWithCMD. If using eclipse's jar in jar loader call the safe method which only fires on double click essentially
+	 * Must be called before {@link SelfCommandPrompt#runWithCMD(String, String, Class, String[], boolean, boolean)}
+	 * Incompatible with Eclipe's jar in jar loader rn
 	 */
 	public static void syncUserDirWithJar()
 	{
@@ -689,6 +690,10 @@ public class SelfCommandPrompt {
 		}
 	}
 	
+	/**
+	 * must be called before {@link SelfCommandPrompt#runWithCMD(String, String, Class, String[], boolean, boolean)}
+	 * @param file
+	 */
 	public static void setUserDir(File file)
 	{
 		setDir = true;
