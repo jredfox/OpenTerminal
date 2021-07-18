@@ -555,7 +555,7 @@ public class SelfCommandPrompt {
 	{
 		try 
 		{
-			return isEclipseJarInJar() || getExtension(getFileFromClass(mainClass)).equals("jar");
+			return getExtension(getFileFromClass(mainClass)).equals("jar");
 		}
 		catch (RuntimeException e) 
 		{
@@ -564,9 +564,10 @@ public class SelfCommandPrompt {
 		return false;
 	}
 	
-	private static boolean isEclipseJarInJar()
+	private static Class<?> JIJ = getClass("org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader", false);
+	public static boolean isEclipseJIJ()
 	{
-		return getMainClassName().endsWith("jarinjarloader.JarRsrcLoader");
+		return JIJ != null || getMainClassName().endsWith("jarinjarloader.JarRsrcLoader");
 	}
 
 	/**
@@ -575,7 +576,7 @@ public class SelfCommandPrompt {
 	 */
 	public static File getFileFromClass(Class<?> clazz) throws RuntimeException
 	{
-		clazz = isEclipseJarInJar() ? loadSyClass(clazz.getName(), false) : clazz;
+		clazz = isEclipseJIJ() ? loadSyClass(clazz.getName(), false) : clazz;
 		URL jarURL = clazz.getProtectionDomain().getCodeSource().getLocation();//get the path of the currently running jar
 		File file = getFile(jarURL);
 		String fileName = file.getPath();
@@ -729,7 +730,7 @@ public class SelfCommandPrompt {
 	{
 		wrappedAppId = appId;
 		wrappedAppName = appName;
-		wrappedAppClass = SelfCommandPrompt.class.equals(mainClass) ? getClass(System.getProperty("selfcmd.mainclass")) : mainClass;
+		wrappedAppClass = SelfCommandPrompt.class.equals(mainClass) ? getClass(System.getProperty("selfcmd.mainclass"), true) : mainClass;
 		wrappedAppArgs = args;
 		wrappedPause = pause;
 	}
@@ -936,12 +937,17 @@ public class SelfCommandPrompt {
 		return index != -1 ? str.substring(0, index) + toInject + str.substring(index) : str;
 	}
 	
-	public static Class<?> getClass(String name) 
+	public static Class<?> getClass(String name, boolean print) 
 	{
 		try 
 		{
 			return Class.forName(name);
 		} 
+		catch(ClassNotFoundException c)
+		{
+			if(print)
+				c.printStackTrace();
+		}
 		catch (Throwable t) 
 		{
 			t.printStackTrace();
