@@ -297,12 +297,10 @@ public class SelfCommandPrompt {
     
     public static Process runInTerminal(String flag, String command) throws IOException
     {
-        StringTokenizer st = new StringTokenizer(command);
-        String[] cmdarray = new String[st.countTokens() + 2];
+        String[] cmdarray = new String[3];
         cmdarray[0] = terminal;
         cmdarray[1] = flag;
-        for (int i = 0; st.hasMoreTokens(); i++)
-            cmdarray[i + 2] = st.nextToken().replaceAll("%20", " ");
+        cmdarray[2] = command;
         return run(cmdarray);
     }
 	
