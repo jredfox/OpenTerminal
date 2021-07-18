@@ -7,8 +7,7 @@ public class TestMain {
 	
 	public static void main(String[] args) throws IOException, RuntimeException, URISyntaxException
 	{
-		SelfCommandPrompt.patchUserDir();
-//		args = SelfCommandPrompt.runWithCMD("test_app", "Test App", args);
+		args = SelfCommandPrompt.runWithCMD("test_app", "Test App", args);
 //		System.out.println(System.getProperty("java.version"));
 //		System.out.println(new File("").getAbsolutePath());
 //		System.out.println(new File(".").getCanonicalPath());
