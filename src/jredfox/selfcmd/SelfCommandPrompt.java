@@ -630,6 +630,21 @@ public class SelfCommandPrompt {
 		return mc != null ? mc : getJVMClassName();
 	}
 	
+	public static Class<?> getMainClass()
+	{
+		Class<?> mainClass = null;
+		try 
+		{
+			String className = getMainClassName();
+			mainClass = Class.forName(className);
+		} 
+		catch (ClassNotFoundException e1) 
+		{
+			e1.printStackTrace();
+		}
+		return mainClass;
+	}
+	
 	public static String getJVMClassName()
 	{
 		StackTraceElement[] stack = Thread.currentThread().getStackTrace();
@@ -644,21 +659,6 @@ public class SelfCommandPrompt {
 		try 
 		{
 			String className = getJVMClassName();
-			mainClass = Class.forName(className);
-		} 
-		catch (ClassNotFoundException e1) 
-		{
-			e1.printStackTrace();
-		}
-		return mainClass;
-	}
-
-	public static Class<?> getMainClass()
-	{
-		Class<?> mainClass = null;
-		try 
-		{
-			String className = getMainClassName();
 			mainClass = Class.forName(className);
 		} 
 		catch (ClassNotFoundException e1) 
