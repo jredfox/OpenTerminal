@@ -8,6 +8,7 @@ import java.util.List;
 import jredfox.common.io.IOUtils;
 import jredfox.common.os.OSUtil;
 import jredfox.common.utils.JREUtil;
+import jredfox.common.utils.JavaUtil;
 
 public class OpenTerminalUtil {
 	
@@ -121,8 +122,9 @@ public class OpenTerminalUtil {
         return new ProcessBuilder(cmdarray).inheritIO().directory(JREUtil.getProgramDir()).start();
     }
     
-	public static String[] wrapProgramArgs(String[] args) 
+	public static String[] wrapProgramArgs(List<String> arr) 
 	{
+		String[] args = JavaUtil.toArray(arr, String.class);
 		String q = OSUtil.getQuote();
 		String esc = OSUtil.getEsc();
 		for(int i=0;i<args.length; i++)

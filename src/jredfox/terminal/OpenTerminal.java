@@ -10,15 +10,6 @@ import jredfox.terminal.app.TerminalApp;
 
 public class OpenTerminal {
 	
-	static
-	{
-		//patch macOs returning junk #untested before Big Sur
-		String dir = System.getProperty("user.dir");
-		String tmp = System.getProperty("java.io.tmpdir");
-		if(dir.contains(tmp) && !dir.startsWith(tmp))
-			JREUtil.syncUserDirWithJar();
-	}
-	
 	public static OpenTerminal INSTANCE = new OpenTerminal();
 	public TerminalApp app;
 	public boolean canReboot = true;
@@ -29,20 +20,28 @@ public class OpenTerminal {
 		
 	}
 	
-	public void run(TerminalApp app)
+	public String[] run(TerminalApp app)
 	{
 		this.app = app;
-		this.run();
+		return this.run();
 	}
 
-	public void run() 
+	public String[] run() 
 	{
-		if(JREUtil.getMainClass().equals(OpenTerminalWrapper.class))
-			return;
-		else if(this.app == null)
+		if(this.app == null)
 			throw new IllegalArgumentException("TerminalApp cannot be null!");
+		else if(!this.app.programArgs.isEmpty())
+		{
+			if(this.app.programArgs.get(0).equals("openterminal.launched"))
+			{
+				OpenTerminalWrapper.run(this, new String[]{"openterminal.wrapped"});
+				return null;
+			}
+			else if(this.app.programArgs.get(0).equals("openterminal.wrapped"))
+				return this.app.getProgramArgs();
+		}
 		
-		this.app.terminal = this.terminal;
+		this.app.init(this);
 		boolean open = this.shouldOpen();
 		this.app.process = this.launch(open);
 		int exit = this.app.process != null ? 0 : -1;
@@ -55,6 +54,7 @@ public class OpenTerminal {
 			}
 		}
 		this.exit(exit);
+		return null;
 	}
 
 	/**
@@ -77,14 +77,15 @@ public class OpenTerminal {
     	builder.addCommand("-cp");
     	String q = OSUtil.getQuote();
     	builder.addCommand(q + libs + q);
-    	builder.addCommand(OpenTerminalWrapper.class.getName());
     	builder.addCommand(this.app.mainClass.getName());
+    	builder.commands.add("openterminal.launched");
     	builder.addCommand(OpenTerminalUtil.wrapProgramArgs(this.app.programArgs));
     	String command = builder.toString();
     	String shName = this.app.id.contains("/") ? JavaUtil.getLastSplit(this.app.id, "/") : this.app.id;
     	try
     	{
     		return OpenTerminalUtil.runInNewTerminal(this.getAppdata(this.app.id), this.app.terminal, this.app.name, shName, command);
+//    		return open ? OpenTerminalUtil.runInNewTerminal(this.getAppdata(this.app.id), this.app.terminal, this.app.name, shName, command) : OpenTerminalUtil.runInTerminal(this.terminal, command);
     	}
     	catch(Throwable t)
     	{

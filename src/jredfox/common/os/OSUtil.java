@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jredfox.common.file.FileUtils;
-import jredfox.selfcmd.SelfCommandPrompt;
-import jredfox.selfcmd.thread.ShutdownThread;
+import jredfox.common.thread.ShutdownThread;
+import jredfox.common.utils.FileUtil;
+import jredfox.common.utils.JavaUtil;
 
 public class OSUtil {
 	
@@ -159,9 +160,8 @@ public class OSUtil {
 	public static File getAppData()
 	{
 		if(isWindows())
-		{
 			return new File(System.getenv("APPDATA"));
-		}
+		
 	    String path = System.getProperty("user.home");
 	    if(isMac())
 	    	path += "/Library/Application Support";
@@ -189,7 +189,7 @@ public class OSUtil {
 			while(fpath != null)
 			{
 				String fileName = FileUtils.getTrueName(fpath);
-				String filtered = isReserved(fileName) ? ( (fileName.contains(".") ? SelfCommandPrompt.inject(fileName, '.', '_') : fileName + "_") + SelfCommandPrompt.getExtensionFull(fpath)) : (fpath.getParent() != null ? fpath.getName() : fpath.getPath());
+				String filtered = isReserved(fileName) ? ( (fileName.contains(".") ? JavaUtil.inject(fileName, '.', '_') : fileName + "_") + FileUtil.getExtensionFull(fpath)) : (fpath.getParent() != null ? fpath.getName() : fpath.getPath());
 				paths.add(filtered);
 				fpath = fpath.getParentFile();
 			}
@@ -211,7 +211,7 @@ public class OSUtil {
 	public static File toOSFile(File file)
 	{
 		String invalid = "*/<>?\":|'";//java replaces trailing "\" or "/" and you can't get a file name with "/\" in java so don't check it
-		if(SelfCommandPrompt.containsAny(file.getPath(), invalid))
+		if(JavaUtil.containsAny(file.getPath(), invalid))
 		{
 			file = filter(file, invalid);
 		}

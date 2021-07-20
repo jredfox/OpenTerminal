@@ -4,25 +4,21 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * going to be replaced with a virtual wrapper to get it working with eclipse's jarInJar loader without extraction
+ * virtual wrapper because hard wrappers causes issues with other wrappers including eclipe's jarInJar loader
  */
-@Deprecated
 public class OpenTerminalWrapper {
 	
-	public static void main(String[] args)
+	public static void run(OpenTerminal ot, String[] args)
 	{
+		boolean err = false;
 		try
 		{
-			String className = args[0];
-			System.setProperty("openterminal.app.mainclass", className);//because eclipse's jar in jar loader sets a class loader it wipes static fields set a system property instead
-			Class<?> mainClass = Class.forName(className);
-			String[] programArgs = new String[args.length - 1];
-			System.arraycopy(args, 1, programArgs, 0, programArgs.length);
-			Method method = mainClass.getMethod("main", String[].class);
-			method.invoke(null, new Object[]{programArgs});
+			Method method = ot.app.mainClass.getMethod("main", String[].class);
+			method.invoke(null, new Object[]{args});
 		}
 		catch(InvocationTargetException e)
 		{
+			err = true;
 			if(e.getCause() != null)
 				e.getCause().printStackTrace();
 			else
@@ -30,13 +26,15 @@ public class OpenTerminalWrapper {
 		}
 		catch(Throwable t)
 		{
+			err = true;
 			t.printStackTrace();
 		}
 		
-		if(OpenTerminal.INSTANCE.app.shouldPause())
+		if(ot.app.shouldPause())
 		{
-			OpenTerminal.INSTANCE.app.pause();
+			ot.app.pause();
 		}
+		System.exit(err ? -1 : 0);
 	}
 
 }

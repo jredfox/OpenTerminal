@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import jredfox.common.io.IOUtils;
-import jredfox.selfcmd.SelfCommandPrompt;
+import jredfox.common.utils.JavaUtil;
 
 /**
  * a Config that will only support key=value
@@ -114,9 +114,9 @@ public class MapConfig {
 	
 	public void parseLine(String line) 
 	{
-		String[] reg = SelfCommandPrompt.splitFirst(line, ':', '"', '"');
+		String[] reg = JavaUtil.splitFirst(line, ':', '"', '"');
 		String type = reg[0].trim();
-		reg = SelfCommandPrompt.splitFirst(reg[1], this.sep, '"', '"');
+		reg = JavaUtil.splitFirst(reg[1], this.sep, '"', '"');
 		String key = reg[0].trim();
 		String value = reg[1].trim();
 		Object parsed = this.parseObj(type, value);
@@ -166,7 +166,7 @@ public class MapConfig {
 		else if(types[6].equals(type))
 			return Boolean.parseBoolean(value);
 		else if(types[7].equals(type))
-			return SelfCommandPrompt.parseQuotes(value, '"', '"');
+			return JavaUtil.parseQuotes(value, '"', '"');
 		
 		return null;
 	}

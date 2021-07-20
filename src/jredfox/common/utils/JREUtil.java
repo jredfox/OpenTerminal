@@ -12,6 +12,17 @@ import jredfox.common.thread.ShutdownThread;
 public class JREUtil {
 	
 	public static final String INVALID = "\"'`,";
+	
+	static
+	{	
+		System.setProperty("runnables.jar", getFileFromClass(getMainClass()).getPath());
+		
+		//patch macOs returning junk #untested before Big Sur
+		String dir = System.getProperty("user.dir");
+		String tmp = System.getProperty("java.io.tmpdir");
+		if(dir.contains(tmp) && !dir.startsWith(tmp))
+			JREUtil.syncUserDirWithJar();
+	}
 
 	/**
 	 * Must be called before {@link SelfCommandPrompt#runWithCMD(String, String, Class, String[], boolean, boolean)}
@@ -21,7 +32,7 @@ public class JREUtil {
 	{
 		try 
 		{
-			setUserDir(getFileFromClass(getMainClass()).getParentFile());
+			setUserDir(new File(System.getProperty("runnables.jar")).getParentFile());
 		}
 		catch (Exception e) 
 		{
@@ -39,11 +50,11 @@ public class JREUtil {
 	}
 
 	/**
-	 * checks if the jar is compiled based on the main class 
+	 *  optimized method for checking if the main executing jar isCompiled
 	 */
 	public static boolean isCompiled()
 	{
-		return isCompiled(getMainClass());
+		return System.getProperty("runnables.jar").endsWith(".jar");
 	}
 	
 	/**

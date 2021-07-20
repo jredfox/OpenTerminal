@@ -1,7 +1,11 @@
 package jredfox.terminal.app;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jredfox.common.utils.JREUtil;
 import jredfox.common.utils.JavaUtil;
+import jredfox.terminal.OpenTerminal;
 import jredfox.terminal.OpenTerminalConstants;
 
 public class TerminalApp {
@@ -13,8 +17,8 @@ public class TerminalApp {
 	public String name;
 	public String version;
 	public Class<?> mainClass;
-	public String[] programArgs;
-	public String[] jvmArgs;
+	public List<String> programArgs;
+	public List<String> jvmArgs;
 	public boolean runDeob;
 	public boolean forceTerminal;//set this to true to always open up a new window
 	
@@ -51,19 +55,26 @@ public class TerminalApp {
 		this.name = name;
 		this.version = version;
 		this.mainClass = clazz;
-		this.programArgs = args;
+		this.programArgs = new ArrayList<>(args.length);
+		for(String s : args)
+			this.programArgs.add(s);
 		
 		//run vars
 		this.runDeob = runDeob;
 		this.forceTerminal = false;
 		this.shouldPause = pause;
-		this.compiled = JREUtil.isCompiled(this.mainClass);
+		this.compiled = JREUtil.isCompiled();
 		this.background = false;
+	}
+	
+	public void init(OpenTerminal ot) 
+	{
+		this.terminal = ot.terminal;
 	}
 
     public boolean shouldOpen()
     {
-        return !this.compiled ? this.runDeob && System.console() == null && !JREUtil.isDebugMode() : this.forceTerminal || System.console() == null;
+        return !this.background && (!this.compiled ? this.runDeob && System.console() == null && !JREUtil.isDebugMode() : this.forceTerminal || System.console() == null);
     }
     
 	public boolean shouldPause() 
@@ -107,6 +118,11 @@ public class TerminalApp {
 	public static String suggestAppId(String name)
 	{
 		return name.replaceAll("\\.", "/");
+	}
+
+	public String[] getProgramArgs() 
+	{
+		return JavaUtil.toArray(this.programArgs, String.class);
 	}
 
 }
