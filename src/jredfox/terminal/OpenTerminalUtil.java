@@ -15,16 +15,15 @@ public class OpenTerminalUtil {
 	 * runs a command in a new terminal window.
 	 * the sh name is the file name you want the shell script stored. The appId is to locate your folder
 	 */
-	public static Process runInNewTerminal(OpenTerminal ot, String appId, String appName, String shName, String command) throws IOException
+	public static Process runInNewTerminal(File appdata, String terminal, String appName, String shName, String command) throws IOException
 	{
         if(OSUtil.isWindows())
         {
-        	return runInTerminal(ot.terminal, " start " + "\"" + appName + "\" " + command);
+        	return runInTerminal(terminal, " start " + "\"" + appName + "\" " + command);
         }
         else if(OSUtil.isMac())
         {
-        	genAS(ot.terminal);
-        	File appdata = ot.getAppdata(appId);
+        	genAS(terminal);
         	File sh = new File(appdata, shName + ".sh");
         	List<String> cmds = new ArrayList<>();
         	cmds.add("#!/bin/bash");
@@ -37,11 +36,11 @@ public class OpenTerminalUtil {
         	cmds.add("osascript " + OpenTerminalConstants.closeMe.getPath().replaceAll(" ", "\\\\ ") + " & exit");
         	IOUtils.saveFileLines(cmds, sh, true);//save the file
         	IOUtils.makeExe(sh);//make it executable
-        	return runInTerminal(ot.terminal, "osascript " + OpenTerminalConstants.start.getPath().replaceAll(" ", "\\\\ ") + " \"" + sh.getPath().replaceAll(" ", "\\\\ ") + "\"");
+        	return runInTerminal(terminal, "osascript " + OpenTerminalConstants.start.getPath().replaceAll(" ", "\\\\ ") + " \"" + sh.getPath().replaceAll(" ", "\\\\ ") + "\"");
         }
         else if(OSUtil.isLinux())
         {
-        	File sh = new File(ot.getAppdata(appId), shName + ".sh");
+        	File sh = new File(terminal, shName + ".sh");
         	List<String> cmds = new ArrayList<>();
         	cmds.add("#!/bin/bash");
         	cmds.add("set +v");//@Echo off

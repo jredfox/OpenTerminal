@@ -84,7 +84,7 @@ public class OpenTerminal {
     	String shName = this.app.id.contains("/") ? JavaUtil.getLastSplit(this.app.id, "/") : this.app.id;
     	try
     	{
-    		return OpenTerminalUtil.runInNewTerminal(this, this.app.id, this.app.name, shName, command);
+    		return OpenTerminalUtil.runInNewTerminal(this.getAppdata(this.app.id), this.app.terminal, this.app.name, shName, command);
     	}
     	catch(Throwable t)
     	{
