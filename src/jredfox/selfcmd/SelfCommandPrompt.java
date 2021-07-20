@@ -26,7 +26,7 @@ import jredfox.selfcmd.jconsole.JConsole;
  */
 public class SelfCommandPrompt {
 	
-	public static final String VERSION = "2.2.0";
+	public static final String VERSION = "2.2.1";
 	public static final String INVALID = OSUtil.getQuote() + "'`,";
 	public static final File selfcmd = new File(OSUtil.getAppData(), "SelfCommandPrompt");
 	public static final Scanner scanner = new Scanner(System.in);
