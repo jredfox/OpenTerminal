@@ -1,6 +1,8 @@
 package jredfox.terminal;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import jredfox.common.exe.ExeBuilder;
 import jredfox.common.os.OSUtil;
@@ -30,14 +32,18 @@ public class OpenTerminal {
 	{
 		if(this.app == null)
 			throw new IllegalArgumentException("TerminalApp cannot be null!");
-		else if(!this.app.programArgs.isEmpty())
+		else if(!this.app.properties.isEmpty())
 		{
-			if(this.app.programArgs.get(0).equals("openterminal.launched"))
+			if(this.app.properties.get(0).equals(OpenTerminalConstants.launched))
 			{
-				OpenTerminalWrapper.run(this, new String[]{"openterminal.wrapped"});
-				return null;
+				List<String> args = new ArrayList<>(this.app.properties.size() + this.app.programArgs.size());
+				this.app.properties.set(0, "openterminal.wrapped");
+				args.addAll(this.app.properties);
+				args.addAll(this.app.programArgs);
+				OpenTerminalWrapper.run(this.app, JavaUtil.toArray(args, String.class));
+				return null;//when the virtual wrapper is done executing so is the process so return null as nothing happens here
 			}
-			else if(this.app.programArgs.get(0).equals("openterminal.wrapped"))
+			else if(this.app.properties.get(0).equals(OpenTerminalConstants.wrapped))
 				return this.app.getProgramArgs();
 		}
 		
@@ -53,8 +59,9 @@ public class OpenTerminal {
 				this.app.process = this.canReboot && exit == 4097 ? this.relaunch(open) : null;
 			}
 		}
+		System.out.println("shutting down OpenTerminal Launcher:" + exit);
 		this.exit(exit);
-		return null;
+		return this.app.getProgramArgs();
 	}
 
 	/**
@@ -78,14 +85,14 @@ public class OpenTerminal {
     	String q = OSUtil.getQuote();
     	builder.addCommand(q + libs + q);
     	builder.addCommand(this.app.mainClass.getName());
-    	builder.commands.add("openterminal.launched");
+    	builder.addCommand(OpenTerminalConstants.launched);
     	builder.addCommand(OpenTerminalUtil.wrapProgramArgs(this.app.programArgs));
     	String command = builder.toString();
     	String shName = this.app.id.contains("/") ? JavaUtil.getLastSplit(this.app.id, "/") : this.app.id;
     	try
     	{
     		return OpenTerminalUtil.runInNewTerminal(this.getAppdata(this.app.id), this.app.terminal, this.app.name, shName, command);
-//    		return open ? OpenTerminalUtil.runInNewTerminal(this.getAppdata(this.app.id), this.app.terminal, this.app.name, shName, command) : OpenTerminalUtil.runInTerminal(this.terminal, command);
+//TODO:    		return open ? OpenTerminalUtil.runInNewTerminal(this.getAppdata(this.app.id), this.app.terminal, this.app.name, shName, command) : OpenTerminalUtil.runInTerminal(this.terminal, command);
     	}
     	catch(Throwable t)
     	{
@@ -96,7 +103,8 @@ public class OpenTerminal {
 	
 	public Process relaunch(boolean open) 
 	{
-		return null;
+		System.out.println("re-launching");
+		return this.launch(open);
 	}
 
 	public void exit(int code)

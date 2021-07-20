@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
+import jredfox.common.os.OSUtil;
 import jredfox.common.thread.ShutdownThread;
 
 public class JREUtil {
@@ -16,6 +17,7 @@ public class JREUtil {
 	static
 	{	
 		System.setProperty("runnables.jar", getFileFromClass(getMainClass()).getPath());
+		System.setProperty("user.appdata", OSUtil.getAppData().getPath());
 		
 		//patch macOs returning junk #untested before Big Sur
 		String dir = System.getProperty("user.dir");

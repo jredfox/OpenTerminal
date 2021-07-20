@@ -14,5 +14,7 @@ public class OpenTerminalConstants {
 	public static final File scripts = new File(data, "scripts");
 	public static final File closeMe = new File(scripts, "closeMe.scpt");
 	public static final File start = new File(scripts, "start.scpt");
+	public static final String wrapped = "openterminal.wrapped";
+	public static final String launched = "openterminal.launched";
 	
 }

@@ -3,17 +3,19 @@ package jredfox.terminal;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import jredfox.terminal.app.TerminalApp;
+
 /**
  * virtual wrapper because hard wrappers causes issues with other wrappers including eclipe's jarInJar loader
  */
 public class OpenTerminalWrapper {
 	
-	public static void run(OpenTerminal ot, String[] args)
+	public static void run(TerminalApp app, String[] args)
 	{
 		boolean err = false;
 		try
 		{
-			Method method = ot.app.mainClass.getMethod("main", String[].class);
+			Method method = app.mainClass.getMethod("main", String[].class);
 			method.invoke(null, new Object[]{args});
 		}
 		catch(InvocationTargetException e)
@@ -30,9 +32,9 @@ public class OpenTerminalWrapper {
 			t.printStackTrace();
 		}
 		
-		if(ot.app.shouldPause())
+		if(app.shouldPause())
 		{
-			ot.app.pause();
+			app.pause();
 		}
 		System.exit(err ? -1 : 0);
 	}

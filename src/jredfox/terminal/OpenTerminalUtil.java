@@ -20,7 +20,7 @@ public class OpenTerminalUtil {
 	{
         if(OSUtil.isWindows())
         {
-        	return runInTerminal(terminal, " start " + "\"" + appName + "\" " + command);
+        	return runInTerminal(terminal, " start /wait " + "\"" + appName + "\" " + command);
         }
         else if(OSUtil.isMac())
         {

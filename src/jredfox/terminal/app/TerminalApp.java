@@ -1,7 +1,9 @@
 package jredfox.terminal.app;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jredfox.common.utils.JREUtil;
 import jredfox.common.utils.JavaUtil;
@@ -17,8 +19,9 @@ public class TerminalApp {
 	public String name;
 	public String version;
 	public Class<?> mainClass;
-	public List<String> programArgs;
-	public List<String> jvmArgs;
+	public List<String> programArgs = new ArrayList<>();
+	public List<String> properties = new ArrayList<>();
+	public List<String> jvmArgs = new ArrayList<>();
 	public boolean runDeob;
 	public boolean forceTerminal;//set this to true to always open up a new window
 	
@@ -26,6 +29,7 @@ public class TerminalApp {
 	public boolean shouldPause;
 	public boolean compiled;//is this app compiled into a jar already
 	public Process process;
+	public static final Set<String> props = new HashSet<>();
 	
 	public TerminalApp(String[] args)
 	{
@@ -57,7 +61,12 @@ public class TerminalApp {
 		this.mainClass = clazz;
 		this.programArgs = new ArrayList<>(args.length);
 		for(String s : args)
-			this.programArgs.add(s);
+		{
+			if(isProperty(s))
+				this.properties.add(s);
+			else
+				this.programArgs.add(s);
+		}
 		
 		//run vars
 		this.runDeob = runDeob;
@@ -67,6 +76,11 @@ public class TerminalApp {
 		this.background = false;
 	}
 	
+	public boolean isProperty(String s) 
+	{
+		return s.startsWith("openterminal.") || s.contains("=") && props.contains(s.split("=")[0]);
+	}
+
 	public void init(OpenTerminal ot) 
 	{
 		this.terminal = ot.terminal;
