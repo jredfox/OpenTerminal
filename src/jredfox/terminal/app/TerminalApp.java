@@ -2,19 +2,17 @@ package jredfox.terminal.app;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import jredfox.common.io.IOUtils;
+import jredfox.common.exe.ExeBuilder;
 import jredfox.common.os.OSUtil;
 import jredfox.common.utils.JREUtil;
 import jredfox.common.utils.JavaUtil;
 import jredfox.terminal.OpenTerminalConstants;
+import jredfox.terminal.OpenTerminalUtil;
 
 public class TerminalApp {
 	
@@ -34,7 +32,6 @@ public class TerminalApp {
 	//args
 	public List<String> jvmArgs = new ArrayList<>();
 	public List<String> programArgs = new ArrayList<>();
-	public LinkedHashMap<String, String> properties = new LinkedHashMap<>();
 	
 	//non serializable vars
 	public boolean compiled;//is this app compiled into a jar already
@@ -66,16 +63,13 @@ public class TerminalApp {
     	if(JavaUtil.containsAny(id, OpenTerminalConstants.INVALID))
     		throw new RuntimeException("appId contains illegal parsing characters:(" + id + "), invalid:" + OpenTerminalConstants.INVALID);
     	
+    	this.initLaunchStage();
+    	
 		//non properties vars
 		this.programArgs = new ArrayList<>(args.length);
 		for(String s : args)
-		{
-			if(isProperty(s))
-				this.parseProperty(s);
-			else
-				this.programArgs.add(s);
-		}
-		this.jvmArgs = JavaUtil.asArray(JREUtil.getJVMArgs());
+			this.programArgs.add(s);
+		this.jvmArgs = JREUtil.getJVMArgs();
 		this.compiled = JREUtil.isCompiled();
 		
 		this.id = this.getProperty("openterminal.id", id);
@@ -93,12 +87,19 @@ public class TerminalApp {
 		this.shouldPause = this.getProperty("openterminal.shoulPause", pause);
 	}
 
+	protected void initLaunchStage()
+	{
+		String stage = System.getProperty(OpenTerminalConstants.launchStage);
+		if(stage == null)
+			System.setProperty(OpenTerminalConstants.launchStage, OpenTerminalConstants.init);
+	}
+
 	/**
 	 * parsed from a reboot file
 	 */
 	public TerminalApp(File propsFile)
 	{
-		this.parseProperties(propsFile);
+//		this.parseProperties(propsFile);//TODO:
 		this.fromProperties();
 	}
 
@@ -117,8 +118,7 @@ public class TerminalApp {
 	 */
 	public boolean isLaunching()
 	{
-		String prop = JavaUtil.getFirst(this.properties);
-		return prop == null || OpenTerminalConstants.rebooted.equals(prop);
+		return System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.init);
 	}
 	
 	/**
@@ -126,22 +126,19 @@ public class TerminalApp {
 	 */
 	public boolean isChild()
 	{
-		String prop = JavaUtil.getFirst(this.properties);
-		return prop != null && (prop.equals(OpenTerminalConstants.launched) || prop.equals(OpenTerminalConstants.wrapped) || prop.equals(OpenTerminalConstants.rebooted));
+		return !this.isLaunching();
 	}
 	
 	/**
 	 * can your main(String[] args) execute yet? First launch fires launcher, Second launch fires virtual wrapper, Third launch your program now executes as normal
 	 */
-	public boolean isWrapped()
+	public boolean canExe()
 	{
-		String prop = JavaUtil.getFirst(this.properties);
-		return OpenTerminalConstants.wrapped.equals(prop);
+		return System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.exe);
 	}
 	
 	public void reboot()
 	{
-		JavaUtil.setFirst(this.properties, OpenTerminalConstants.rebooted);
 		//TODO:
 	}
 	
@@ -168,53 +165,6 @@ public class TerminalApp {
 		return id.toString();
 	}
 	
-	public void parseProperties(File propsFile) 
-	{
-		List<String> li = IOUtils.getFileLines(propsFile);
-		for(String s : li)
-		{
-			s = s.trim();
-			if(this.isProperty(s))
-				this.parseProperty(s);
-		}
-	}
-
-	public void parseProperty(String line)
-	{
-		if(!line.contains("="))
-		{
-			this.properties.put(line, "");
-			return;
-		}
-		String[] arr = JavaUtil.splitFirst(line, '=', '"', '"');
-		this.properties.put(arr[0], arr[1]);
-	}
-
-	public boolean getBooleanProperty(String propId)
-	{
-		return Boolean.parseBoolean(this.getProperty(propId));
-	}
-	
-	public boolean getProperty(String propId, boolean defaults)
-	{
-		return Boolean.parseBoolean(this.getProperty(propId, String.valueOf(defaults)));
-	}
-	
-	public String getProperty(String propId, String defaults)
-	{
-		return this.properties.containsKey(propId) ? this.properties.get(propId) : defaults;
-	}
-
-	public String getProperty(String propId) 
-	{
-		return this.properties.get(propId);
-	}
-
-	public boolean isProperty(String s) 
-	{
-		return s.startsWith("openterminal.") || s.contains("=") && props.contains(s.split("=")[0]);
-	}
-	
 	/**
 	 * sync your values with the properties
 	 */
@@ -232,37 +182,60 @@ public class TerminalApp {
 		this.runDeob = this.getBooleanProperty("openterminal.runDeob");
 		this.forceTerminal = this.getBooleanProperty("openterminal.forceTerminal");
 	}
-
+	
 	/**
 	 * sync your properties from the real values
 	 * NOTE: doesn't writer openterminal.jvmArgs or openterminal.programArgs
 	 */
 	public void toProperties()
 	{
-		this.properties.put("openterminal.terminal", this.terminal);
-		this.properties.put("openterminal.uuid", this.uuid);
-		this.properties.put("openterminal.background", String.valueOf(this.background));
-		this.properties.put("openterminal.shoulPause", String.valueOf(this.shouldPause));
-		this.properties.put("openterminal.id", this.id);
-		this.properties.put("openterminal.shName", this.shName);
-		this.properties.put("openterminal.name", this.name);
-		this.properties.put("openterminal.version", this.version);
-		this.properties.put("openterminal.mainClass", this.mainClass.getName());
-		this.properties.put("openterminal.runDeob", String.valueOf(this.runDeob));
-		this.properties.put("openterminal.forceTerminal", String.valueOf(this.forceTerminal));
+		System.setProperty("openterminal.terminal", this.terminal);
+		System.setProperty("openterminal.uuid", this.uuid);
+		System.setProperty("openterminal.background", String.valueOf(this.background));
+		System.setProperty("openterminal.shoulPause", String.valueOf(this.shouldPause));
+		System.setProperty("openterminal.id", this.id);
+		System.setProperty("openterminal.shName", this.shName);
+		System.setProperty("openterminal.name", this.name);
+		System.setProperty("openterminal.version", this.version);
+		System.setProperty("openterminal.mainClass", this.mainClass.getName());
+		System.setProperty("openterminal.runDeob", String.valueOf(this.runDeob));
+		System.setProperty("openterminal.forceTerminal", String.valueOf(this.forceTerminal));
 	}
 	
-	public void writeProperties(Collection<String> col)
+	public void writeProperties(List<String> li, ExeBuilder builder)
 	{
-		int index = 0;
-		for(Map.Entry<String, String> entry : this.properties.entrySet())
-		{
-			if(index == 0 && entry.getKey().startsWith("openterminal.launcher."))
-				continue;
-			String v = entry.getValue();
-			col.add(entry.getKey() + (v.isEmpty() ? "" : "=" + v));
-			index++;
-		}
+		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.terminal"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.uuid"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.background"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.shoulPause"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.id"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.shName"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.name"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.version"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.mainClass"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.runDeob"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.forceTerminal"));
+	}
+	
+	public boolean getProperty(String propId, boolean b)
+	{
+		return Boolean.parseBoolean(this.getProperty(propId, String.valueOf(b)));
+	}
+
+	public String getProperty(String propId, String defaults) 
+	{
+		String p = System.getProperty(propId);
+		return p != null ? p : defaults;
+	}
+
+	public boolean getBooleanProperty(String propId) 
+	{
+		return Boolean.parseBoolean(this.getProperty(propId));
+	}
+
+	public String getProperty(String propId)
+	{
+		return System.getProperty(propId);
 	}
 	
 	/**

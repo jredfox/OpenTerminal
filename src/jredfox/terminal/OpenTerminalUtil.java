@@ -131,5 +131,23 @@ public class OpenTerminalUtil {
 			args[i] =  q + args[i].replaceAll(q, esc + q) + q;//wrap the jvm args to the native terminal quotes and escape quotes
 		return args;
 	}
+	
+	public static String writeProperty(List<String> list, String propId, String value)
+	{
+		JavaUtil.removeStarts(list, "-D" + propId, false);
+		return  "-D" + propId + "=\"" + value + "\"";
+	}
+	
+	public static String writeProperty(List<String> list, String propId)
+	{
+		JavaUtil.removeStarts(list, "-D" + propId, false);
+		return "-D" + propId + "=\"" + System.getProperty(propId) + "\"";
+	}
+
+	public static String writeDirProperty(List<String> list, String propId)
+	{
+		JavaUtil.removeStarts(list, "-D" + propId, false);
+		return "-D" + propId + "=\"" + new File(System.getProperty(propId)).getPath() + "\"";
+	}
 
 }

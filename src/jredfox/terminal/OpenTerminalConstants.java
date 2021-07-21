@@ -14,8 +14,9 @@ public class OpenTerminalConstants {
 	public static final File scripts = new File(data, "scripts");
 	public static final File closeMe = new File(scripts, "closeMe.scpt");
 	public static final File start = new File(scripts, "start.scpt");
-	public static final String wrapped =  "openterminal.launcher.wrapped";
-	public static final String launched = "openterminal.launcher.launched";
-	public static final String rebooted = "openterminal.launcher.rebooted";
+	public static final String launchStage = "openterminal.stage";
+	public static final String init = "init";
+	public static final String launched = "launched";
+	public static final String exe = "exe";
 	
 }

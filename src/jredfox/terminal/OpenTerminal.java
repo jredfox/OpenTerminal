@@ -1,7 +1,6 @@
 package jredfox.terminal;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import jredfox.common.exe.ExeBuilder;
@@ -20,32 +19,26 @@ public class OpenTerminal {
 		
 	}
 	
-	public String[] run(TerminalApp app)
+	public void run(TerminalApp app)
 	{
 		this.app = app;
-		return this.run();
+		this.run();
 	}
 
-	public String[] run()
+	public void run()
 	{
 		if(this.app == null)
 			throw new IllegalArgumentException("TerminalApp cannot be null!");
-		else if(!this.app.properties.isEmpty())
-		{
-			if(this.app.properties.containsKey(OpenTerminalConstants.launched))
-			{
-				List<String> args = new ArrayList<>(this.app.properties.size() + this.app.programArgs.size());
-				args.add(OpenTerminalConstants.wrapped);
-				this.app.writeProperties(args);
-				args.addAll(this.app.programArgs);
-				OpenTerminalWrapper.run(this.app, JavaUtil.toArray(args, String.class));
-				return null;//return null as the TerminalApp is done executing and System#exit has already been called on the child process
-			}
-			else if(this.app.properties.containsKey(OpenTerminalConstants.wrapped))
-				return this.app.getProgramArgs();
-		}
 		
-		this.app.toProperties();
+		if(System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.launched))
+		{
+			System.setProperty(OpenTerminalConstants.launchStage, OpenTerminalConstants.exe);
+			OpenTerminalWrapper.run(this.app, this.app.getProgramArgs());
+			return;//return as the TerminalApp is done executing and System#exit has already been called on the child process
+		}
+		else if(System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.exe))
+			return;
+		
 		this.app.process = this.launch(this.shouldOpen());
 		int exit = this.app.process != null ? 0 : -1;
 		while(this.app.process != null)
@@ -59,7 +52,6 @@ public class OpenTerminal {
 		}
 		System.out.println("shutting down OpenTerminal Launcher:" + exit);
 		this.exit(exit);
-		return null;//return null as the Launcher is done executing and System#exit has already been called
 	}
 
 	/**
@@ -76,23 +68,21 @@ public class OpenTerminal {
         if(JavaUtil.containsAny(libs, OpenTerminalConstants.INVALID))
         	throw new RuntimeException("one or more LIBRARIES contains illegal parsing characters:(" + libs + "), invalid:" + OpenTerminalConstants.INVALID);
         
+		this.app.toProperties();
         ExeBuilder builder = new ExeBuilder();
     	builder.addCommand("java");
-    	builder.addCommand(this.app.jvmArgs);
-    	JavaUtil.removeStarts(this.app.jvmArgs, "-Djava.io.tmpdir", false);
-    	JavaUtil.removeStarts(this.app.jvmArgs, "-Duser.home", false);
-    	JavaUtil.removeStarts(this.app.jvmArgs, "-Duser.dir", false);
-    	JavaUtil.removeStarts(this.app.jvmArgs, "-Duser.appdata", false);
-    	builder.addCommand("-Djava.io.tmpdir=\"" + new File(System.getProperty("java.io.tmpdir")).getPath() + "\"");
-    	builder.addCommand("-Duser.home=\"" + new File(System.getProperty("user.home")).getPath() + "\"");
-    	builder.addCommand("-Duser.dir=\"" + new File(System.getProperty("user.dir")).getPath() + "\"");
-    	builder.addCommand("-Duser.appdata=\"" + new File(System.getProperty("user.appdata")).getPath() + "\"");
+    	List<String> jvm = JavaUtil.asArray(this.app.jvmArgs);
+    	builder.addCommand(OpenTerminalUtil.writeProperty(jvm, OpenTerminalConstants.launchStage, OpenTerminalConstants.launched));
+      	builder.addCommand(OpenTerminalUtil.writeDirProperty(jvm, "java.io.tmpdir"));
+    	builder.addCommand(OpenTerminalUtil.writeDirProperty(jvm, "user.home"));
+    	builder.addCommand(OpenTerminalUtil.writeDirProperty(jvm, "user.dir"));
+    	builder.addCommand(OpenTerminalUtil.writeDirProperty(jvm, "user.appdata"));
+    	this.app.writeProperties(jvm, builder);
+    	builder.addCommand(jvm);
     	builder.addCommand("-cp");
     	String q = OSUtil.getQuote();
     	builder.addCommand(q + libs + q);
     	builder.addCommand(this.app.mainClass.getName());
-    	builder.addCommand(OpenTerminalConstants.launched);
-    	this.app.writeProperties(builder.commands);
     	builder.addCommand(OpenTerminalUtil.wrapProgramArgs(this.app.programArgs));
     	String command = builder.toString();
     	try
@@ -106,7 +96,7 @@ public class OpenTerminal {
     	}
     	return null;
 	}
-	
+
 	/**
 	 * use {@link TerminalApp#reboot()} for users. This is to simply re-launch your TerminalApp after the reboot file has started from the Parent(Launcher) process not your TerminalApp(child) process
 	 */

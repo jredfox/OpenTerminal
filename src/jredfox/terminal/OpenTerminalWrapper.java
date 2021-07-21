@@ -15,7 +15,23 @@ public class OpenTerminalWrapper {
 		boolean err = false;
 		try
 		{
+//			Runtime.getRuntime().addShutdownHook(
+//				new Thread()
+//				{
+//					@Override
+//					public void run()
+//					{
+//						if(app.shouldPause())
+//							app.pause();	
+//					}
+//				}	
+//			);
 			Method method = app.mainClass.getMethod("main", String[].class);
+			if(args.length == 0)
+			{
+//				args = app.getWrappedArgs();//TODO: also have a msg without line feed enforced
+			}
+			System.gc();
 			method.invoke(null, new Object[]{args});
 		}
 		catch(InvocationTargetException e)
@@ -34,7 +50,7 @@ public class OpenTerminalWrapper {
 		
 		if(app.shouldPause())
 		{
-			app.pause();
+			app.pause();//TODO: add on shutdown hook as well
 		}
 		System.exit(err ? -1 : 0);
 	}
