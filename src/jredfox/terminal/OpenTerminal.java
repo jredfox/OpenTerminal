@@ -6,7 +6,6 @@ import java.util.List;
 
 import jredfox.common.exe.ExeBuilder;
 import jredfox.common.os.OSUtil;
-import jredfox.common.utils.JREUtil;
 import jredfox.common.utils.JavaUtil;
 import jredfox.terminal.app.TerminalApp;
 
@@ -15,7 +14,6 @@ public class OpenTerminal {
 	public static OpenTerminal INSTANCE = new OpenTerminal();
 	public TerminalApp app;
 	public boolean canReboot = true;
-	public String terminal = OSUtil.getTerminal();//TODO:
 	
 	public OpenTerminal()
 	{
@@ -41,27 +39,27 @@ public class OpenTerminal {
 				args.addAll(this.app.properties);
 				args.addAll(this.app.programArgs);
 				OpenTerminalWrapper.run(this.app, JavaUtil.toArray(args, String.class));
-				return null;//when the virtual wrapper is done executing so is the process so return null as nothing happens here
+				return null;//return null as the TerminalApp is done executing and System#exit has already been called
 			}
 			else if(this.app.properties.get(0).equals(OpenTerminalConstants.wrapped))
 				return this.app.getProgramArgs();
 		}
 		
-		this.app.init(this);
-		boolean open = this.shouldOpen();
-		this.app.process = this.launch(open);
+		this.app.writeProperties();
+		this.app.process = this.launch(this.shouldOpen());
 		int exit = this.app.process != null ? 0 : -1;
 		while(this.app.process != null)
 		{
 			if(!this.app.process.isAlive())
 			{
 				exit = this.app.process.exitValue();
-				this.app.process = this.canReboot && exit == 4097 ? this.relaunch(open) : null;
+				File reboot = new File(this.getAppdata(this.app.id), "reboot.properties");
+				this.app.process = this.canReboot && reboot.exists() ? this.relaunch(reboot) : null;
 			}
 		}
 		System.out.println("shutting down OpenTerminal Launcher:" + exit);
 		this.exit(exit);
-		return this.app.getProgramArgs();
+		return null;//return null as the Launcher is done executing and System#exit has already been called
 	}
 
 	/**
@@ -80,15 +78,16 @@ public class OpenTerminal {
         
         ExeBuilder builder = new ExeBuilder();
     	builder.addCommand("java");
-    	builder.addCommand(JREUtil.getJVMArgs());
+    	builder.addCommand(this.app.jvmArgs);
     	builder.addCommand("-cp");
     	String q = OSUtil.getQuote();
     	builder.addCommand(q + libs + q);
     	builder.addCommand(this.app.mainClass.getName());
     	builder.addCommand(OpenTerminalConstants.launched);
+    	builder.addCommand(this.app.properties);
     	builder.addCommand(OpenTerminalUtil.wrapProgramArgs(this.app.programArgs));
     	String command = builder.toString();
-    	String shName = this.app.id.contains("/") ? JavaUtil.getLastSplit(this.app.id, "/") : this.app.id;
+    	String shName = this.app.shName;
     	try
     	{
     		return OpenTerminalUtil.runInNewTerminal(this.getAppdata(this.app.id), this.app.terminal, this.app.name, shName, command);
@@ -101,10 +100,13 @@ public class OpenTerminal {
     	return null;
 	}
 	
-	public Process relaunch(boolean open) 
+	/**
+	 * use {@link TerminalApp#reboot()} for users. This is to simply re-launch your TerminalApp after the reboot file has started from the Parent(Launcher) process not your TerminalApp(child) process
+	 */
+	public Process relaunch(File reboot) 
 	{
 		System.out.println("re-launching");
-		return this.launch(open);
+		return null;
 	}
 
 	public void exit(int code)

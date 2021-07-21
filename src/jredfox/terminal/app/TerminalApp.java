@@ -1,32 +1,38 @@
 package jredfox.terminal.app;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
+import jredfox.common.io.IOUtils;
 import jredfox.common.utils.JREUtil;
 import jredfox.common.utils.JavaUtil;
-import jredfox.terminal.OpenTerminal;
 import jredfox.terminal.OpenTerminalConstants;
 
 public class TerminalApp {
 	
-	public final boolean background;//TODO:
 	public String terminal;
+	public String uuid;
+	public boolean background;
+	public boolean shouldPause;
 	
 	public String id;
+	public String shName;
 	public String name;
 	public String version;
 	public Class<?> mainClass;
-	public List<String> programArgs = new ArrayList<>();
-	public List<String> properties = new ArrayList<>();
-	public List<String> jvmArgs = new ArrayList<>();
 	public boolean runDeob;
 	public boolean forceTerminal;//set this to true to always open up a new window
 	
+	//args
+	public List<String> programArgs = new ArrayList<>();
+	public LinkedHashMap<String, String> properties = new LinkedHashMap<>();
+	public List<String> jvmArgs = new ArrayList<>();
+	
 	//non serializable vars
-	public boolean shouldPause;
 	public boolean compiled;//is this app compiled into a jar already
 	public Process process;
 	public static final Set<String> props = new HashSet<>();
@@ -55,38 +61,110 @@ public class TerminalApp {
 	{
     	if(JavaUtil.containsAny(id, OpenTerminalConstants.INVALID))
     		throw new RuntimeException("appId contains illegal parsing characters:(" + id + "), invalid:" + OpenTerminalConstants.INVALID);
-		this.id = id;
-		this.name = name;
-		this.version = version;
-		this.mainClass = clazz;
+    	
+		//non properties vars
 		this.programArgs = new ArrayList<>(args.length);
 		for(String s : args)
 		{
 			if(isProperty(s))
-				this.properties.add(s);
+				this.parseProperty(s);
 			else
 				this.programArgs.add(s);
 		}
+		this.jvmArgs = JREUtil.getJVMArgs();
+		this.compiled = JREUtil.isCompiled();
 		
-		//run vars
+		//TODO: set properties instead of expected values
+		
+		this.shouldPause = pause;//set initial value of pause in case there is no properties for it
+		
+    	this.id = id;
+		this.shName = this.id.contains("/") ? JavaUtil.getLastSplit(this.id, "/") : this.id;
+		this.name = name;
+		this.version = version;
+		this.mainClass = clazz;
 		this.runDeob = runDeob;
 		this.forceTerminal = false;
-		this.shouldPause = pause;
-		this.compiled = JREUtil.isCompiled();
-		this.background = false;
+	}
+
+	/**
+	 * parsed from a reboot file
+	 */
+	public TerminalApp(File propsFile)
+	{
+		this.parseProperties(propsFile);
+		this.fromProperties();
 	}
 	
+	public void parseProperties(File propsFile) 
+	{
+		List<String> li = IOUtils.getFileLines(propsFile);
+		for(String s : li)
+		{
+			s = s.trim();
+			if(this.isProperty(s))
+				this.parseProperty(s);
+		}
+	}
+
+	public void parseProperty(String line)
+	{
+		String[] arr = JavaUtil.splitFirst(line, '=', '"', '"');
+		this.properties.put(arr[0], arr[1]);
+	}
+
+	/**
+	 * override all current values from the parsed properties
+	 */
+	public void fromProperties()
+	{
+		this.terminal = this.getProperty("openterminal.terminal");
+		this.uuid = this.getProperty("openterminal.uuid");
+		this.background = this.getBooleanProperty("openterminal.background");
+		this.shouldPause = this.getBooleanProperty("openterminal.shoulPause");
+		this.id = this.getProperty("openterminal.id");
+		this.shName = this.getProperty("openterminal.shName");
+		this.name = this.getProperty("openterminal.name");
+		this.version = this.getProperty("openterminal.version");
+		this.mainClass = JREUtil.getClass(this.getProperty("openterminal.mainClass"), true);
+		this.runDeob = this.getBooleanProperty("openterminal.runDeob");
+		this.forceTerminal = this.getBooleanProperty("openterminal.forceTerminal");
+	}
+
+	public boolean getBooleanProperty(String propId)
+	{
+		return Boolean.parseBoolean(this.getProperty(propId));
+	}
+
+	public String getProperty(String propId) 
+	{
+		return this.properties.get(propId);
+	}
+
 	public boolean isProperty(String s) 
 	{
 		return s.startsWith("openterminal.") || s.contains("=") && props.contains(s.split("=")[0]);
 	}
 
-	public void init(OpenTerminal ot) 
+	/**
+	 * doesn't writer openterminal.jvmArgs or openterminal.programArgs
+	 */
+	public void writeProperties() 
 	{
-		this.terminal = ot.terminal;
+		this.properties.put("openterminal.terminal", this.terminal);
+		this.properties.put("openterminal.uuid", this.uuid);
+		this.properties.put("openterminal.background", String.valueOf(this.background));
+		this.properties.put("openterminal.shoulPause", String.valueOf(this.shouldPause));
+		this.properties.put("openterminal.id", this.id);
+		this.properties.put("shName", this.shName);
+		this.properties.put("openterminal.name", this.name);
+		this.properties.put("openterminal.version", this.version);
+		this.properties.put("openterminal.mainClass", this.mainClass.getName());
+		this.properties.put("openterminal.runDeob", String.valueOf(this.runDeob));
+		this.properties.put("openterminal.forceTerminal", String.valueOf(this.forceTerminal));
 	}
 
-    public boolean shouldOpen()
+	public boolean shouldOpen()
     {
         return !this.background && (!this.compiled ? this.runDeob && System.console() == null && !JREUtil.isDebugMode() : this.forceTerminal || System.console() == null);
     }
@@ -96,9 +174,37 @@ public class TerminalApp {
 		return this.shouldPause;
 	}
 	
+	/**
+	 * use this boolean to load configs related to the TerminalApp's variables
+	 */
+	public boolean isLaunching()
+	{
+		String prop = JavaUtil.getFirst(this.properties);
+		return prop == null || OpenTerminalConstants.rebooted.equals(prop);
+	}
+	
+	/**
+	 * is your TerminalApp already a child process
+	 */
+	public boolean isChild()
+	{
+		String prop = JavaUtil.getFirst(this.properties);
+		return prop != null && (prop.equals(OpenTerminalConstants.launched) || prop.equals(OpenTerminalConstants.wrapped) || prop.equals(OpenTerminalConstants.rebooted));
+	}
+	
+	/**
+	 * can your main(String[] args) execute yet? First launch fires launcher, Second launch fires virtual wrapper, Third launch your program now executes as normal
+	 */
+	public boolean isWrapped()
+	{
+		String prop = JavaUtil.getFirst(this.properties);
+		return OpenTerminalConstants.wrapped.equals(prop);
+	}
+	
 	public void reboot()
 	{
-		System.exit(4097);
+		JavaUtil.setFirst(this.properties, OpenTerminalConstants.rebooted);
+		//TODO:
 	}
 	
 	/**

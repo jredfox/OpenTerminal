@@ -7,8 +7,7 @@ public class TestConsole {
 	
 	public static void main(String[] args)
 	{
-		TerminalApp app = new TerminalApp(args);
-		args = OpenTerminal.INSTANCE.run(app);
+		args = OpenTerminal.INSTANCE.run(new TerminalApp(args));
 	}
 
 }

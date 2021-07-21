@@ -4,7 +4,9 @@ import java.io.File;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JavaUtil {
 	
@@ -153,6 +155,21 @@ public class JavaUtil {
 			prev = c;
 		}
 		return false;
+	}
+
+	public static <V> V getFirst(Map<?, V> m)
+	{
+		for(Object k : m.keySet())
+		{
+			return m.get(k);
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <K, V> void setFirst(LinkedHashMap<K, V> map, V v) 
+	{
+		map.put((K) JavaUtil.getFirst(map), v);
 	}
 
 }
