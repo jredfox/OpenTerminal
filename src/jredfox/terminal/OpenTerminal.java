@@ -32,20 +32,20 @@ public class OpenTerminal {
 			throw new IllegalArgumentException("TerminalApp cannot be null!");
 		else if(!this.app.properties.isEmpty())
 		{
-			if(this.app.properties.get(0).equals(OpenTerminalConstants.launched))
+			if(this.app.properties.containsKey(OpenTerminalConstants.launched))
 			{
 				List<String> args = new ArrayList<>(this.app.properties.size() + this.app.programArgs.size());
-				this.app.properties.set(0, "openterminal.wrapped");
-				args.addAll(this.app.properties);
+				args.add(OpenTerminalConstants.wrapped);
+				this.app.writeProperties(args);
 				args.addAll(this.app.programArgs);
 				OpenTerminalWrapper.run(this.app, JavaUtil.toArray(args, String.class));
-				return null;//return null as the TerminalApp is done executing and System#exit has already been called
+				return null;//return null as the TerminalApp is done executing and System#exit has already been called on the child process
 			}
-			else if(this.app.properties.get(0).equals(OpenTerminalConstants.wrapped))
+			else if(this.app.properties.containsKey(OpenTerminalConstants.wrapped))
 				return this.app.getProgramArgs();
 		}
 		
-		this.app.writeProperties();
+		this.app.toProperties();
 		this.app.process = this.launch(this.shouldOpen());
 		int exit = this.app.process != null ? 0 : -1;
 		while(this.app.process != null)
@@ -53,7 +53,7 @@ public class OpenTerminal {
 			if(!this.app.process.isAlive())
 			{
 				exit = this.app.process.exitValue();
-				File reboot = new File(this.getAppdata(this.app.id), "reboot.properties");
+				File reboot = new File(this.app.getAppdata(), "reboot.properties");
 				this.app.process = this.canReboot && reboot.exists() ? this.relaunch(reboot) : null;
 			}
 		}
@@ -84,13 +84,12 @@ public class OpenTerminal {
     	builder.addCommand(q + libs + q);
     	builder.addCommand(this.app.mainClass.getName());
     	builder.addCommand(OpenTerminalConstants.launched);
-    	builder.addCommand(this.app.properties);
+    	this.app.writeProperties(builder.commands);
     	builder.addCommand(OpenTerminalUtil.wrapProgramArgs(this.app.programArgs));
     	String command = builder.toString();
-    	String shName = this.app.shName;
     	try
     	{
-    		return OpenTerminalUtil.runInNewTerminal(this.getAppdata(this.app.id), this.app.terminal, this.app.name, shName, command);
+    		return OpenTerminalUtil.runInNewTerminal(this.app.getAppdata(), this.app.terminal, this.app.name, this.app.shName, command);
 //TODO:    		return open ? OpenTerminalUtil.runInNewTerminal(this.getAppdata(this.app.id), this.app.terminal, this.app.name, shName, command) : OpenTerminalUtil.runInTerminal(this.terminal, command);
     	}
     	catch(Throwable t)
@@ -122,14 +121,6 @@ public class OpenTerminal {
 	public void setCanReboot(boolean b)
 	{
 		this.canReboot = b;
-	}
-	
-	/**
-	 * returns the appdata contained in %appdata%/SelfCommandPrompt/appId
-	 */
-	public File getAppdata(String appId)
-	{
-		return new File(OpenTerminalConstants.data, appId);
 	}
 
 }
