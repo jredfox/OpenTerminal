@@ -20,6 +20,7 @@ public class OpenTerminalUtil {
 	{
         if(OSUtil.isWindows())
         {
+//        	return runInTerminal(terminal, "conhost.exe");
         	return runInTerminal(terminal, "start /wait " + "\"" + appName + "\" " + command);
         }
         else if(OSUtil.isMac())
@@ -119,7 +120,7 @@ public class OpenTerminalUtil {
 	
     public static Process run(String[] cmdarray) throws IOException
     {
-        return new ProcessBuilder(cmdarray).inheritIO().directory(JREUtil.getProgramDir()).start();
+        return new ProcessBuilder(cmdarray)/*.inheritIO()*/.directory(JREUtil.getProgramDir()).start();
     }
     
 	public static String[] wrapProgramArgs(List<String> arr) 
