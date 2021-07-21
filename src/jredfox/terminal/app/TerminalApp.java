@@ -75,7 +75,7 @@ public class TerminalApp {
 			else
 				this.programArgs.add(s);
 		}
-		this.jvmArgs = JREUtil.getJVMArgs();
+		this.jvmArgs = JavaUtil.asArray(JREUtil.getJVMArgs());
 		this.compiled = JREUtil.isCompiled();
 		
 		this.id = this.getProperty("openterminal.id", id);

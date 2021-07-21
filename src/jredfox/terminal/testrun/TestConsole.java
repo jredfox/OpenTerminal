@@ -9,6 +9,7 @@ public class TestConsole {
 	{
 		TerminalApp app = new TerminalApp(args);
 		args = OpenTerminal.INSTANCE.run(app);
+		System.setProperty("jredfox.property", "null");
 	}
 
 }

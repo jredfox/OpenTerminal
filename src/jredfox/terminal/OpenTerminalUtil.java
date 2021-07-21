@@ -20,7 +20,6 @@ public class OpenTerminalUtil {
 	{
         if(OSUtil.isWindows())
         {
-//        	return runInTerminal(terminal, "conhost.exe");
         	return runInTerminal(terminal, "start /wait " + "\"" + appName + "\" " + command);
         }
         else if(OSUtil.isMac())

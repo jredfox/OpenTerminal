@@ -26,7 +26,7 @@ public class OpenTerminal {
 		return this.run();
 	}
 
-	public String[] run() 
+	public String[] run()
 	{
 		if(this.app == null)
 			throw new IllegalArgumentException("TerminalApp cannot be null!");
@@ -79,6 +79,14 @@ public class OpenTerminal {
         ExeBuilder builder = new ExeBuilder();
     	builder.addCommand("java");
     	builder.addCommand(this.app.jvmArgs);
+    	JavaUtil.removeStarts(this.app.jvmArgs, "-Djava.io.tmpdir", false);
+    	JavaUtil.removeStarts(this.app.jvmArgs, "-Duser.home", false);
+    	JavaUtil.removeStarts(this.app.jvmArgs, "-Duser.dir", false);
+    	JavaUtil.removeStarts(this.app.jvmArgs, "-Duser.appdata", false);
+    	builder.addCommand("-Djava.io.tmpdir=\"" + new File(System.getProperty("java.io.tmpdir")).getPath() + "\"");
+    	builder.addCommand("-Duser.home=\"" + new File(System.getProperty("user.home")).getPath() + "\"");
+    	builder.addCommand("-Duser.dir=\"" + new File(System.getProperty("user.dir")).getPath() + "\"");
+    	builder.addCommand("-Duser.appdata=\"" + new File(System.getProperty("user.appdata")).getPath() + "\"");
     	builder.addCommand("-cp");
     	String q = OSUtil.getQuote();
     	builder.addCommand(q + libs + q);

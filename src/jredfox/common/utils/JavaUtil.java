@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -170,6 +171,28 @@ public class JavaUtil {
 	public static <K, V> void setFirst(LinkedHashMap<K, V> map, V v) 
 	{
 		map.put((K) JavaUtil.getFirst(map), v);
+	}
+
+	public static void removeStarts(List<String> list, String match, boolean all)
+	{
+		Iterator<String> i = list.iterator();
+		while(i.hasNext())
+		{
+			String s = i.next();
+			if(s.startsWith(match))
+			{
+				i.remove();
+				if(!all)
+					return;
+			}
+		}
+	}
+
+	public static <T> List<T> asArray(Collection<T> li) 
+	{
+		ArrayList<T> arr = new ArrayList<>(li.size());
+		arr.addAll(li);
+		return arr;
 	}
 
 }

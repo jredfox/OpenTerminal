@@ -17,7 +17,8 @@ public class JREUtil {
 	static
 	{	
 		System.setProperty("runnables.jar", getFileFromClass(getMainClass()).getPath());
-		System.setProperty("user.appdata", OSUtil.getAppData().getPath());
+		if(System.getProperty("user.appdata") == null)
+			System.setProperty("user.appdata", OSUtil.getAppData().getPath());
 		
 		//patch macOs returning junk #untested before Big Sur
 		String dir = System.getProperty("user.dir");
