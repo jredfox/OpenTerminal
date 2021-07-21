@@ -89,8 +89,8 @@ public class OpenTerminal {
     	String command = builder.toString();
     	try
     	{
-    		return OpenTerminalUtil.runInNewTerminal(this.app.getAppdata(), this.app.terminal, this.app.name, this.app.shName, command);
-//TODO:    		return open ? OpenTerminalUtil.runInNewTerminal(this.getAppdata(this.app.id), this.app.terminal, this.app.name, shName, command) : OpenTerminalUtil.runInTerminal(this.terminal, command);
+//    		return OpenTerminalUtil.runInNewTerminal(this.app.getAppdata(), this.app.terminal, this.app.name, this.app.shName, command);
+    		return open ? OpenTerminalUtil.runInNewTerminal(this.app.getAppdata(), this.app.terminal, this.app.name, this.app.shName, command) : OpenTerminalUtil.runInTerminal(this.app.terminal, command);
     	}
     	catch(Throwable t)
     	{
