@@ -1,7 +1,9 @@
 package jredfox.terminal;
 
+import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Scanner;
 
 import jredfox.terminal.app.TerminalApp;
 
@@ -15,17 +17,6 @@ public class OpenTerminalWrapper {
 		boolean err = false;
 		try
 		{
-//			Runtime.getRuntime().addShutdownHook(
-//				new Thread()
-//				{
-//					@Override
-//					public void run()
-//					{
-//						if(app.shouldPause())
-//							app.pause();	
-//					}
-//				}	
-//			);
 			Method method = app.mainClass.getMethod("main", String[].class);
 			if(args.length == 0)
 			{

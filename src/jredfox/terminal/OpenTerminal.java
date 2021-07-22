@@ -62,6 +62,9 @@ public class OpenTerminal {
 		return this.app.shouldOpen();
 	}
 	
+	/**
+	 * make sure that all System properties are set before calling this. In memory properties override other properties
+	 */
 	public Process launch(boolean open)
 	{
         String libs = System.getProperty("java.class.path");
@@ -87,7 +90,6 @@ public class OpenTerminal {
     	String command = builder.toString();
     	try
     	{
-//    		return OpenTerminalUtil.runInNewTerminal(this.app.getAppdata(), this.app.terminal, this.app.name, this.app.shName, command);
     		return open ? OpenTerminalUtil.runInNewTerminal(this.app.getAppdata(), this.app.terminal, this.app.name, this.app.shName, command) : OpenTerminalUtil.runInTerminal(this.app.terminal, command);
     	}
     	catch(Throwable t)

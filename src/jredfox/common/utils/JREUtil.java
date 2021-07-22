@@ -166,10 +166,10 @@ public class JREUtil {
 		throw new RuntimeException("Unsupported Check back in a future version!");
 	}
 	
-	public static void shutdown()
+	public static void shutdown(int code)
 	{
 		System.gc();
-		System.exit(0);
+		System.exit(code);
 	}
 
 	public static File getProgramDir() 

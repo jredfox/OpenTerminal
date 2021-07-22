@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import jredfox.common.exe.ExeBuilder;
 import jredfox.common.os.OSUtil;
@@ -17,7 +16,7 @@ import jredfox.terminal.OpenTerminalUtil;
 public class TerminalApp {
 	
 	public String terminal;
-	public String uuid;
+	public String idHash;
 	public boolean background;
 	public boolean shouldPause;
 	
@@ -82,7 +81,7 @@ public class TerminalApp {
 		
 		boolean isLaunching = this.isLaunching();
 		this.terminal = isLaunching ? this.getProperty("openterminal.terminal", OSUtil.getTerminal()) : this.getProperty("openterminal.terminal");//TODO: get the terminal per app config and pull the terminal from the global one
-		this.uuid = isLaunching ? this.getProperty("openterminal.uuid", this.genUUID()) : this.getProperty("openterminal.uuid");
+		this.idHash = isLaunching ? this.getProperty("openterminal.hash", "" + System.currentTimeMillis()) : this.getProperty("openterminal.hash");
 		this.background = this.getProperty("openterminal.background", false);
 		this.shouldPause = this.getProperty("openterminal.shoulPause", pause);
 	}
@@ -137,6 +136,25 @@ public class TerminalApp {
 		return System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.exe);
 	}
 	
+	/**
+	 * don't have direct calls to {@link System#exit(int)} it will not pause your program. Multi thread safe as it interrupts all threads
+	 */
+	public void exit(int code)
+	{
+		//pause all current process's
+		Set<Thread> threads = Thread.getAllStackTraces().keySet();
+		for(Thread t : threads)
+			t.interrupt();
+		
+		if(this.shouldPause())
+			this.pause();
+		
+		for(Thread t : threads)
+			t.resume();
+		
+		JREUtil.shutdown(code);
+	}
+	
 	public void reboot()
 	{
 		//TODO:
@@ -152,26 +170,12 @@ public class TerminalApp {
 	}
 	
 	/**
-	 * generate an instance for this app to instantiate in
-	 */
-	protected String genUUID() 
-	{
-		UUID id = null;
-		while(id == null)
-		{
-			UUID tmp = UUID.randomUUID();
-			id = new File(this.getRootAppData(), tmp.toString()).exists() ? null : tmp;
-		}
-		return id.toString();
-	}
-	
-	/**
 	 * sync your values with the properties
 	 */
 	public void fromProperties()
 	{
 		this.terminal = this.getProperty("openterminal.terminal");
-		this.uuid = this.getProperty("openterminal.uuid");
+		this.idHash = this.getProperty("openterminal.hash");
 		this.background = this.getBooleanProperty("openterminal.background");
 		this.shouldPause = this.getBooleanProperty("openterminal.shoulPause");
 		this.id = this.getProperty("openterminal.id");
@@ -190,7 +194,7 @@ public class TerminalApp {
 	public void toProperties()
 	{
 		System.setProperty("openterminal.terminal", this.terminal);
-		System.setProperty("openterminal.uuid", this.uuid);
+		System.setProperty("openterminal.hash", this.idHash);
 		System.setProperty("openterminal.background", String.valueOf(this.background));
 		System.setProperty("openterminal.shoulPause", String.valueOf(this.shouldPause));
 		System.setProperty("openterminal.id", this.id);
@@ -202,19 +206,19 @@ public class TerminalApp {
 		System.setProperty("openterminal.forceTerminal", String.valueOf(this.forceTerminal));
 	}
 	
-	public void writeProperties(List<String> li, ExeBuilder builder)
+	public void writeProperties(List<String> jvm, ExeBuilder builder)
 	{
-		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.terminal"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.uuid"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.background"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.shoulPause"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.id"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.shName"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.name"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.version"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.mainClass"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.runDeob"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(li, "openterminal.forceTerminal"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.terminal"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.hash"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.background"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.shoulPause"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.id"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.shName"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.name"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.version"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.mainClass"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.runDeob"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.forceTerminal"));
 	}
 	
 	public boolean getProperty(String propId, boolean b)
@@ -243,7 +247,7 @@ public class TerminalApp {
 	 */
 	public File getAppdata()
 	{
-		return new File(OpenTerminalConstants.data, this.uuid + "/" + this.id);
+		return new File(OpenTerminalConstants.data, this.idHash + "/" + this.id);
 	}
 	
 	public File getRootAppData()
