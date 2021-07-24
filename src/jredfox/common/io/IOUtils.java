@@ -153,16 +153,7 @@ public class IOUtils {
 		}
 		finally
 		{
-			if(reader != null)
-			{
-				try 
-				{
-					reader.close();
-				} catch (IOException e) 
-				{
-					System.out.println("Unable to Close InputStream this is bad");
-				}
-			}
+			IOUtils.close(reader);
 		}
 		return list;
 	}

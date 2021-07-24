@@ -119,7 +119,7 @@ public class OpenTerminalUtil {
 	
     public static Process run(String[] cmdarray) throws IOException
     {
-        return new ProcessBuilder(cmdarray)/*.inheritIO()*/.directory(JREUtil.getProgramDir()).start();
+        return new ProcessBuilder(cmdarray).inheritIO().directory(JREUtil.getProgramDir()).start();
     }
     
 	public static String[] wrapProgramArgs(List<String> arr) 

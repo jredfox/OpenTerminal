@@ -5,8 +5,10 @@ import java.util.List;
 
 import jredfox.common.exe.ExeBuilder;
 import jredfox.common.os.OSUtil;
+import jredfox.common.utils.JREUtil;
 import jredfox.common.utils.JavaUtil;
 import jredfox.terminal.app.TerminalApp;
+import jredfox.terminal.app.TerminalAppWrapped;
 
 public class OpenTerminal {
 	
@@ -29,17 +31,17 @@ public class OpenTerminal {
 	{
 		if(this.app == null)
 			throw new IllegalArgumentException("TerminalApp cannot be null!");
-		
-		if(System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.launched))
+		else if(System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.exe))
+			return;
+		else if(System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.wrapping))
 		{
 			System.setProperty(OpenTerminalConstants.launchStage, OpenTerminalConstants.exe);
 			OpenTerminalWrapper.run(this.app, this.app.getProgramArgs());
 			return;//return as the TerminalApp is done executing and System#exit has already been called on the child process
 		}
-		else if(System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.exe))
-			return;
 		
 		this.app.process = this.launch(this.shouldOpen());
+		JREUtil.sleep(700);
 		int exit = this.app.process != null ? 0 : -1;
 		while(this.app.process != null)
 		{
@@ -47,7 +49,9 @@ public class OpenTerminal {
 			{
 				exit = this.app.process.exitValue();
 				File reboot = new File(this.app.getAppdata(), "reboot.properties");
+//				System.out.println(reboot.exists());
 				this.app.process = this.canReboot && reboot.exists() ? this.relaunch(reboot) : null;
+				JREUtil.sleep(500);
 			}
 		}
 		System.out.println("shutting down OpenTerminal Launcher:" + exit);
@@ -75,7 +79,7 @@ public class OpenTerminal {
         ExeBuilder builder = new ExeBuilder();
     	builder.addCommand("java");
     	List<String> jvm = JavaUtil.asArray(this.app.jvmArgs);
-    	builder.addCommand(OpenTerminalUtil.writeProperty(jvm, OpenTerminalConstants.launchStage, OpenTerminalConstants.launched));
+    	builder.addCommand(OpenTerminalUtil.writeProperty(jvm, OpenTerminalConstants.launchStage, this.app.shouldPause || this.app.hardPause || this.app instanceof TerminalAppWrapped ? OpenTerminalConstants.wrapping : OpenTerminalConstants.exe));//go to exe if no wrapper is used / required
       	builder.addCommand(OpenTerminalUtil.writeDirProperty(jvm, "java.io.tmpdir"));
     	builder.addCommand(OpenTerminalUtil.writeDirProperty(jvm, "user.home"));
     	builder.addCommand(OpenTerminalUtil.writeDirProperty(jvm, "user.dir"));
@@ -85,7 +89,7 @@ public class OpenTerminal {
     	builder.addCommand("-cp");
     	String q = OSUtil.getQuote();
     	builder.addCommand(q + libs + q);
-    	builder.addCommand(this.app.mainClass.getName());
+    	builder.addCommand(this.app.hardPause ? OpenTerminalWrapper.class.getName() : this.app.mainClass.getName());
     	builder.addCommand(OpenTerminalUtil.wrapProgramArgs(this.app.programArgs));
     	String command = builder.toString();
     	try
@@ -105,7 +109,22 @@ public class OpenTerminal {
 	public Process relaunch(File reboot) 
 	{
 		System.out.println("re-launching");
-		return null;
+		TerminalApp app = null;
+		try
+		{
+			TerminalApp.parseProperties(reboot);
+			app = (TerminalApp) JREUtil.getClass(System.getProperty("openterminal.TerminalAppClass"), true).newInstance();
+			app.fromProperties();
+			app.idHash = "" + System.currentTimeMillis();
+			app.jvmArgs.add(System.getProperty(OpenTerminalConstants.jvmArgs));
+			app.programArgs.add(System.getProperty(OpenTerminalConstants.programArgs));
+		}
+		catch (Throwable e)
+		{
+			e.printStackTrace();
+		}
+		this.app = app;
+		return this.launch(this.app.shouldOpen());
 	}
 
 	public void exit(int code)

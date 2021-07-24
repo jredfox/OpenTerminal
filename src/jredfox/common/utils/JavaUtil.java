@@ -195,4 +195,16 @@ public class JavaUtil {
 		return arr;
 	}
 
+	public static String toCommand(Collection<String> args) 
+	{
+		StringBuilder b = new StringBuilder();
+		int index = 0;
+		for(String s : args)
+		{
+			b.append("" + s + "" + (index + 1 == args.size() ? "" : " "));
+			index++;
+		}
+		return b.toString();
+	}
+
 }

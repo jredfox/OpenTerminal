@@ -182,6 +182,41 @@ public class JREUtil {
 		RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
 		return runtimeMxBean.getInputArguments();
 	}
+	
+	/**
+	 * cause a thread to sleep garenteed even with thread interuptions if boolean is true
+	 */
+	public static void sleep(long time)
+	{
+		sleep(time, true);
+	}
+
+	/**
+	 * cause a thread to sleep to for time in ms. If noInterupt it won't allow interuptions to stop the sleep
+	 */
+	public static void sleep(long time, boolean noInterupt)
+	{
+		long startMs = System.currentTimeMillis();
+		try 
+		{
+			Thread.sleep(time);
+		}
+		catch (InterruptedException | IllegalArgumentException e) 
+		{
+			if(noInterupt)
+			{
+				long current = System.currentTimeMillis();
+				long passedMs = current - startMs;
+				time = time - passedMs;
+				long stopMs = System.currentTimeMillis() + time;
+				System.err.println("causing manual sleep due to interuption for:" + time);
+				while(System.currentTimeMillis() < stopMs)
+				{
+					;
+				}
+			}
+		}
+	}
 
 
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import jredfox.common.exe.ExeBuilder;
+import jredfox.common.io.IOUtils;
 import jredfox.common.os.OSUtil;
 import jredfox.common.utils.JREUtil;
 import jredfox.common.utils.JavaUtil;
@@ -19,6 +20,7 @@ public class TerminalApp {
 	public String idHash;
 	public boolean background;
 	public boolean shouldPause;
+	public boolean hardPause;
 	
 	public String id;
 	public String shName;
@@ -54,10 +56,10 @@ public class TerminalApp {
 	
 	public TerminalApp(String id, String name, String version, Class<?> clazz, String[] args)
 	{
-		this(id, name, version, clazz, args, true, true);
+		this(id, name, version, clazz, args, true);
 	}
 	
-	public TerminalApp(String id, String name, String version, Class<?> clazz, String[] args, boolean runDeob, boolean pause)
+	public TerminalApp(String id, String name, String version, Class<?> clazz, String[] args, boolean runDeob)
 	{
     	if(JavaUtil.containsAny(id, OpenTerminalConstants.INVALID))
     		throw new RuntimeException("appId contains illegal parsing characters:(" + id + "), invalid:" + OpenTerminalConstants.INVALID);
@@ -83,7 +85,16 @@ public class TerminalApp {
 		this.terminal = isLaunching ? this.getProperty("openterminal.terminal", OSUtil.getTerminal()) : this.getProperty("openterminal.terminal");//TODO: get the terminal per app config and pull the terminal from the global one
 		this.idHash = isLaunching ? this.getProperty("openterminal.hash", "" + System.currentTimeMillis()) : this.getProperty("openterminal.hash");
 		this.background = this.getProperty("openterminal.background", false);
-		this.shouldPause = this.getProperty("openterminal.shoulPause", pause);
+		this.shouldPause = this.getProperty("openterminal.shoulPause", false);
+		this.hardPause = this.getProperty("openterminal.hardPause", false);
+	}
+	
+	/**
+	 * TerminalApp's when they get parsed from either the hard wrapper or a reboot
+	 */
+	public TerminalApp()
+	{
+		
 	}
 
 	protected void initLaunchStage()
@@ -93,15 +104,6 @@ public class TerminalApp {
 			System.setProperty(OpenTerminalConstants.launchStage, OpenTerminalConstants.init);
 	}
 
-	/**
-	 * parsed from a reboot file
-	 */
-	public TerminalApp(File propsFile)
-	{
-//		this.parseProperties(propsFile);//TODO:
-		this.fromProperties();
-	}
-
 	public boolean shouldOpen()
     {
         return !this.background && (!this.compiled ? this.runDeob && System.console() == null && !JREUtil.isDebugMode() : this.forceTerminal || System.console() == null);
@@ -109,7 +111,31 @@ public class TerminalApp {
     
 	public boolean shouldPause() 
 	{
-		return this.shouldPause;
+		return this.shouldPause || this.hardPause;
+	}
+	
+	/**
+	 * hard pause will catch {@link System#exit(int)}
+	 */
+	public TerminalApp enablePause()
+	{
+		this.shouldPause = true;
+		return this;
+	}
+	
+	public TerminalApp enableHardPause()
+	{
+		this.hardPause = true;
+		return this;
+	}
+	
+	/**
+	 * disables both shouldPause and hardPause
+	 */
+	public void disablePause()
+	{
+		this.shouldPause = false;
+		this.hardPause = false;
 	}
 	
 	/**
@@ -155,9 +181,30 @@ public class TerminalApp {
 		JREUtil.shutdown(code);
 	}
 	
+	/**
+	 * edit your variables before calling this will update the reboot vars
+	 */
 	public void reboot()
 	{
-		//TODO:
+		File reboot = new File(this.getAppdata(), "reboot.properties");
+		List<String> li = new ArrayList<>();
+		li.add("openterminal.terminal=" + this.terminal);
+		li.add("openterminal.hash=" + this.idHash);
+		li.add("openterminal.background=" + this.background);
+		li.add("openterminal.shoulPause=" + this.shouldPause);
+		li.add("openterminal.id=" + this.id);
+		li.add("openterminal.shName=" + this.shName);
+		li.add("openterminal.name=" + this.name);
+		li.add("openterminal.version=" + this.version);
+		li.add("openterminal.mainClass=" + this.mainClass.getName());
+		li.add("openterminal.runDeob=" + this.runDeob);
+		li.add("openterminal.forceTerminal=" + this.forceTerminal);
+		li.add("openterminal.TerminalAppClass=" + this.getClass().getName());
+		li.add(OpenTerminalConstants.jvmArgs + "=" + JavaUtil.toCommand(this.jvmArgs));
+		li.add(OpenTerminalConstants.programArgs + "=" + JavaUtil.toCommand(this.programArgs));
+		IOUtils.saveFileLines(li, reboot, true);
+		System.out.println("saved reboot to:" + reboot);
+		JREUtil.shutdown(0);
 	}
 	
 	/**
@@ -169,6 +216,21 @@ public class TerminalApp {
 		OpenTerminalConstants.scanner.nextLine();
 	}
 	
+	public static void parseProperties(File propsFile) 
+	{
+		List<String> lines = IOUtils.getFileLines(propsFile);
+		for(String s : lines)
+		{
+			s = s.trim();
+			if(s.isEmpty())
+				continue;
+			String[] arr = JavaUtil.splitFirst(s, '=', '"', '"');
+			String propId = arr[0];
+			String value = arr[1];
+			System.setProperty(propId, value);
+		}
+	}
+	
 	/**
 	 * sync your values with the properties
 	 */
@@ -178,6 +240,7 @@ public class TerminalApp {
 		this.idHash = this.getProperty("openterminal.hash");
 		this.background = this.getBooleanProperty("openterminal.background");
 		this.shouldPause = this.getBooleanProperty("openterminal.shoulPause");
+		this.hardPause = this.getBooleanProperty("openterminal.hardPause");
 		this.id = this.getProperty("openterminal.id");
 		this.shName = this.getProperty("openterminal.shName");
 		this.name = this.getProperty("openterminal.name");
@@ -193,10 +256,12 @@ public class TerminalApp {
 	 */
 	public void toProperties()
 	{
+		System.setProperty("openterminal.appClass", this.getClass().getName());
 		System.setProperty("openterminal.terminal", this.terminal);
 		System.setProperty("openterminal.hash", this.idHash);
 		System.setProperty("openterminal.background", String.valueOf(this.background));
 		System.setProperty("openterminal.shoulPause", String.valueOf(this.shouldPause));
+		System.setProperty("openterminal.hardPause", String.valueOf(this.hardPause));
 		System.setProperty("openterminal.id", this.id);
 		System.setProperty("openterminal.shName", this.shName);
 		System.setProperty("openterminal.name", this.name);
@@ -208,10 +273,12 @@ public class TerminalApp {
 	
 	public void writeProperties(List<String> jvm, ExeBuilder builder)
 	{
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.appClass"));
 		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.terminal"));
 		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.hash"));
 		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.background"));
 		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.shoulPause"));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.hardPause"));
 		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.id"));
 		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.shName"));
 		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.name"));
@@ -247,7 +314,7 @@ public class TerminalApp {
 	 */
 	public File getAppdata()
 	{
-		return new File(OpenTerminalConstants.data, this.idHash + "/" + this.id);
+		return new File(OpenTerminalConstants.data, this.id + "/" + this.idHash);
 	}
 	
 	public File getRootAppData()
