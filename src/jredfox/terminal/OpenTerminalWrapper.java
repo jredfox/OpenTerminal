@@ -18,6 +18,7 @@ public class OpenTerminalWrapper {
 	 */
 	public static void run(TerminalApp app, String[] args)
 	{
+		System.setProperty(OpenTerminalConstants.launchStage, OpenTerminalConstants.exe);//set the state from wrapping to execute
 		boolean err = false;
 		try
 		{
@@ -41,9 +42,7 @@ public class OpenTerminalWrapper {
 		}
 		
 		if(app.shouldPause())
-		{
 			app.pause();
-		}
 		System.exit(err ? -1 : 0);
 	}
 	
@@ -71,12 +70,11 @@ public class OpenTerminalWrapper {
 		JREUtil.sleep(100);
 		while(p.isAlive())
 		{
-			JREUtil.sleep(500);//don't ping Process#isAlive constantly as it slows down the process
+			
 		}
+		
 		if(app.shouldPause())
-		{
 			app.pause();
-		}
 	}
 
 }

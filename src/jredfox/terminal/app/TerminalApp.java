@@ -39,6 +39,13 @@ public class TerminalApp {
 	public Process process;
 	public static final Set<String> props = new HashSet<>();
 	
+	static
+	{
+		String stage = System.getProperty(OpenTerminalConstants.launchStage);
+		if(stage == null)
+			System.setProperty(OpenTerminalConstants.launchStage, OpenTerminalConstants.init);
+	}
+	
 	public TerminalApp(String[] args)
 	{
 		this(suggestAppId(), args);
@@ -63,8 +70,6 @@ public class TerminalApp {
 	{
     	if(JavaUtil.containsAny(id, OpenTerminalConstants.INVALID))
     		throw new RuntimeException("appId contains illegal parsing characters:(" + id + "), invalid:" + OpenTerminalConstants.INVALID);
-    	
-    	this.initLaunchStage();
     	
 		//non properties vars
 		this.programArgs = new ArrayList<>(args.length);
@@ -95,13 +100,6 @@ public class TerminalApp {
 	public TerminalApp()
 	{
 		
-	}
-
-	protected void initLaunchStage()
-	{
-		String stage = System.getProperty(OpenTerminalConstants.launchStage);
-		if(stage == null)
-			System.setProperty(OpenTerminalConstants.launchStage, OpenTerminalConstants.init);
 	}
 
 	public boolean shouldOpen()

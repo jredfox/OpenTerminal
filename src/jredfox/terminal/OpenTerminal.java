@@ -8,7 +8,6 @@ import jredfox.common.os.OSUtil;
 import jredfox.common.utils.JREUtil;
 import jredfox.common.utils.JavaUtil;
 import jredfox.terminal.app.TerminalApp;
-import jredfox.terminal.app.TerminalAppWrapped;
 
 public class OpenTerminal {
 	
@@ -27,7 +26,7 @@ public class OpenTerminal {
 		this.run();
 	}
 
-	public void run()
+	protected void run()
 	{
 		if(this.app == null)
 			throw new IllegalArgumentException("TerminalApp cannot be null!");
@@ -37,13 +36,11 @@ public class OpenTerminal {
 			return;
 		else if(stage.equals(OpenTerminalConstants.wrapping))
 		{
-			System.setProperty(OpenTerminalConstants.launchStage, OpenTerminalConstants.exe);
 			OpenTerminalWrapper.run(this.app, this.app.getProgramArgs());
 			return;//return as the TerminalApp is done executing and System#exit has already been called on the child process
 		}
 		
 		this.app.process = this.launch(this.shouldOpen());
-		System.out.println(this.app.idHash);
 		if(this.app.process != null)
 			JREUtil.sleep(700);
 		int exit = this.app.process != null ? 0 : -1;
@@ -88,7 +85,7 @@ public class OpenTerminal {
         ExeBuilder builder = new ExeBuilder();
     	builder.addCommand("java");
     	List<String> jvm = JavaUtil.asArray(this.app.jvmArgs);
-    	builder.addCommand(OpenTerminalUtil.writeProperty(jvm, OpenTerminalConstants.launchStage, this.app.shouldPause || this.app.hardPause || this.app instanceof TerminalAppWrapped ? OpenTerminalConstants.wrapping : OpenTerminalConstants.exe));//go to exe if no wrapper is used / required
+    	builder.addCommand(OpenTerminalUtil.writeProperty(jvm, OpenTerminalConstants.launchStage, OpenTerminalConstants.wrapping));//always use wrapper due to character limit on the command line
       	builder.addCommand(OpenTerminalUtil.writeDirProperty(jvm, "java.io.tmpdir"));
     	builder.addCommand(OpenTerminalUtil.writeDirProperty(jvm, "user.home"));
     	builder.addCommand(OpenTerminalUtil.writeDirProperty(jvm, "user.dir"));
