@@ -20,5 +20,6 @@ public class OpenTerminalConstants {
 	public static final String exe = "exe";
 	public static final String jvmArgs = "openterminal.jvmArgs";
 	public static final String programArgs = "openterminal.programArgs";
+	public static final int rebootExit = 20214097;
 	
 }

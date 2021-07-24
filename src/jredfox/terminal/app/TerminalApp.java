@@ -106,6 +106,11 @@ public class TerminalApp {
     {
         return !this.background && (!this.compiled ? this.runDeob && System.console() == null && !JREUtil.isDebugMode() : this.forceTerminal || System.console() == null);
     }
+	
+	public boolean shouldPause(int exit)
+	{
+		return exit != OpenTerminalConstants.rebootExit && this.shouldPause();
+	}
     
 	public boolean shouldPause() 
 	{
@@ -161,25 +166,6 @@ public class TerminalApp {
 	}
 	
 	/**
-	 * don't have direct calls to {@link System#exit(int)} it will not pause your program. Multi thread safe as it interrupts all threads
-	 */
-	public void exit(int code)
-	{
-		//pause all current process's
-		Set<Thread> threads = Thread.getAllStackTraces().keySet();
-		for(Thread t : threads)
-			t.interrupt();
-		
-		if(this.shouldPause())
-			this.pause();
-		
-		for(Thread t : threads)
-			t.resume();
-		
-		JREUtil.shutdown(code);
-	}
-	
-	/**
 	 * edit your variables before calling this will update the reboot vars
 	 */
 	public void reboot()
@@ -201,8 +187,7 @@ public class TerminalApp {
 		li.add(OpenTerminalConstants.jvmArgs + "=" + OpenTerminalUtil.wrapArgsToCmd(this.jvmArgs));
 		li.add(OpenTerminalConstants.programArgs + "=" + OpenTerminalUtil.wrapArgsToCmd(this.programArgs));
 		IOUtils.saveFileLines(li, reboot, true);
-		System.out.println("saved reboot to:" + reboot);
-		JREUtil.shutdown(0);
+		JREUtil.shutdown(OpenTerminalConstants.rebootExit);
 	}
 	
 	/**

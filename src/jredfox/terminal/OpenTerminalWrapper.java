@@ -41,9 +41,10 @@ public class OpenTerminalWrapper {
 			t.printStackTrace();
 		}
 		
-		if(app.shouldPause())
+		int exit = err ? -1 : 0;
+		if(app.shouldPause(exit))
 			app.pause();
-		System.exit(err ? -1 : 0);
+		System.exit(exit);
 	}
 	
 	/**
@@ -73,7 +74,7 @@ public class OpenTerminalWrapper {
 			
 		}
 		
-		if(app.shouldPause())
+		if(app.shouldPause(p.exitValue()))
 			app.pause();
 	}
 

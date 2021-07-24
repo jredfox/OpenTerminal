@@ -52,7 +52,7 @@ public class OpenTerminal {
 				if(this.canReboot && reboot.exists())
 				{
 					this.relaunch(reboot);
-					JREUtil.sleep(1000);
+					JREUtil.sleep(700);
 					continue;
 				}
 				exit = this.app.process.exitValue();
