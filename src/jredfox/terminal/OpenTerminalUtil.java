@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jredfox.common.exe.ExeBuilder;
 import jredfox.common.io.IOUtils;
 import jredfox.common.os.OSUtil;
 import jredfox.common.utils.JREUtil;
@@ -53,8 +54,8 @@ public class OpenTerminalUtil {
         }
 		return null;
 	}
-	
-    public static void genAS(String terminal) throws IOException
+
+	public static void genAS(String terminal) throws IOException
     {
     	//generate closeMe script
     	if(!OpenTerminalConstants.closeMe.exists())
@@ -148,6 +149,16 @@ public class OpenTerminalUtil {
 	{
 		JavaUtil.removeStarts(list, "-D" + propId, false);
 		return "-D" + propId + "=\"" + new File(System.getProperty(propId)).getPath() + "\"";
+	}
+
+	public static String wrapArgsToCmd(List<String> args) 
+	{
+		ExeBuilder b = new ExeBuilder();
+		String q = OSUtil.getQuote();
+		String esc = OSUtil.getEsc();
+		for(String s : args)
+			b.addCommand(q + s.replaceAll(q, esc + q) + q);
+		return b.toString();
 	}
 
 }

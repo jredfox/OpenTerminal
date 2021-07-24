@@ -43,6 +43,7 @@ public class OpenTerminal {
 		}
 		
 		this.app.process = this.launch(this.shouldOpen());
+		System.out.println(this.app.idHash);
 		if(this.app.process != null)
 			JREUtil.sleep(700);
 		int exit = this.app.process != null ? 0 : -1;
@@ -50,12 +51,17 @@ public class OpenTerminal {
 		{
 			if(!this.app.process.isAlive())
 			{
-				exit = this.app.process.exitValue();
 				File reboot = new File(this.app.getAppdata(), "reboot.properties");
-//				System.out.println(reboot.exists());
-				this.app.process = this.canReboot && reboot.exists() ? this.relaunch(reboot) : null;
-				JREUtil.sleep(1000);
+				if(this.canReboot && reboot.exists())
+				{
+					this.relaunch(reboot);
+					JREUtil.sleep(1000);
+					continue;
+				}
+				exit = this.app.process.exitValue();
+				this.app.process = null;
 			}
+			JREUtil.sleep(1000);
 		}
 		System.out.println("shutting down OpenTerminal Launcher:" + exit);
 		this.exit(exit);
@@ -109,25 +115,25 @@ public class OpenTerminal {
 	/**
 	 * use {@link TerminalApp#reboot()} for users. This is to simply re-launch your TerminalApp after the reboot file has started from the Parent(Launcher) process not your TerminalApp(child) process
 	 */
-	public Process relaunch(File reboot) 
+	public void relaunch(File reboot) 
 	{
 		System.out.println("re-launching");
 		TerminalApp app = null;
 		try
 		{
 			TerminalApp.parseProperties(reboot);
-			app = (TerminalApp) JREUtil.getClass(System.getProperty("openterminal.TerminalAppClass"), true).newInstance();
+			app = (TerminalApp) JREUtil.getClass(System.getProperty("openterminal.appClass"), true).newInstance();
 			app.fromProperties();
-			app.idHash = "" + System.currentTimeMillis();
 			app.jvmArgs.add(System.getProperty(OpenTerminalConstants.jvmArgs));
 			app.programArgs.add(System.getProperty(OpenTerminalConstants.programArgs));
+			reboot.delete();
 		}
 		catch (Throwable e)
 		{
 			e.printStackTrace();
 		}
 		this.app = app;
-		return this.launch(this.app.shouldOpen());
+		this.app.process = this.launch(this.app.shouldOpen());
 	}
 
 	public void exit(int code)

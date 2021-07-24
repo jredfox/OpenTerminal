@@ -1,15 +1,15 @@
 package jredfox.terminal.testrun;
 
-import jredfox.terminal.OpenTerminal;
-import jredfox.terminal.app.TerminalApp;
+import java.io.IOException;
+import java.util.Arrays;
 
 public class TestConsole {
 	
-	public static void main(String[] args)
+	public static void main(String[] args) throws IOException
 	{
-		TerminalApp app = new TerminalApp("test_app", "Test App", "1.0.0", args).enableHardPause();
-		OpenTerminal.INSTANCE.run(app);
-		System.out.println(app.jvmArgs);
+//		TerminalApp app = new TerminalApp("test_app", "Test App", "1.0.0", args).enablePause();
+//		OpenTerminal.INSTANCE.run(app);
+////		JREUtil.sleep(3000);
 //		app.name = UUID.randomUUID().toString();
 //		app.reboot();
 	}

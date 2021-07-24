@@ -188,6 +188,7 @@ public class TerminalApp {
 	{
 		File reboot = new File(this.getAppdata(), "reboot.properties");
 		List<String> li = new ArrayList<>();
+		li.add("openterminal.appClass=" + this.getClass().getName());
 		li.add("openterminal.terminal=" + this.terminal);
 		li.add("openterminal.hash=" + this.idHash);
 		li.add("openterminal.background=" + this.background);
@@ -199,9 +200,8 @@ public class TerminalApp {
 		li.add("openterminal.mainClass=" + this.mainClass.getName());
 		li.add("openterminal.runDeob=" + this.runDeob);
 		li.add("openterminal.forceTerminal=" + this.forceTerminal);
-		li.add("openterminal.TerminalAppClass=" + this.getClass().getName());
-		li.add(OpenTerminalConstants.jvmArgs + "=" + JavaUtil.toCommand(this.jvmArgs));
-		li.add(OpenTerminalConstants.programArgs + "=" + JavaUtil.toCommand(this.programArgs));
+		li.add(OpenTerminalConstants.jvmArgs + "=" + OpenTerminalUtil.wrapArgsToCmd(this.jvmArgs));
+		li.add(OpenTerminalConstants.programArgs + "=" + OpenTerminalUtil.wrapArgsToCmd(this.programArgs));
 		IOUtils.saveFileLines(li, reboot, true);
 		System.out.println("saved reboot to:" + reboot);
 		JREUtil.shutdown(0);
@@ -222,8 +222,6 @@ public class TerminalApp {
 		for(String s : lines)
 		{
 			s = s.trim();
-			if(s.isEmpty())
-				continue;
 			String[] arr = JavaUtil.splitFirst(s, '=', '"', '"');
 			String propId = arr[0];
 			String value = arr[1];
