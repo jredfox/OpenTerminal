@@ -29,6 +29,7 @@ public class TerminalApp {
 	public Class<?> mainClass;
 	public boolean runDeob;
 	public boolean forceTerminal;//set this to true to always open up a new window
+	public boolean canReboot = true;
 	
 	//args
 	public List<String> jvmArgs = new ArrayList<>();
@@ -102,6 +103,9 @@ public class TerminalApp {
 		
 	}
 
+	/**
+	 * should your TerminalApp open the terminal gui?
+	 */
 	public boolean shouldOpen()
     {
         return !this.background && (!this.compiled ? this.runDeob && System.console() == null && !JREUtil.isDebugMode() : this.forceTerminal || System.console() == null);
@@ -141,6 +145,12 @@ public class TerminalApp {
 		this.hardPause = false;
 	}
 	
+	public TerminalApp setRebootable(boolean b)
+	{
+		this.canReboot = b;
+		return this;
+	}
+	
 	/**
 	 * use this boolean to load configs related to the TerminalApp's variables
 	 */
@@ -163,6 +173,11 @@ public class TerminalApp {
 	public boolean canExe()
 	{
 		return System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.exe);
+	}
+	
+	public boolean canReboot()
+	{
+		return this.canReboot;
 	}
 	
 	/**

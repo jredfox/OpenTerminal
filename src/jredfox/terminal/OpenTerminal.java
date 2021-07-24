@@ -13,7 +13,6 @@ public class OpenTerminal {
 	
 	public static OpenTerminal INSTANCE = new OpenTerminal();
 	public TerminalApp app;
-	public boolean canReboot = true;
 	
 	public OpenTerminal()
 	{
@@ -49,7 +48,7 @@ public class OpenTerminal {
 			if(!this.app.process.isAlive())
 			{
 				File reboot = new File(this.app.getAppdata(), "reboot.properties");
-				if(this.canReboot && reboot.exists())
+				if(this.app.canReboot() && reboot.exists())
 				{
 					this.relaunch(reboot);
 					JREUtil.sleep(700);
@@ -58,7 +57,8 @@ public class OpenTerminal {
 				exit = this.app.process.exitValue();
 				this.app.process = null;
 			}
-			JREUtil.sleep(1000);
+			else
+				JREUtil.sleep(1000);
 		}
 		System.out.println("shutting down OpenTerminal Launcher:" + exit);
 		this.exit(exit);
@@ -136,16 +136,6 @@ public class OpenTerminal {
 	public void exit(int code)
 	{
 		System.exit(code);
-	}
-	
-	public boolean canReboot()
-	{
-		return this.canReboot;
-	}
-	
-	public void setCanReboot(boolean b)
-	{
-		this.canReboot = b;
 	}
 
 }
