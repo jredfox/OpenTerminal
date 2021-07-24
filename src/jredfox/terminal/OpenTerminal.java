@@ -31,9 +31,11 @@ public class OpenTerminal {
 	{
 		if(this.app == null)
 			throw new IllegalArgumentException("TerminalApp cannot be null!");
-		else if(System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.exe))
+		
+		String stage = System.getProperty(OpenTerminalConstants.launchStage);
+		if(stage.equals(OpenTerminalConstants.exe))
 			return;
-		else if(System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.wrapping))
+		else if(stage.equals(OpenTerminalConstants.wrapping))
 		{
 			System.setProperty(OpenTerminalConstants.launchStage, OpenTerminalConstants.exe);
 			OpenTerminalWrapper.run(this.app, this.app.getProgramArgs());
@@ -41,7 +43,8 @@ public class OpenTerminal {
 		}
 		
 		this.app.process = this.launch(this.shouldOpen());
-		JREUtil.sleep(700);
+		if(this.app.process != null)
+			JREUtil.sleep(700);
 		int exit = this.app.process != null ? 0 : -1;
 		while(this.app.process != null)
 		{
@@ -51,7 +54,7 @@ public class OpenTerminal {
 				File reboot = new File(this.app.getAppdata(), "reboot.properties");
 //				System.out.println(reboot.exists());
 				this.app.process = this.canReboot && reboot.exists() ? this.relaunch(reboot) : null;
-				JREUtil.sleep(500);
+				JREUtil.sleep(1000);
 			}
 		}
 		System.out.println("shutting down OpenTerminal Launcher:" + exit);
