@@ -1,0 +1,17 @@
+parsible properties OOP proper
+openterminal.programArgs
+openterminal.jvmArgs
+instantiation proper of TerminalApp on reboot
+reboot
+wrapper for hard pause fix
+
+all TODO:
+wrap
+custom jvm args pre-determined from file
+finish all todo flags
+macOs
+
+Lib Loader:
+have wrapper to ship java.class.path in it
+have jar in jar extractor add to java.class.path
+update openterminal to have an embedded version of this
