@@ -1,6 +1,12 @@
 # OpenTerminal
 do you have a java command line program? then this library is for you. Simply call SelfCommandPrompt#runWithCMD for a program that handles 0 args or SelfCommandPrompt#wrapWithCMD to get wrapped args before executing. Tested on (windows 10, mac osx 2016, linux(mint & ubuntu)
 
+Screenshots:
+<img width="1280" alt="Screen_Shot_2021-07-18_at_9 11 00_PM" src="https://user-images.githubusercontent.com/9736369/127045068-1477cc30-8b73-48e4-8b00-92e0e8062e24.png">
+![Screenshot_from_2021-07-18_21-42-00](https://user-images.githubusercontent.com/9736369/127045071-e1a7e3ab-6ad9-48f7-907c-bc82e578d81b.png)
+![Screenshot_from_2021-07-18_21-39-00](https://user-images.githubusercontent.com/9736369/127045075-2a8cfc43-bb7e-4f9c-aa7f-592e8b9930cc.png)
+
+
 # SelfCommandPrompt(Legacy)
 Note: SelfCommandPrompt is now getting replaced with OpenTerminal to fix unfixable issues with the SelfCommandPrompt's current design. It's still avalible for download in the release page
 
