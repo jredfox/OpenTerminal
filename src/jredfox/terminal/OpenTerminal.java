@@ -35,7 +35,7 @@ public class OpenTerminal {
 			return;
 		else if(stage.equals(OpenTerminalConstants.wrapping))
 		{
-			OpenTerminalWrapper.run(this.app, this.app.getProgramArgs());
+			OpenTerminalWrapper.run(this.app);
 			return;//return as the TerminalApp is done executing and System#exit has already been called on the child process
 		}
 		
@@ -115,24 +115,11 @@ public class OpenTerminal {
 	public void relaunch(File reboot) 
 	{
 		System.out.println("re-launching");
-		TerminalApp app = null;
-		try
-		{
-			TerminalApp.parseProperties(reboot);
-			app = (TerminalApp) JREUtil.getClass(System.getProperty("openterminal.appClass"), true).newInstance();
-			app.fromProperties();
-			app.jvmArgs.add(System.getProperty(OpenTerminalConstants.jvmArgs));
-			app.programArgs.add(System.getProperty(OpenTerminalConstants.programArgs));
-			reboot.delete();
-		}
-		catch (Throwable e)
-		{
-			e.printStackTrace();
-		}
-		this.app = app;
+		this.app = TerminalApp.fromFile(reboot);
+		reboot.delete();
 		this.app.process = this.launch(this.app.shouldOpen());
 	}
-
+	
 	public void exit(int code)
 	{
 		System.exit(code);

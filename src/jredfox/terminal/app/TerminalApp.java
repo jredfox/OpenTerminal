@@ -199,8 +199,8 @@ public class TerminalApp {
 		li.add("openterminal.mainClass=" + this.mainClass.getName());
 		li.add("openterminal.runDeob=" + this.runDeob);
 		li.add("openterminal.forceTerminal=" + this.forceTerminal);
-		li.add(OpenTerminalConstants.jvmArgs + "=" + OpenTerminalUtil.wrapArgsToCmd(this.jvmArgs));
-		li.add(OpenTerminalConstants.programArgs + "=" + OpenTerminalUtil.wrapArgsToCmd(this.programArgs));
+		li.add(OpenTerminalConstants.jvmArgs + "=" + OpenTerminalUtil.wrapArgsToCmd(this.jvmArgs).replaceAll(System.lineSeparator(), OpenTerminalConstants.linefeed));
+		li.add(OpenTerminalConstants.programArgs + "=" + OpenTerminalUtil.wrapArgsToCmd(this.programArgs).replaceAll(System.lineSeparator(), OpenTerminalConstants.linefeed));//stop illegal line feed characters from messing up parsing
 		IOUtils.saveFileLines(li, reboot, true);
 		JREUtil.shutdown(OpenTerminalConstants.rebootExit);
 	}
@@ -219,7 +219,7 @@ public class TerminalApp {
 		List<String> lines = IOUtils.getFileLines(propsFile);
 		for(String s : lines)
 		{
-			s = s.trim();
+			s = s.trim().replaceAll(OpenTerminalConstants.linefeed, System.lineSeparator());
 			String[] arr = JavaUtil.splitFirst(s, '=', '"', '"');
 			String propId = arr[0];
 			String value = arr[1];
@@ -346,5 +346,25 @@ public class TerminalApp {
 	{
 		return JavaUtil.toArray(this.programArgs, String.class);
 	}
+
+	public static TerminalApp fromFile(File reboot)
+	{
+		TerminalApp.parseProperties(reboot);
+		TerminalApp app = JREUtil.newInstance(JREUtil.getClass(System.getProperty("openterminal.appClass"), true));
+		app.fromProperties();
+		addArgs(app.jvmArgs, OpenTerminalConstants.jvmArgs);
+		addArgs(app.programArgs, OpenTerminalConstants.programArgs);
+		System.clearProperty(OpenTerminalConstants.jvmArgs);
+		System.clearProperty(OpenTerminalConstants.programArgs);
+		return app;
+	}
+	
+	private static void addArgs(List<String> args, String argId) 
+	{
+		String[] arr = System.getProperty(argId).split(" ");
+		for(String s : arr)
+			args.add(s.replaceAll(OpenTerminalConstants.spacefeed, " "));
+	}
+
 
 }

@@ -21,5 +21,8 @@ public class OpenTerminalConstants {
 	public static final String jvmArgs = "openterminal.jvmArgs";
 	public static final String programArgs = "openterminal.programArgs";
 	public static final int rebootExit = 20214097;
+	public static final String splitter = "\u00a9\ud83e\udd82\u00a9";
+	public static final String linefeed = splitter + "l";
+	public static final String spacefeed = splitter + "s";
 	
 }

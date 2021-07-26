@@ -11,8 +11,8 @@ public class TestConsole {
 	{
 		TerminalApp app = new TerminalApp("test_app", "Test App", "1.0.0", args).enableHardPause();
 		OpenTerminal.INSTANCE.run(app);
-//		app.name = UUID.randomUUID().toString();
-//		app.reboot();
+		app.name = "" + System.currentTimeMillis();
+		app.reboot();
 	}
 
 }

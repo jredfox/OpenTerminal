@@ -154,10 +154,8 @@ public class OpenTerminalUtil {
 	public static String wrapArgsToCmd(List<String> args) 
 	{
 		ExeBuilder b = new ExeBuilder();
-		String q = OSUtil.getQuote();
-		String esc = OSUtil.getEsc();
 		for(String s : args)
-			b.addCommand(q + s.replaceAll(q, esc + q) + q);
+			b.addCommand(s.replaceAll(" ", OpenTerminalConstants.spacefeed));
 		return b.toString();
 	}
 

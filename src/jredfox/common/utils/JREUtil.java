@@ -218,5 +218,19 @@ public class JREUtil {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <T> T newInstance(Class<?> clazz) 
+	{
+		try
+		{
+			return (T) clazz.newInstance();
+		}
+		catch(Throwable t)
+		{
+			t.printStackTrace();
+		}
+		return null;
+	}
+
 
 }

@@ -9,22 +9,21 @@ import jredfox.common.exe.ExeBuilder;
 import jredfox.common.utils.JREUtil;
 import jredfox.common.utils.JavaUtil;
 import jredfox.terminal.app.TerminalApp;
-import jredfox.terminal.app.TerminalAppWrapped;
+import jredfox.terminal.app.TerminalAppWrapper;
 
 public class OpenTerminalWrapper {
 	
 	/**
 	 * virtual wrapper because hard wrappers forces OpenTerminal to be extracted when using eclipe's JarInJar loader
 	 */
-	public static void run(TerminalApp app, String[] args)
+	public static void run(TerminalApp app)
 	{
 		System.setProperty(OpenTerminalConstants.launchStage, OpenTerminalConstants.exe);//set the state from wrapping to execute
 		boolean err = false;
 		try
 		{
+			String[] args = app instanceof TerminalAppWrapper ? (((TerminalAppWrapper)app).getWrappedArgs(app.getProgramArgs())) : app.getProgramArgs();
 			Method method = app.mainClass.getMethod("main", String[].class);
-			if(app instanceof TerminalAppWrapped)
-				args = ((TerminalAppWrapped)app).getWrappedArgs(args);
 			method.invoke(null, new Object[]{args});
 		}
 		catch(InvocationTargetException e)
@@ -55,8 +54,8 @@ public class OpenTerminalWrapper {
 	{
 		TerminalApp app = new TerminalApp(args);//TODO: fix hard coded default TerminalApp option here
 		app.fromProperties();
-		if(app instanceof TerminalAppWrapped)
-			args = ((TerminalAppWrapped)app).getWrappedArgs(args);
+		if(app instanceof TerminalAppWrapper)
+			args = ((TerminalAppWrapper)app).getWrappedArgs(args);
 		
 		ExeBuilder b = new ExeBuilder();
 		b.addCommand("java");
