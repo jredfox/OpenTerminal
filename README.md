@@ -16,7 +16,7 @@ Features:
 - users should parse their config options for the TerminalApp during `TerminalApp#isLaunching` returns true
 - users should parse their program config after OpenTerminal#run has been called or checking if `TerminalApp#canExe`
 
-Executing the jar:
+Executing the jar from an external Process:
 - `-Dopenterminal.background=boolean` #will force the jar to run in the background
 - `-Dopenterminal.terminal=value` #controls the terminal string
 - `-Dopenterminal.shouldPause=boolean` #forces shouldPause true/false
