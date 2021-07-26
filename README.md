@@ -17,12 +17,12 @@ Features:
 - users should parse their program config after OpenTerminal#run has been called or checking if `OpenTerminal#canExe`
 
 Executing the jar from an external Process:
+- `-Dopenterminal.<TerminalApp#var>=value` #override a TerminalApp property from the executable jar! excludes special properties like openterminal.appClass and openterminal.programArgs
 - `-Dopenterminal.background=boolean` #will force the jar to run in the background if it's set to true
 - `-Dopenterminal.terminal=value` #controls the terminal string
 - `-Dopenterminal.shouldPause=boolean` #forces shouldPause true/false
 - `-Dopenterminal.hardPause=boolean` #forces hardPause true/false
 - `-Dopenterminal.jvmArgs=jvmArgs` #execute the jar with those jvm arguments. Allows the launcher to run with default arguments while the actual executing process has them
-- `-Dopenterminal.<TerminalApp#var>=value` #override a TerminalApp property from the executable jar! excludes special properties like openterminal.appClass and openterminal.programArgs
 
 # SelfCommandPrompt(Legacy)
 Note: SelfCommandPrompt is now getting replaced with OpenTerminal to fix unfixable issues with the SelfCommandPrompt's current design. It's still avalible for download in the release page
