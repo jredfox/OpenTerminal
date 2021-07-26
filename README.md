@@ -1,10 +1,17 @@
 # OpenTerminal
-do you have a java command line program? then this library is for you. Simply call SelfCommandPrompt#runWithCMD for a program that handles 0 args or SelfCommandPrompt#wrapWithCMD to get wrapped args before executing. Tested on (windows 10, mac osx 2016, linux(mint & ubuntu)
+do you have a java command line program? then this library is for you. Simply call OpenTerminal#INSTANCE#run(TerminalApp app) where instance can be "INSTANCE" or a custom OpenTerminal instance.
 
-Screenshots:
+Screenshots(double click jar):
 <img width="1280" alt="Screen_Shot_2021-07-18_at_9 11 00_PM" src="https://user-images.githubusercontent.com/9736369/127045068-1477cc30-8b73-48e4-8b00-92e0e8062e24.png">
 ![Screenshot_from_2021-07-18_21-42-00](https://user-images.githubusercontent.com/9736369/127045071-e1a7e3ab-6ad9-48f7-907c-bc82e578d81b.png)
 ![Screenshot_from_2021-07-18_21-39-00](https://user-images.githubusercontent.com/9736369/127045075-2a8cfc43-bb7e-4f9c-aa7f-592e8b9930cc.png)
+
+Features:
+- user.appdata is now a System property
+- user.dir, user.home, java.io.tmpdir, user.appdata can all be changed before calling OpenTerminal#run
+- JREUtil#syncUserDirWithJar will sync the user dir with jar #call before OpenTerminal#run
+- shouldPause #this option will pause if System#exit hasn't been called directly by the user
+- hardPause #this option will pause even if System#exit has been called directly by the user except during a reboot
 
 
 # SelfCommandPrompt(Legacy)
