@@ -16,6 +16,14 @@ Features:
 - users should parse their config options for the TerminalApp during `TerminalApp#isLaunching` returns true
 - users should parse their program config after OpenTerminal#run has been called or checking if `TerminalApp#canExe`
 
+Executing the jar:
+- `-Dopenterminal.background=boolean` #will force the jar to run in the background
+- `-Dopenterminal.terminal=value` #controls the terminal string
+- `-Dopenterminal.shouldPause=boolean` #forces shouldPause true/false
+- `-Dopenterminal.hardPause=boolean` #forces hardPause true/false
+- `-Dopenterminal.jvmArgs=jvmArgs` #execute the jar with those jvm arguments. Allows the launcher to run with default arguments while the actual executing process has them
+- `-Dopenterminal.<TerminalApp#var>=value` #forces the TerminalApp to have a custom property on launch. look at the TerminalApp or anything extending it to find the exact values. Excludes openterminal.appClass, openterminal.programArgs
+
 # SelfCommandPrompt(Legacy)
 Note: SelfCommandPrompt is now getting replaced with OpenTerminal to fix unfixable issues with the SelfCommandPrompt's current design. It's still avalible for download in the release page
 
