@@ -1,5 +1,5 @@
 # OpenTerminal
-do you have a java command line program? then this library is for you. Simply call OpenTerminal#INSTANCE#run(TerminalApp app) where instance can be "INSTANCE" or a custom OpenTerminal instance.
+do you have a java command line program? then this library is for you. Simply call `OpenTerminal#INSTANCE#run(TerminalApp app)` where instance can be "INSTANCE" or a custom OpenTerminal instance. What does it do: opens a native command prompt terminal via double click based on your current os to execute your jar file like you just launched it with a batch file. for jars that handle 0 arguments create use `TerminalAppWrapper` instead
 
 Screenshots(double click jar):
 <img width="1280" alt="Screen_Shot_2021-07-18_at_9 11 00_PM" src="https://user-images.githubusercontent.com/9736369/127045068-1477cc30-8b73-48e4-8b00-92e0e8062e24.png">
@@ -7,12 +7,14 @@ Screenshots(double click jar):
 ![Screenshot_from_2021-07-18_21-39-00](https://user-images.githubusercontent.com/9736369/127045075-2a8cfc43-bb7e-4f9c-aa7f-592e8b9930cc.png)
 
 Features:
-- user.appdata is now a System property
-- user.dir, user.home, java.io.tmpdir, user.appdata can all be changed before calling OpenTerminal#run
-- JREUtil#syncUserDirWithJar will sync the user dir with jar #call before OpenTerminal#run
-- shouldPause #this option will pause if System#exit hasn't been called directly by the user
-- hardPause #this option will pause even if System#exit has been called directly by the user except during a reboot
-
+- `user.appdata` is now a System property
+- `user.dir`, `user.home`, `java.io.tmpdir`, `user.appdata` can all be changed before calling `OpenTerminal#run`
+- `JREUtil#syncUserDirWithJar` will sync the user dir with jar #call before `OpenTerminal#run`
+- `TerminalApp#shouldPause` #this option will pause if `System#exit` hasn't been called directly by the user
+- `TerminalApp#hardPause` #this option will pause even if `System#exit` has been called directly by the user except during a reboot
+- `TerminalAppWrapper` #this option will get user input args before executing your program, custom wrappers can return custom arugments with or without getting user input
+- users should parse their config options for the TerminalApp during `TerminalApp#isLaunching` returns true
+- users should parse their program config after OpenTerminal#run has been called or checking if `TerminalApp#canExe`
 
 # SelfCommandPrompt(Legacy)
 Note: SelfCommandPrompt is now getting replaced with OpenTerminal to fix unfixable issues with the SelfCommandPrompt's current design. It's still avalible for download in the release page
