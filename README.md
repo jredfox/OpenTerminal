@@ -1,5 +1,5 @@
 # OpenTerminal
-do you have a java command line program? then this library is for you. Simply call `OpenTerminal#INSTANCE#run(TerminalApp app)` where instance can be "INSTANCE" or a custom OpenTerminal instance. What does it do: opens a native command prompt terminal via double click based on your current os to execute your jar file like you just launched it with a batch file. for jars that handle 0 arguments create use `TerminalAppWrapper` instead
+do you have a java command line program? then this library is for you. Simply call `OpenTerminal#INSTANCE#run(TerminalApp app)`. Then it opens a native command prompt terminal via double click based on your current os to execute your jar file like you just launched it with a batch file. for jars that handle 0 arguments create use `TerminalAppWrapper` as the parameter
 
 Screenshots(double click jar):
 <img width="1280" alt="Screen_Shot_2021-07-18_at_9 11 00_PM" src="https://user-images.githubusercontent.com/9736369/127045068-1477cc30-8b73-48e4-8b00-92e0e8062e24.png">
