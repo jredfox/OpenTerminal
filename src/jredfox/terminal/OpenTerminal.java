@@ -14,6 +14,13 @@ public class OpenTerminal {
 	public static OpenTerminal INSTANCE = new OpenTerminal();
 	public TerminalApp app;
 	
+	static
+	{
+		String stage = System.getProperty(OpenTerminalConstants.launchStage);
+		if(stage == null)
+			System.setProperty(OpenTerminalConstants.launchStage, OpenTerminalConstants.init);
+	}
+	
 	public OpenTerminal()
 	{
 		
@@ -123,6 +130,30 @@ public class OpenTerminal {
 	public void exit(int code)
 	{
 		System.exit(code);
+	}
+	
+	/**
+	 * use this boolean to load configs related to the TerminalApp's variables
+	 */
+	public static boolean isLaunching()
+	{
+		return System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.init);
+	}
+	
+	/**
+	 * is your TerminalApp already a child process? Is your current code executing from not the Launcher but, a child process?
+	 */
+	public static boolean isChild()
+	{
+		return !isLaunching();
+	}
+	
+	/**
+	 * can your main(String[] args) execute yet? First launch fires launcher, Second launch fires virtual wrapper, Third launch your program now executes as normal
+	 */
+	public static boolean canExe()
+	{
+		return System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.exe);
 	}
 
 }

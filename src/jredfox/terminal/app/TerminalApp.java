@@ -11,6 +11,7 @@ import jredfox.common.io.IOUtils;
 import jredfox.common.os.OSUtil;
 import jredfox.common.utils.JREUtil;
 import jredfox.common.utils.JavaUtil;
+import jredfox.terminal.OpenTerminal;
 import jredfox.terminal.OpenTerminalConstants;
 import jredfox.terminal.OpenTerminalUtil;
 
@@ -39,13 +40,6 @@ public class TerminalApp {
 	public boolean compiled;//is this app compiled into a jar already
 	public Process process;
 	public static final Set<String> props = new HashSet<>();
-	
-	static
-	{
-		String stage = System.getProperty(OpenTerminalConstants.launchStage);
-		if(stage == null)
-			System.setProperty(OpenTerminalConstants.launchStage, OpenTerminalConstants.init);
-	}
 	
 	public TerminalApp(String[] args)
 	{
@@ -87,7 +81,7 @@ public class TerminalApp {
 		this.runDeob = this.getProperty("openterminal.runDeob", runDeob);
 		this.forceTerminal = this.getProperty("openterminal.forceTerminal", false);
 		
-		boolean isLaunching = this.isLaunching();
+		boolean isLaunching = OpenTerminal.isLaunching();
 		this.terminal = isLaunching ? this.getProperty("openterminal.terminal", OSUtil.getTerminal()) : this.getProperty("openterminal.terminal");//TODO: get the terminal per app config and pull the terminal from the global one
 		this.idHash = isLaunching ? this.getProperty("openterminal.hash", "" + System.currentTimeMillis()) : this.getProperty("openterminal.hash");
 		this.background = this.getProperty("openterminal.background", false);
@@ -149,30 +143,6 @@ public class TerminalApp {
 	{
 		this.canReboot = b;
 		return this;
-	}
-	
-	/**
-	 * use this boolean to load configs related to the TerminalApp's variables
-	 */
-	public boolean isLaunching()
-	{
-		return System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.init);
-	}
-	
-	/**
-	 * is your TerminalApp already a child process? Is your current code executing from not the Launcher but, a child process?
-	 */
-	public boolean isChild()
-	{
-		return !this.isLaunching();
-	}
-	
-	/**
-	 * can your main(String[] args) execute yet? First launch fires launcher, Second launch fires virtual wrapper, Third launch your program now executes as normal
-	 */
-	public boolean canExe()
-	{
-		return System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.exe);
 	}
 	
 	public boolean canReboot()
