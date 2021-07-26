@@ -10,8 +10,8 @@ Features:
 - `user.appdata` is now a System property
 - `user.dir`, `user.home`, `java.io.tmpdir`, `user.appdata` can all be changed before calling `OpenTerminal#run`
 - `JREUtil#syncUserDirWithJar` will sync the user dir with jar #call before `OpenTerminal#run`
-- `TerminalApp#shouldPause` #this option will pause if `System#exit` hasn't been called directly by the user
-- `TerminalApp#hardPause` #this option will pause even if `System#exit` has been called directly by the user except during a reboot
+- `TerminalApp#shouldPause` #this option will not pause with `System#exit`
+- `TerminalApp#hardPause` #this option will pause with `System#exit`
 - `TerminalAppWrapper` #this option will get user input args before executing your program, custom wrappers can return custom arugments with or without getting user input
 - users should parse their config options for the TerminalApp during `TerminalApp#isLaunching` returns true
 - users should parse their program config after OpenTerminal#run has been called or checking if `TerminalApp#canExe`
