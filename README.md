@@ -9,7 +9,7 @@ Screenshots(double click jar):
 Features:
 - `user.appdata` is now a System property
 - `user.dir`, `user.home`, `java.io.tmpdir`, `user.appdata` can all be changed before calling `OpenTerminal#run`
-- `JREUtil#syncUserDirWithJar` will sync the user dir with jar #call before `OpenTerminal#run`
+- `JREUtil#syncUserDirWithJar` will sync the user dir with jar's parent directory #call before `OpenTerminal#run`
 - `TerminalApp#shouldPause` #this option will not pause with `System#exit`
 - `TerminalApp#hardPause` #this option will pause with `System#exit`
 - `TerminalAppWrapper` #this option will get user input args before executing your program, custom wrappers can return custom arugments with or without getting user input
