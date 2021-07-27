@@ -225,7 +225,7 @@ public class JavaUtil {
 	/**
 	 * get the codepoint from the unicode number. from there you can convert it to a unicode escape sequence using {@link JavaUtil#getUnicodeEsq(int)}
 	 * "U+hex" for unicode number
-	 * "&#hex" for html
+	 * "&#codePoint;" or "&#hex;" for html
 	 * "\hex" for css
 	 * "hex" for lazyness
 	 */
@@ -235,7 +235,7 @@ public class JavaUtil {
 		if(num.startsWith("u+"))
 			num = num.substring(2);
 		else if(num.startsWith("&#"))
-			return Integer.parseInt(num.substring(2));
+			return num.startsWith("&#x") ? Integer.parseInt(num.substring(3, num.length() - 1), 16) : Integer.parseInt(num.substring(2, num.length() - 1)); 
 		else if(num.startsWith("\\"))
 			num = num.substring(1);
 		return Integer.parseInt(num, 16);
