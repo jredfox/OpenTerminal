@@ -14,7 +14,7 @@ Features:
 - `TerminalApp#hardPause` #this option will pause with `System#exit`
 - `TerminalAppWrapper` #this option will get user input args before executing your program, custom wrappers can return custom arugments with or without getting user input
 - users should parse their config options for the TerminalApp during `OpenTerminal#isLaunching` returns true
-- users should parse their program config after OpenTerminal#run has been called or checking if `OpenTerminal#canExe`
+- users should parse their program config after `OpenTerminal#run` has been called or checking if `OpenTerminal#canExe`
 
 Executing the jar from an external Process:
 - `-Dopenterminal.<TerminalApp#var>=value` #override a TerminalApp property from the executable jar! excludes special properties like openterminal.appClass and openterminal.programArgs
