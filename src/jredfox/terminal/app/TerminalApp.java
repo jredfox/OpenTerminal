@@ -116,7 +116,7 @@ public class TerminalApp {
 	}
 	
 	/**
-	 * hard pause will catch {@link System#exit(int)}
+	 * shouldPause will NOT catch {@link System#exit(int)}
 	 */
 	public TerminalApp enablePause()
 	{
@@ -124,6 +124,9 @@ public class TerminalApp {
 		return this;
 	}
 	
+	/**
+	 * hard pause will catch {@link System#exit(int)}
+	 */
 	public TerminalApp enableHardPause()
 	{
 		this.hardPause = true;

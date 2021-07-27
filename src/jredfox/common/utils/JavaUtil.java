@@ -2,6 +2,8 @@ package jredfox.common.utils;
 
 import java.io.File;
 import java.lang.reflect.Array;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -244,24 +246,25 @@ public class JavaUtil {
 	/**
 	 * convert a unicode number directly to unicode escape sequence in java
 	 */
-	public static String toUnicodeEsq(String num)
+	public static String unicodeNumberToEsq(String num)
 	{
-		return getUnicodeEsq(parseUnicodeNumber(num));
+		return toUnicodeEsq(parseUnicodeNumber(num));
 	}
 	
 	/**
 	 * return the java unicode string from the utf-8 string
+	 * TODO: add an option to change the unicode number strings to not just the codepoints
 	 */
-	public static String getUnicodeEsq(String unicode)
+	public static String toUnicodeEsq(String unicode)
 	{
 		StringBuilder b = new StringBuilder();
 		int[] arr = unicode.codePoints().toArray();
 		for(int i : arr)
-			b.append(getUnicodeEsq(i));
+			b.append(toUnicodeEsq(i));
 		return b.toString();
 	}
 	
-	public static String getUnicodeEsq(int cp)
+	public static String toUnicodeEsq(int cp)
 	{
 		return isAscii(cp) ? "" + (char) cp : Character.isBmpCodePoint(cp) ? "\\u" + String.format("%04x", cp) : "\\u" + String.format("%04x", (int)Character.highSurrogate(cp)) + "\\u" + String.format("%04x", (int)Character.lowSurrogate(cp) );
 	}
