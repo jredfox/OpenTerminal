@@ -320,7 +320,7 @@ public class TerminalApp {
 	public static TerminalApp fromFile(File reboot)
 	{
 		TerminalApp.parseProperties(reboot);
-		TerminalApp app = JREUtil.newInstance(JREUtil.getClass(System.getProperty("openterminal.appClass"), true));
+		TerminalApp app = TerminalApp.newInstance();
 		app.fromProperties();
 		addArgs(app.jvmArgs, OpenTerminalConstants.jvmArgs);
 		addArgs(app.programArgs, OpenTerminalConstants.programArgs);
@@ -329,6 +329,16 @@ public class TerminalApp {
 		return app;
 	}
 	
+	public static TerminalApp newInstance() 
+	{
+		return JREUtil.newInstance(JREUtil.getClass(System.getProperty("openterminal.appClass"), true));
+	}
+	
+	public static TerminalApp newInstance(String[] args) 
+	{
+		return JREUtil.newInstance(JREUtil.getClass(System.getProperty("openterminal.appClass"), true), new Class<?>[]{String[].class}, (Object)args);
+	}
+
 	private static void addArgs(List<String> args, String argId) 
 	{
 		String[] arr = System.getProperty(argId).split(" ");

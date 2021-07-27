@@ -52,10 +52,9 @@ public class OpenTerminalWrapper {
 	 */
 	public static void main(String[] args) throws IOException
 	{
-		TerminalApp app = new TerminalApp(args);//TODO: fix hard coded default TerminalApp option here
+		TerminalApp app = TerminalApp.newInstance(args);
 		app.fromProperties();
-		if(app instanceof TerminalAppWrapper)
-			args = ((TerminalAppWrapper)app).getWrappedArgs(args);
+		args = app instanceof TerminalAppWrapper ? (((TerminalAppWrapper)app).getWrappedArgs(args)) : app.getProgramArgs();
 		
 		ExeBuilder b = new ExeBuilder();
 		b.addCommand("java");
@@ -65,7 +64,7 @@ public class OpenTerminalWrapper {
 		b.addCommand("-cp");
 		b.addCommand("\"" + System.getProperty("java.class.path") + "\"");
 		b.addCommand(app.mainClass.getName());
-		b.addCommand(OpenTerminalUtil.wrapProgramArgs(app.programArgs));
+		b.addCommand(OpenTerminalUtil.wrapProgramArgs(args));
 		Process p = OpenTerminalUtil.runInTerminal(app.terminal, b.toString());
 		JREUtil.sleep(100);
 		while(p.isAlive())

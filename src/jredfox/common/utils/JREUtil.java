@@ -231,6 +231,20 @@ public class JREUtil {
 		}
 		return null;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T newInstance(Class<?> clazz, Class<?>[] ids, Object... params)
+	{
+		try 
+		{
+			return (T) clazz.getConstructor(ids).newInstance(params);
+		} 
+		catch(Throwable t)
+		{
+			t.printStackTrace();
+		}
+		return null;
+	}
 
 
 }

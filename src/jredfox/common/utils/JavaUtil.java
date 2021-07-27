@@ -207,18 +207,71 @@ public class JavaUtil {
 		return b.toString();
 	}
 	
-	   public static String codepointToString(int cp) 
+	public static String codepointToString(int cp) 
+	{
+	    StringBuilder sb = new StringBuilder();
+	    if (Character.isBmpCodePoint(cp)) 
+	    	sb.append((char) cp);
+	    else if (Character.isValidCodePoint(cp))
 	    {
-	        StringBuilder sb = new StringBuilder();
-	        if (Character.isBmpCodePoint(cp)) {
-	            sb.append((char) cp);
-	        } else if (Character.isValidCodePoint(cp)) {
-	            sb.append(Character.highSurrogate(cp));
-	            sb.append(Character.lowSurrogate(cp));
-	        } else {
-	            sb.append('?');
-	        }
-	        return sb.toString();
+	       sb.append(Character.highSurrogate(cp));
+	       sb.append(Character.lowSurrogate(cp));
 	    }
+	    else
+	    	sb.append('?');
+	   return sb.toString();
+	}
+	
+	/**
+	 * get the codepoint from the unicode number. from there you can convert it to a unicode escape sequence using {@link JavaUtil#getUnicodeEsq(int)}
+	 * "U+hex" for unicode number
+	 * "&#hex" for html
+	 * "\hex" for css
+	 * "hex" for lazyness
+	 */
+	public static int parseUnicodeNumber(String num)
+	{
+		num = num.toLowerCase();
+		if(num.startsWith("u+") || num.startsWith("&#"))
+			num = num.substring(2);
+		else if(num.startsWith("\\"))
+			num = num.substring(1);
+		return Integer.parseInt(num, 16);
+	}
+	
+	/**
+	 * convert a unicode number directly to unicode escape sequence in java
+	 */
+	public static String toUnicodeEsq(String num)
+	{
+		return getUnicodeEsq(parseUnicodeNumber(num));
+	}
+	
+	/**
+	 * return the java unicode string from the utf-8 string
+	 */
+	public static String getUnicodeEsq(String unicode)
+	{
+		StringBuilder b = new StringBuilder();
+		int[] arr = unicode.codePoints().toArray();
+		for(int i : arr)
+			b.append(getUnicodeEsq(i));
+		return b.toString();
+	}
+	
+	public static String getUnicodeEsq(int cp)
+	{
+		return isAscii(cp) ? "" + (char) cp : Character.isBmpCodePoint(cp) ? "\\u" + String.format("%04x", cp) : "\\u" + String.format("%04x", (int)Character.highSurrogate(cp)) + "\\u" + String.format("%04x", (int)Character.lowSurrogate(cp) );
+	}
+	
+	public static boolean isAscii(char c)
+	{
+		return isAscii((int)c);
+	}
+
+	public static boolean isAscii(int cp) 
+	{
+		return cp <= Byte.MAX_VALUE;
+	}
 
 }
