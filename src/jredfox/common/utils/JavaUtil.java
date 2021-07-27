@@ -232,8 +232,10 @@ public class JavaUtil {
 	public static int parseUnicodeNumber(String num)
 	{
 		num = num.toLowerCase();
-		if(num.startsWith("u+") || num.startsWith("&#"))
+		if(num.startsWith("u+"))
 			num = num.substring(2);
+		else if(num.startsWith("&#"))
+			return Integer.parseInt(num.substring(2));
 		else if(num.startsWith("\\"))
 			num = num.substring(1);
 		return Integer.parseInt(num, 16);
