@@ -18,38 +18,40 @@ public class JREUtil {
 	{	
 		System.setProperty("runnables.jar", getFileFromClass(getMainClass()).getPath());
 		if(System.getProperty("user.appdata") == null)
+		{
 			System.setProperty("user.appdata", OSUtil.getAppData().getPath());
-		
-		//patch macOs returning junk #untested before Big Sur
-		String dir = System.getProperty("user.dir");
-		String tmp = System.getProperty("java.io.tmpdir");
-		if(dir.contains(tmp) && !dir.startsWith(tmp))
-			JREUtil.syncUserDirWithJar();
+		}
+		JREUtil.patchMacOsDir();//patch os's screwing up initial directory untested, patch macOs java launcher returning junk //TODO: test make sure it works
 	}
 
 	/**
-	 * Must be called before {@link SelfCommandPrompt#runWithCMD(String, String, Class, String[], boolean, boolean)}
-	 * Incompatible with Eclipe's jar in jar loader rn
+	 * Must be called before OpenTerminal#run(TerminalApp app)
+	 * NOTE: calling this forces the user directory regardless of os. this changes behavior on linux where user.dir = user.home
 	 */
 	public static void syncUserDirWithJar()
 	{
-		try 
-		{
-			setUserDir(new File(System.getProperty("runnables.jar")).getParentFile());
-		}
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-		}
+		setUserDir(new File(System.getProperty("runnables.jar")).getParentFile());
 	}
 	
 	/**
-	 * must be called before {@link SelfCommandPrompt#runWithCMD(String, String, Class, String[], boolean, boolean)}
+	 * patch macOs
+	 */
+	public static void patchMacOsDir()
+	{
+		File user = OSUtil.isLinux() ? new File(System.getProperty("user.home")) : new File(System.getProperty("runnables.jar")).getParentFile();
+		String dir = System.getProperty("user.dir");
+		String tmp = System.getProperty("java.io.tmpdir");
+		if(dir.contains(tmp) && !dir.startsWith(tmp))
+			setUserDir(user);
+	}
+
+	/**
+	 * must be called before {@link OpenTerminal#runWithCMD(String, String, Class, String[], boolean, boolean)}
 	 * @param file
 	 */
 	public static void setUserDir(File file)
 	{
-		System.setProperty("user.dir", file.getAbsolutePath());
+		System.setProperty("user.dir", file.getPath());
 	}
 
 	/**
@@ -166,6 +168,17 @@ public class JREUtil {
 		throw new RuntimeException("Unsupported Check back in a future version!");
 	}
 	
+	/**
+	 * shut down your java application
+	 */
+	public static void shutdown()
+	{
+		shutdown(0);
+	}
+	
+	/**
+	 * shut down your java application
+	 */
 	public static void shutdown(int code)
 	{
 		System.gc();

@@ -65,7 +65,7 @@ public class OpenTerminalWrapper {
 		b.addCommand("\"" + System.getProperty("java.class.path") + "\"");
 		b.addCommand(app.mainClass.getName());
 		b.addCommand(OpenTerminalUtil.wrapProgramArgs(args));
-		Process p = OpenTerminalUtil.runInTerminal(app.terminal, b.toString());
+		Process p = OpenTerminalUtil.runInTerminal(app.terminal, b.toString(), app.userDir);
 		JREUtil.sleep(100);
 		while(p.isAlive())
 		{

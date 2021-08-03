@@ -11,6 +11,7 @@ public class TestConsole {
 	{
 		TerminalApp app = new TerminalApp("test_app", "Test App", "1.0.0", args).enableHardPause();
 		OpenTerminal.INSTANCE.run(app);
+		System.out.println(System.getProperty("user.dir") );
 //		app.name = "" + System.currentTimeMillis();
 //		app.reboot();
 	}

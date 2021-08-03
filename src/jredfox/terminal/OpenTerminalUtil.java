@@ -17,11 +17,11 @@ public class OpenTerminalUtil {
 	 * runs a command in a new terminal window.
 	 * the sh name is the file name you want the shell script stored. The appId is to locate your folder
 	 */
-	public static Process runInNewTerminal(File appdata, String terminal, String appName, String shName, String command) throws IOException
+	public static Process runInNewTerminal(File appdata, String terminal, String appName, String shName, String command, File dir) throws IOException
 	{
         if(OSUtil.isWindows())
         {
-        	return runInTerminal(terminal, "start /wait " + "\"" + appName + "\" " + command);
+        	return runInTerminal(terminal, "start /wait " + "\"" + appName + "\" " + command, dir);
         }
         else if(OSUtil.isMac())
         {
@@ -38,7 +38,7 @@ public class OpenTerminalUtil {
         	cmds.add("osascript " + OpenTerminalConstants.closeMe.getPath().replaceAll(" ", "\\\\ ") + " & exit");
         	IOUtils.saveFileLines(cmds, sh, true);//save the file
         	IOUtils.makeExe(sh);//make it executable
-        	return runInTerminal(terminal, "osascript " + OpenTerminalConstants.start.getPath().replaceAll(" ", "\\\\ ") + " \"" + sh.getPath().replaceAll(" ", "\\\\ ") + "\"");
+        	return runInTerminal(terminal, "osascript " + OpenTerminalConstants.start.getPath().replaceAll(" ", "\\\\ ") + " \"" + sh.getPath().replaceAll(" ", "\\\\ ") + "\"", dir);
         }
         else if(OSUtil.isLinux())
         {
@@ -50,7 +50,7 @@ public class OpenTerminalUtil {
         	cmds.add(command);//actual command
         	IOUtils.saveFileLines(cmds, sh, true);//save the file
         	IOUtils.makeExe(sh);//make it executable
-        	return runInTerminal(OSUtil.getLinuxNewWin(), sh.getAbsolutePath().replaceAll(" ", "%20"));
+        	return runInTerminal(OSUtil.getLinuxNewWin(), sh.getAbsolutePath().replaceAll(" ", "%20"), dir);
         }
 		return null;
 	}
@@ -93,7 +93,7 @@ public class OpenTerminalUtil {
 	public static void compileAS(String terminal, List<String> osa, File scpt, File applescript) throws IOException
 	{
 		IOUtils.saveFileLines(osa, applescript, true);
-		Process p = runInTerminal(terminal, "osacompile -o \"" + scpt.getPath() + "\"" + " \"" + applescript.getPath() + "\"");
+		Process p = runInTerminal(terminal, "osacompile -o \"" + scpt.getPath() + "\"" + " \"" + applescript.getPath() + "\"", JREUtil.getProgramDir());
    		IOUtils.makeExe(applescript);
 		IOUtils.makeExe(scpt);
 		while(p.isAlive())
@@ -105,22 +105,22 @@ public class OpenTerminalUtil {
     /**
      * enforces it to run in the command prompt terminal as sometimes it doesn't work without it
      */
-    public static Process runInTerminal(String terminal, String command) throws IOException
+    public static Process runInTerminal(String terminal, String command, File dir) throws IOException
     {
-        return runInTerminal(terminal, OSUtil.getExeAndClose(), command);
+        return runInTerminal(terminal, OSUtil.getExeAndClose(), command, dir);
     }
     
     /**
      * enforces it to run in the command prompt terminal as sometimes it doesn't work without it
      */
-    public static Process runInTerminal(String terminal, String flag, String command) throws IOException
+    public static Process runInTerminal(String terminal, String flag, String command, File dir) throws IOException
     {
-        return run(new String[]{terminal, flag, command});
+        return run(new String[]{terminal, flag, command}, dir);
     }
 	
-    public static Process run(String[] cmdarray) throws IOException
+    public static Process run(String[] cmdarray, File dir) throws IOException
     {
-        return new ProcessBuilder(cmdarray).inheritIO().directory(JREUtil.getProgramDir()).start();
+        return new ProcessBuilder(cmdarray).inheritIO().directory(dir).start();
     }
     
 	public static String[] wrapProgramArgs(List<String> arr) 
@@ -147,18 +147,6 @@ public class OpenTerminalUtil {
 		JavaUtil.removeStarts(list, "-D" + propId, false);
 		return  "-D" + propId + "=\"" + value + "\"";
 	}
-	
-//	public static String writeProperty(List<String> list, String propId)
-//	{
-//		JavaUtil.removeStarts(list, "-D" + propId, false);
-//		return "-D" + propId + "=\"" + System.getProperty(propId) + "\"";
-//	}
-
-//	public static String writeDirProperty(List<String> list, String propId)
-//	{
-//		JavaUtil.removeStarts(list, "-D" + propId, false);
-//		return "-D" + propId + "=\"" + new File(System.getProperty(propId)).getPath() + "\"";
-//	}
 
 	public static String wrapArgsToCmd(List<String> args) 
 	{
