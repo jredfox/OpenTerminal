@@ -2,9 +2,7 @@ package jredfox.terminal.app;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import jredfox.common.exe.ExeBuilder;
 import jredfox.common.io.IOUtils;
@@ -22,6 +20,10 @@ public class TerminalApp {
 	public boolean background;
 	public boolean shouldPause;
 	public boolean hardPause;
+	public File userDir;
+	public File userHome;
+	public File tmp;
+	public File appdata;
 	
 	public String id;
 	public String shName;
@@ -39,7 +41,6 @@ public class TerminalApp {
 	//non serializable vars
 	public boolean compiled;//is this app compiled into a jar already
 	public Process process;
-	public static final Set<String> props = new HashSet<>();
 	
 	public TerminalApp(String[] args)
 	{
@@ -72,6 +73,11 @@ public class TerminalApp {
 			this.programArgs.add(s);
 		this.jvmArgs = JREUtil.getJVMArgs();
 		this.compiled = JREUtil.isCompiled();
+		
+		this.userDir = new File(this.getProperty(OpenTerminalConstants.p_userDir));
+		this.userHome = new File(this.getProperty(OpenTerminalConstants.p_userHome));
+		this.tmp = new File(this.getProperty(OpenTerminalConstants.p_tmp));
+		this.appdata = new File(this.getProperty(OpenTerminalConstants.p_appdata));
 		
 		this.id = this.getProperty("openterminal.id", id);
 		this.shName = this.getProperty("openterminal.shName", this.id.contains("/") ? JavaUtil.getLastSplit(this.id, "/") : this.id);
@@ -154,37 +160,78 @@ public class TerminalApp {
 	}
 	
 	/**
-	 * edit your variables before calling this will update the reboot vars
-	 */
-	public void reboot()
-	{
-		File reboot = new File(this.getAppdata(), "reboot.properties");
-		List<String> li = new ArrayList<>();
-		li.add("openterminal.appClass=" + this.getClass().getName());
-		li.add("openterminal.terminal=" + this.terminal);
-		li.add("openterminal.hash=" + this.idHash);
-		li.add("openterminal.background=" + this.background);
-		li.add("openterminal.shoulPause=" + this.shouldPause);
-		li.add("openterminal.id=" + this.id);
-		li.add("openterminal.shName=" + this.shName);
-		li.add("openterminal.name=" + this.name);
-		li.add("openterminal.version=" + this.version);
-		li.add("openterminal.mainClass=" + this.mainClass.getName());
-		li.add("openterminal.runDeob=" + this.runDeob);
-		li.add("openterminal.forceTerminal=" + this.forceTerminal);
-		li.add(OpenTerminalConstants.jvmArgs + "=" + OpenTerminalUtil.wrapArgsToCmd(this.jvmArgs).replaceAll(System.lineSeparator(), OpenTerminalConstants.linefeed));
-		li.add(OpenTerminalConstants.programArgs + "=" + OpenTerminalUtil.wrapArgsToCmd(this.programArgs).replaceAll(System.lineSeparator(), OpenTerminalConstants.linefeed));//stop illegal line feed characters from messing up parsing
-		IOUtils.saveFileLines(li, reboot, true);
-		JREUtil.shutdown(OpenTerminalConstants.rebootExit);
-	}
-	
-	/**
 	 * pause at the end of the program
 	 */
 	public void pause()
 	{
 		System.out.println("Press ENTER to continue:");
 		OpenTerminalConstants.scanner.nextLine();
+	}
+	
+	/**
+	 * write your app vars to jvm properties for wrapping/execution
+	 */
+	public void writeProperties(List<String> jvm, ExeBuilder builder)
+	{
+		//preserve the user directories that have just gotten edited
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, OpenTerminalConstants.p_userDir, this.userDir.getPath()));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, OpenTerminalConstants.p_userHome, this.userHome.getPath()));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, OpenTerminalConstants.p_tmp, this.tmp.getPath()));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, OpenTerminalConstants.p_appdata, this.appdata.getPath()));
+		
+		//preserve the app properties
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.appClass", this.getClass().getName()));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.terminal", this.terminal));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.hash", "" + this.idHash));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.background", "" + this.background));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.shoulPause", "" + this.shouldPause));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.hardPause", "" + this.hardPause));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.id", this.id));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.shName", this.shName));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.name", this.name));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.version", this.version));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.mainClass", this.mainClass.getName()));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.runDeob", "" + this.runDeob));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.forceTerminal", "" + this.forceTerminal));
+		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.canReboot", "" + this.canReboot));
+	}
+	
+	/**
+	 * reboot your TerminalApp
+	 */
+	public void reboot()
+	{
+		File reboot = new File(this.getAppdata(), "reboot.properties");
+		List<String> li = new ArrayList<>();
+		
+		//preserve the user directories that have just gotten edited
+		li.add(OpenTerminalConstants.p_userDir + "=" + this.userDir.getPath());
+		li.add(OpenTerminalConstants.p_userHome + "=" + this.userHome.getPath());
+		li.add(OpenTerminalConstants.p_tmp + "=" + this.tmp.getPath());
+		li.add(OpenTerminalConstants.p_appdata + "=" + this.appdata.getPath());
+		
+		//preserve the app properties
+		li.add("openterminal.appClass" + "=" + this.getClass().getName());
+		li.add("openterminal.terminal" + "=" + this.terminal);
+		li.add("openterminal.hash" + "=" + this.idHash);
+		li.add("openterminal.background" + "=" + this.background);
+		li.add("openterminal.shoulPause" + "=" + this.shouldPause);
+		li.add("openterminal.hardPause" + "=" + this.hardPause);
+		li.add("openterminal.id" + "=" + this.id);
+		li.add("openterminal.shName" + "=" + this.shName);
+		li.add("openterminal.name" + "=" + this.name);
+		li.add("openterminal.version" + "=" + this.version);
+		li.add("openterminal.mainClass" + "=" + this.mainClass.getName());
+		li.add("openterminal.runDeob" + "=" + this.runDeob);
+		li.add("openterminal.forceTerminal" + "=" + this.forceTerminal);
+		li.add("openterminal.canReboot" + "=" + this.canReboot);
+		
+		//preserve the jvm and program args
+		li.add(OpenTerminalConstants.jvmArgs + "=" + OpenTerminalUtil.wrapArgsToCmd(this.jvmArgs).replaceAll(System.lineSeparator(), OpenTerminalConstants.linefeed));
+		li.add(OpenTerminalConstants.programArgs + "=" + OpenTerminalUtil.wrapArgsToCmd(this.programArgs).replaceAll(System.lineSeparator(), OpenTerminalConstants.linefeed));//stop illegal line feed characters from messing up parsing
+		
+		IOUtils.saveFileLines(li, reboot, true);
+		JREUtil.shutdown(OpenTerminalConstants.rebootExit);
 	}
 	
 	public static void parseProperties(File propsFile) 
@@ -210,6 +257,10 @@ public class TerminalApp {
 		this.background = this.getBooleanProperty("openterminal.background");
 		this.shouldPause = this.getBooleanProperty("openterminal.shoulPause");
 		this.hardPause = this.getBooleanProperty("openterminal.hardPause");
+		this.userDir = new File(this.getProperty(OpenTerminalConstants.p_userDir));
+		this.userHome = new File(this.getProperty(OpenTerminalConstants.p_userHome));
+		this.tmp = new File(this.getProperty(OpenTerminalConstants.p_tmp));
+		this.appdata = new File(this.getProperty(OpenTerminalConstants.p_appdata));
 		this.id = this.getProperty("openterminal.id");
 		this.shName = this.getProperty("openterminal.shName");
 		this.name = this.getProperty("openterminal.name");
@@ -217,44 +268,7 @@ public class TerminalApp {
 		this.mainClass = JREUtil.getClass(this.getProperty("openterminal.mainClass"), true);
 		this.runDeob = this.getBooleanProperty("openterminal.runDeob");
 		this.forceTerminal = this.getBooleanProperty("openterminal.forceTerminal");
-	}
-	
-	/**
-	 * sync your properties from the real values
-	 * NOTE: doesn't writer openterminal.jvmArgs or openterminal.programArgs
-	 */
-	public void toProperties()
-	{
-		System.setProperty("openterminal.appClass", this.getClass().getName());
-		System.setProperty("openterminal.terminal", this.terminal);
-		System.setProperty("openterminal.hash", this.idHash);
-		System.setProperty("openterminal.background", String.valueOf(this.background));
-		System.setProperty("openterminal.shoulPause", String.valueOf(this.shouldPause));
-		System.setProperty("openterminal.hardPause", String.valueOf(this.hardPause));
-		System.setProperty("openterminal.id", this.id);
-		System.setProperty("openterminal.shName", this.shName);
-		System.setProperty("openterminal.name", this.name);
-		System.setProperty("openterminal.version", this.version);
-		System.setProperty("openterminal.mainClass", this.mainClass.getName());
-		System.setProperty("openterminal.runDeob", String.valueOf(this.runDeob));
-		System.setProperty("openterminal.forceTerminal", String.valueOf(this.forceTerminal));
-	}
-	
-	public void writeProperties(List<String> jvm, ExeBuilder builder)
-	{
-		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.appClass"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.terminal"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.hash"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.background"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.shoulPause"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.hardPause"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.id"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.shName"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.name"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.version"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.mainClass"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.runDeob"));
-		builder.addCommand(OpenTerminalUtil.writeProperty(jvm, "openterminal.forceTerminal"));
+		this.canReboot = this.getBooleanProperty("openterminal.canReboot");
 	}
 	
 	public boolean getProperty(String propId, boolean b)

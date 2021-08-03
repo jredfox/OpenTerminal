@@ -24,5 +24,9 @@ public class OpenTerminalConstants {
 	public static final String splitter = "\u00a9\ud83e\udd82\u00a9";
 	public static final String linefeed = splitter + "l";
 	public static final String spacefeed = splitter + "s";
+	public static final String p_userDir = "user.dir";
+	public static final String p_userHome = "user.home";
+	public static final String p_tmp = "java.io.tmpdir";
+	public static final String p_appdata = "user.appdata";
 	
 }

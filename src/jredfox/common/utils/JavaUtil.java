@@ -254,6 +254,11 @@ public class JavaUtil {
 	/**
 	 * return the java unicode string from the utf-8 string
 	 * TODO: add an option to change the unicode number strings to not just the codepoints
+	 * ascii esq in java
+	 * ascii un-escape in java
+	   unicode un-escape in java
+	   escape in java does both unicode and ascii
+	   un-escape in java does both unicode and ascii
 	 */
 	public static String toUnicodeEsq(String unicode)
 	{

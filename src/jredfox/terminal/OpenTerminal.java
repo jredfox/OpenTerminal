@@ -88,15 +88,10 @@ public class OpenTerminal {
         if(JavaUtil.containsAny(libs, OpenTerminalConstants.INVALID))
         	throw new RuntimeException("one or more LIBRARIES contains illegal parsing characters:(" + libs + "), invalid:" + OpenTerminalConstants.INVALID);
         
-		this.app.toProperties();
         ExeBuilder builder = new ExeBuilder();
     	builder.addCommand("java");
     	List<String> jvm = JavaUtil.asArray(this.app.jvmArgs);
     	builder.addCommand(OpenTerminalUtil.writeProperty(jvm, OpenTerminalConstants.launchStage, OpenTerminalConstants.wrapping));//always use wrapper due to character limit on the command line
-      	builder.addCommand(OpenTerminalUtil.writeDirProperty(jvm, "java.io.tmpdir"));
-    	builder.addCommand(OpenTerminalUtil.writeDirProperty(jvm, "user.home"));
-    	builder.addCommand(OpenTerminalUtil.writeDirProperty(jvm, "user.dir"));
-    	builder.addCommand(OpenTerminalUtil.writeDirProperty(jvm, "user.appdata"));
     	this.app.writeProperties(jvm, builder);
     	builder.addCommand(jvm);
     	builder.addCommand("-cp");

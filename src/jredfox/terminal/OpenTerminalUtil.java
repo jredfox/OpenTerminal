@@ -148,17 +148,17 @@ public class OpenTerminalUtil {
 		return  "-D" + propId + "=\"" + value + "\"";
 	}
 	
-	public static String writeProperty(List<String> list, String propId)
-	{
-		JavaUtil.removeStarts(list, "-D" + propId, false);
-		return "-D" + propId + "=\"" + System.getProperty(propId) + "\"";
-	}
+//	public static String writeProperty(List<String> list, String propId)
+//	{
+//		JavaUtil.removeStarts(list, "-D" + propId, false);
+//		return "-D" + propId + "=\"" + System.getProperty(propId) + "\"";
+//	}
 
-	public static String writeDirProperty(List<String> list, String propId)
-	{
-		JavaUtil.removeStarts(list, "-D" + propId, false);
-		return "-D" + propId + "=\"" + new File(System.getProperty(propId)).getPath() + "\"";
-	}
+//	public static String writeDirProperty(List<String> list, String propId)
+//	{
+//		JavaUtil.removeStarts(list, "-D" + propId, false);
+//		return "-D" + propId + "=\"" + new File(System.getProperty(propId)).getPath() + "\"";
+//	}
 
 	public static String wrapArgsToCmd(List<String> args) 
 	{
