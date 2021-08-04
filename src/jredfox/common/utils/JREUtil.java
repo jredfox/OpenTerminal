@@ -141,11 +141,12 @@ public class JREUtil {
 		return null;
 	}
 	
-	public static Class<?> getClass(String name, boolean print) 
+	@SuppressWarnings("unchecked")
+	public static <T> Class<T> getClass(String name, boolean print) 
 	{
 		try 
 		{
-			return Class.forName(name);
+			return (Class<T>) Class.forName(name);
 		} 
 		catch(ClassNotFoundException c)
 		{

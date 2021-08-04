@@ -8,9 +8,9 @@ public class TerminalAppWrapper extends TerminalApp {
 	public boolean wrapArgs;
 	public String wrappedMsg = "";
 	
-	public TerminalAppWrapper(String id, String name, String version, Class<?> clazz, String[] args, boolean runDeob) 
+	public TerminalAppWrapper()
 	{
-		super(id, name, version, clazz, args, runDeob);
+		
 	}
 	
 	/**

@@ -25,6 +25,13 @@ public class TerminalApp {
 	public String shName;
 	public String name;
 	public String version;
+	/**
+	 * the main(String[] args) class of your program running an TerminalApp program. Must be extending ITerminalApp
+	 */
+	public Class<?> iclass;
+	/**
+	 * the main(String[] args) of the jvm may not be equal to the IAppClass if there are wrappers involved
+	 */
 	public Class<?> mainClass;
 	public boolean runDeob;
 	public boolean forceTerminal;//set this to true to always open up a new window
@@ -40,27 +47,27 @@ public class TerminalApp {
 	public boolean compiled = JREUtil.isCompiled();
 	public Process process;
 	
-	public TerminalApp(String[] args)
+	public TerminalApp(Class<?> iclass, String[] args)
 	{
-		this(suggestAppId(), args);
+		this(suggestAppId(), iclass, args);
 	}
 	
-	public TerminalApp(String id, String[] args)
+	public TerminalApp(String id, Class<?> iclass, String[] args)
 	{
-		this(id, id, "1.0.0", args);
+		this(id, id, "1.0.0", iclass, args);
 	}
 	
-	public TerminalApp(String id, String name, String version, String[] args)
+	public TerminalApp(String id, String name, String version, Class<?> iclass, String[] args)
 	{
-		this(id, name, version, JREUtil.getMainClass(), args);
+		this(id, name, version, iclass, JREUtil.getMainClass(), args);
 	}
 	
-	public TerminalApp(String id, String name, String version, Class<?> clazz, String[] args)
+	public TerminalApp(String id, String name, String version, Class<?> iclass, Class<?> jvmMain, String[] args)
 	{
-		this(id, name, version, clazz, args, true);
+		this(id, name, version, iclass, jvmMain, args, true);
 	}
 	
-	public TerminalApp(String id, String name, String version, Class<?> clazz, String[] args, boolean runDeob)
+	public TerminalApp(String id, String name, String version, Class<?> iclass, Class<?> jvmMain, String[] args, boolean runDeob)
 	{
     	if(JavaUtil.containsAny(id, OpenTerminalConstants.INVALID))
     		throw new RuntimeException("appId contains illegal parsing characters:(" + id + "), invalid:" + OpenTerminalConstants.INVALID);
@@ -75,7 +82,8 @@ public class TerminalApp {
 		this.shName = this.getProperty("openterminal.shName", this.id.contains("/") ? JavaUtil.getLastSplit(this.id, "/") : this.id);
 		this.name = this.getProperty("openterminal.name", name);
 		this.version = this.getProperty("openterminal.version", version);
-		this.mainClass = JREUtil.getClass(this.getProperty("openterminal.mainClass", clazz.getName()), true);
+		this.iclass = JREUtil.getClass(this.getProperty("openterminal.iclass", iclass.getName()), true);
+		this.mainClass = JREUtil.getClass(this.getProperty("openterminal.mainClass", jvmMain.getName()), true);
 		this.runDeob = this.getProperty("openterminal.runDeob", runDeob);
 		this.forceTerminal = this.getProperty("openterminal.forceTerminal", false);
 		
@@ -113,6 +121,7 @@ public class TerminalApp {
 		this.shName = cfg.get("openterminal.shName", null);
 		this.name = cfg.get("openterminal.name", null);
 		this.version = cfg.get("openterminal.version", null);
+		this.iclass = JREUtil.getClass(cfg.get("openterminal.iclass", null), true);
 		this.mainClass = JREUtil.getClass(cfg.get("openterminal.mainClass", null), true);
 		this.runDeob = Boolean.parseBoolean(cfg.get("openterminal.runDeob", null));
 		this.forceTerminal = Boolean.parseBoolean(cfg.get("openterminal.forceTerminal", null));
@@ -210,6 +219,7 @@ public class TerminalApp {
 		props.put("openterminal.shName", this.shName);
 		props.put("openterminal.name", this.name);
 		props.put("openterminal.version", this.version);
+		props.put("openterminal.iclass", this.iclass.getName());
 		props.put("openterminal.mainClass", this.mainClass.getName());
 		props.put("openterminal.runDeob", "" + this.runDeob);
 		props.put("openterminal.forceTerminal", "" + this.forceTerminal);
@@ -235,12 +245,21 @@ public class TerminalApp {
 	}
 	
 	/**
-	 * reboot your TerminalApp using {@link #programArgs} and {@link #jvmArgs}. in order to have a clean reboot clear them before calling this. you can edit them as well
-	 * Make sure you change what you want in your TerminalApp before rebooting or create a new TerminalApp() before calling this and assign the proper jvmArgs
+	 * reboot your TerminalApp using {@link #programArgs} and {@link #jvmArgs}. in order to have a clean reboot clear them before calling this.
 	 */
 	public void reboot()
 	{
-		this.save();
+		this.reboot(true);
+	}
+	
+	/**
+	 * reboot your TerminalApp using {@link #programArgs} and {@link #jvmArgs}. in order to have a clean reboot clear them before calling this.
+	 */
+	public void reboot(boolean newApp)
+	{
+		TerminalApp app = newApp ? ((ITerminalApp)JREUtil.newInstance(this.iclass)).newApp(this.getProgramArgs()) : this;
+		app.jvmArgs = this.jvmArgs;
+		app.save();
 		JREUtil.shutdown(OpenTerminalConstants.rebootExit);
 	}
 	
@@ -347,7 +366,7 @@ public class TerminalApp {
 	
 	public static TerminalApp newInstance(String[] args) 
 	{
-		return JREUtil.newInstance(JREUtil.getClass(System.getProperty("openterminal.appClass"), true), new Class<?>[]{String[].class}, (Object)args);
+		return JREUtil.newInstance(JREUtil.getClass(System.getProperty("openterminal.appClass"), true), new Class<?>[]{Class.class, String[].class}, JREUtil.getClass(System.getProperty("openterminal.iclass"), true), (Object)args);
 	}
 
 	private static void addArgs(List<String> args, String argStr) 

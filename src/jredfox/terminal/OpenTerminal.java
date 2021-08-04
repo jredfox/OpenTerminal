@@ -8,6 +8,7 @@ import jredfox.common.io.IOUtils;
 import jredfox.common.os.OSUtil;
 import jredfox.common.utils.JREUtil;
 import jredfox.common.utils.JavaUtil;
+import jredfox.terminal.app.ITerminalApp;
 import jredfox.terminal.app.TerminalApp;
 
 public class OpenTerminal {
@@ -30,10 +31,13 @@ public class OpenTerminal {
 	public void run(TerminalApp app)
 	{
 		this.app = app;
-		this.run();
+		this.start();
 	}
 
-	protected void run()
+	/**
+	 * start the launcher loop
+	 */
+	protected void start()
 	{
 		if(this.app == null)
 			throw new IllegalArgumentException("TerminalApp cannot be null!");
@@ -110,6 +114,7 @@ public class OpenTerminal {
     	String command = builder.toString();
     	try
     	{
+    		System.out.println(command);
     		return open ? OpenTerminalUtil.runInNewTerminal(this.app.getAppdata(), this.app.terminal, this.app.name, this.app.shName, command, this.app.userDir) : OpenTerminalUtil.runInTerminal(this.app.terminal, command, this.app.userDir);
     	}
     	catch(Throwable t)
@@ -126,7 +131,7 @@ public class OpenTerminal {
 	{
 		System.out.println("re-launching");
 		this.app = TerminalApp.fromFile(reboot);
-//		reboot.delete();
+		reboot.delete();
 		this.app.process = this.launch(this.app.shouldOpen());
 	}
 	
