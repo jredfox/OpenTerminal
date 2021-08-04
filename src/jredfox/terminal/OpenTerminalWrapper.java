@@ -53,7 +53,6 @@ public class OpenTerminalWrapper {
 	public static void main(String[] args) throws IOException
 	{
 		TerminalApp app = TerminalApp.newInstance(args);
-		app.fromProperties();
 		args = app instanceof TerminalAppWrapper ? (((TerminalAppWrapper)app).getWrappedArgs(args)) : app.getProgramArgs();
 		
 		ExeBuilder b = new ExeBuilder();

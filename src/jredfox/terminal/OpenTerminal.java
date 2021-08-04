@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import jredfox.common.exe.ExeBuilder;
+import jredfox.common.io.IOUtils;
 import jredfox.common.os.OSUtil;
 import jredfox.common.utils.JREUtil;
 import jredfox.common.utils.JavaUtil;
@@ -68,7 +69,14 @@ public class OpenTerminal {
 				JREUtil.sleep(1000);
 		}
 		System.out.println("shutting down OpenTerminal Launcher:" + exit);
+//		this.cleanup();
 		this.exit(exit);
+	}
+
+	public void cleanup() 
+	{
+		if(this.app != null)
+			IOUtils.deleteDirectory(this.app.getAppdata());
 	}
 
 	/**
@@ -92,7 +100,7 @@ public class OpenTerminal {
     	builder.addCommand("java");
     	List<String> jvm = JavaUtil.asArray(this.app.jvmArgs);
     	builder.addCommand(OpenTerminalUtil.writeProperty(jvm, OpenTerminalConstants.launchStage, OpenTerminalConstants.wrapping));//always use wrapper due to character limit on the command line
-    	this.app.writeProperties(jvm, builder);
+    	this.app.writeProperties(jvm);
     	builder.addCommand(jvm);
     	builder.addCommand("-cp");
     	String q = OSUtil.getQuote();

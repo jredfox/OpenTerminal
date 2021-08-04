@@ -38,11 +38,10 @@ public class JREUtil {
 	 */
 	public static void patchMacOsDir()
 	{
-		File user = OSUtil.isLinux() ? new File(System.getProperty("user.home")) : new File(System.getProperty("runnables.jar")).getParentFile();
 		String dir = System.getProperty("user.dir");
 		String tmp = System.getProperty("java.io.tmpdir");
 		if(dir.contains(tmp) && !dir.startsWith(tmp))
-			setUserDir(user);
+			setUserDir(OSUtil.isLinux() ? new File(System.getProperty("user.home")) : new File(System.getProperty("runnables.jar")).getParentFile());
 	}
 
 	/**
