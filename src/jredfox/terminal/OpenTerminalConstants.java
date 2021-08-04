@@ -7,7 +7,7 @@ import jredfox.common.os.OSUtil;
 
 public class OpenTerminalConstants {
 	
-	public static final String VERSION = "0.0.0-alpha";
+	public static final String VERSION = "0.0.0";
 	public static final String INVALID = "\"'`,";
 	public static final Scanner scanner = new Scanner(System.in);
 	public static final File data = new File(OSUtil.getAppData(), "OpenTerminal");
