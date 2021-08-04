@@ -60,6 +60,7 @@ public class JavaUtil {
 	/**
 	 * split with quote ignoring support
 	 * @param limit is the amount of times it will attempt to split
+	 * TODO: make it work with multiple quotes
 	 */
 	public static String[] split(String str, int limit, char sep, char lquote, char rquote) 
 	{

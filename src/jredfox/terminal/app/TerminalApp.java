@@ -100,14 +100,6 @@ public class TerminalApp {
 	}
 	
 	/**
-	 * TerminalApp blank for Parent classes
-	 */
-	public TerminalApp()
-	{
-		
-	}
-	
-	/**
 	 * used when parsing from a file usually a reboot
 	 */
 	public TerminalApp(MapConfig cfg)
