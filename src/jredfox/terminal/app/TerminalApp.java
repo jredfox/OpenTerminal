@@ -245,7 +245,8 @@ public class TerminalApp {
 	}
 	
 	/**
-	 * reboot your TerminalApp using {@link #programArgs} and {@link #jvmArgs}. in order to have a clean reboot clear them before calling this.
+	 * reboot your TerminalApp using {@link #programArgs} and {@link #jvmArgs}. in order to have a clean reboot clear them before calling this. 
+	 * WARNING: your {@link TerminalApp#iclass} must be instanceof ITerminalApp in order to reboot
 	 */
 	public void reboot()
 	{

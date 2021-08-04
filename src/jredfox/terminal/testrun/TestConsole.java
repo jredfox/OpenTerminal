@@ -13,8 +13,8 @@ public class TestConsole implements ITerminalApp {
 	{
 		TerminalApp app = OpenTerminal.INSTANCE.run(TestConsole.class, args);
 		app.name = "" + System.currentTimeMillis();
-		JREUtil.sleep(4000);
-		app.reboot();
+//		JREUtil.sleep(4000);
+//		app.reboot();
 	}
 
 	@Override
