@@ -14,7 +14,7 @@ import jredfox.terminal.app.TerminalAppWrapper;
 public class OpenTerminalWrapper {
 	
 	/**
-	 * virtual wrapper because hard wrappers forces OpenTerminal to be extracted when using eclipe's JarInJar loader
+	 * virtual wrapper doesn't catch {@link System#exit(int)}
 	 */
 	public static void run(TerminalApp app)
 	{
@@ -47,8 +47,7 @@ public class OpenTerminalWrapper {
 	}
 	
 	/**
-	 * this is the hard pause option. It wraps the TermainApp#mainClass#main(String[] args) and catches {@link System#exit(int)} slightly slower then virtualWrapper as a new Process has to be created
-	   NOTE: requires OpenTerminal library to be extracted into a jar for JarInJar loader when this option is used so java can find the main class
+	 * hard wrapper catches {@link System#exit(int)}
 	 */
 	public static void main(String[] args) throws IOException
 	{

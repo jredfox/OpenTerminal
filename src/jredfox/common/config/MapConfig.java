@@ -90,9 +90,10 @@ public class MapConfig {
 		if(!this.file.exists())
 			return;
 		this.clear();
+		BufferedReader reader = null;
 		try
 		{
-			BufferedReader reader = IOUtils.getReader(this.file);
+			reader = IOUtils.getReader(this.file);
 			String line = "";
 			while(line != null)
 			{
@@ -104,11 +105,14 @@ public class MapConfig {
 					continue;
 				this.parseLine(line);
 			}
-			reader.close();
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
+		}
+		finally
+		{
+			IOUtils.close(reader);
 		}
 	}
 	
@@ -136,7 +140,7 @@ public class MapConfig {
 			{
 				Object value = this.list.get(key);
 				String type = this.getType(value);
-				String strValue = value instanceof String ? "\"" + value + "\"" : value.toString();
+				String strValue = value instanceof String ? "\"" + value + "\"" : String.valueOf(value);
 				key = key.contains(" ") ? "\"" + key + "\"" : key;
 				String equals = this.spacedEnd ? " " + this.sep + " " : "" + this.sep;
 				writer.write(type + ":" + key + equals + strValue + "\r\n");

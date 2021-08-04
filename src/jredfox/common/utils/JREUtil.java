@@ -3,6 +3,7 @@ package jredfox.common.utils;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
@@ -251,6 +252,13 @@ public class JREUtil {
 		{
 			return (T) clazz.getConstructor(ids).newInstance(params);
 		} 
+		catch(InvocationTargetException e)
+		{
+			if(e.getCause() != null)
+				e.getCause().printStackTrace();
+			else
+				e.printStackTrace();
+		}
 		catch(Throwable t)
 		{
 			t.printStackTrace();

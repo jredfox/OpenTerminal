@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jredfox.common.io.IOUtils;
+import jredfox.common.config.MapConfig;
 import jredfox.common.os.OSUtil;
 import jredfox.common.utils.JREUtil;
 import jredfox.common.utils.JavaUtil;
@@ -37,7 +37,7 @@ public class TerminalApp {
 	public File appdata;
 	
 	//non serializable vars
-	public boolean compiled;//is this app compiled into a jar already
+	public boolean compiled = JREUtil.isCompiled();
 	public Process process;
 	
 	public TerminalApp(String[] args)
@@ -70,7 +70,6 @@ public class TerminalApp {
 		for(String s : args)
 			this.programArgs.add(s);
 		this.jvmArgs = JavaUtil.asArray(JREUtil.getJVMArgs());
-		this.compiled = JREUtil.isCompiled();
 		
 		this.id = this.getProperty("openterminal.id", id);
 		this.shName = this.getProperty("openterminal.shName", this.id.contains("/") ? JavaUtil.getLastSplit(this.id, "/") : this.id);
@@ -93,11 +92,41 @@ public class TerminalApp {
 	}
 	
 	/**
-	 * TerminalApp's when they get parsed from either the hard wrapper or a reboot
+	 * TerminalApp blank for Parent classes
 	 */
 	public TerminalApp()
 	{
 		
+	}
+	
+	/**
+	 * used when parsing from a file usually a reboot
+	 */
+	public TerminalApp(MapConfig cfg)
+	{
+		this.terminal = cfg.get("openterminal.terminal", null);
+		this.idHash = cfg.get("openterminal.hash", null);
+		this.background = Boolean.parseBoolean(cfg.get("openterminal.background", null));
+		this.shouldPause = Boolean.parseBoolean(cfg.get("openterminal.shouldPause", null));
+		this.hardPause = Boolean.parseBoolean(cfg.get("openterminal.hardPause", null));
+		this.id = cfg.get("openterminal.id", null);
+		this.shName = cfg.get("openterminal.shName", null);
+		this.name = cfg.get("openterminal.name", null);
+		this.version = cfg.get("openterminal.version", null);
+		this.mainClass = JREUtil.getClass(cfg.get("openterminal.mainClass", null), true);
+		this.runDeob = Boolean.parseBoolean(cfg.get("openterminal.runDeob", null));
+		this.forceTerminal = Boolean.parseBoolean(cfg.get("openterminal.forceTerminal", null));
+		this.canReboot = Boolean.parseBoolean(cfg.get("openterminal.canReboot", null));
+		this.userDir = new File((String)cfg.get(OpenTerminalConstants.p_userDir, null));
+		this.userHome = new File((String)cfg.get(OpenTerminalConstants.p_userHome, null));
+		this.tmp = new File((String)cfg.get(OpenTerminalConstants.p_tmp, null));
+		this.appdata = new File((String)cfg.get(OpenTerminalConstants.p_appdata, null));
+		String jvm = cfg.get(OpenTerminalConstants.jvmArgs, null);
+		String args = cfg.get(OpenTerminalConstants.programArgs, null);
+		this.jvmArgs = new ArrayList<>();
+		this.programArgs = new ArrayList<>();
+		addArgs(this.jvmArgs, jvm);
+		addArgs(this.programArgs, args);
 	}
 
 	/**
@@ -206,7 +235,8 @@ public class TerminalApp {
 	}
 	
 	/**
-	 * WARNING: TerminalApp doesn't get re-initialized on re-boot so call your config to change the TerminalApp vars or create a new one before calling reboot. If you create a new one make sure to preserve the JVM arguments
+	 * reboot your TerminalApp using {@link #programArgs} and {@link #jvmArgs}. in order to have a clean reboot clear them before calling this. you can edit them as well
+	 * Make sure you change what you want in your TerminalApp before rebooting or create a new TerminalApp() before calling this and assign the proper jvmArgs
 	 */
 	public void reboot()
 	{
@@ -222,12 +252,12 @@ public class TerminalApp {
 		List<String> jvm = JavaUtil.asArray(this.jvmArgs);
 		this.writeProperties(jvm);//overwrite jvmArgs with app properties
 		File reboot = new File(this.getAppdata(), "reboot.properties");
-		List<String> li = new ArrayList<>(25);
+		MapConfig cfg = new MapConfig(reboot);
 		for(Map.Entry<String, String> entry : this.toPropertyMap().entrySet())
-			li.add(entry.getKey() + "=" + entry.getValue());
-		li.add(OpenTerminalConstants.jvmArgs + "=" + OpenTerminalUtil.wrapArgsToCmd(jvm).replaceAll(System.lineSeparator(), OpenTerminalConstants.linefeed));
-		li.add(OpenTerminalConstants.programArgs + "=" + OpenTerminalUtil.wrapArgsToCmd(this.programArgs).replaceAll(System.lineSeparator(), OpenTerminalConstants.linefeed));//stop illegal line feed characters from messing up parsing
-		IOUtils.saveFileLines(li, reboot, true);
+			cfg.list.put(entry.getKey(), entry.getValue());
+		cfg.list.put(OpenTerminalConstants.jvmArgs, OpenTerminalUtil.wrapArgsToCmd(jvm).replaceAll(System.lineSeparator(), OpenTerminalConstants.linefeed));
+		cfg.list.put(OpenTerminalConstants.programArgs, OpenTerminalUtil.wrapArgsToCmd(this.programArgs).replaceAll(System.lineSeparator(), OpenTerminalConstants.linefeed));//stop illegal line feed characters from messing up parsing
+		cfg.save();
 	}
 	
 	/**
@@ -304,10 +334,14 @@ public class TerminalApp {
 		return JavaUtil.toArray(this.programArgs, String.class);
 	}
 
-	
+	/**
+	 * used to parse any TerminalApp from the disk into memory not just a specific class
+	 */
 	public static TerminalApp fromFile(File reboot)
 	{
-		TerminalApp app = null;
+		MapConfig cfg = new MapConfig(reboot);
+		cfg.load();
+		TerminalApp app = JREUtil.newInstance(JREUtil.getClass(cfg.get("openterminal.appClass", null), true), new Class<?>[]{MapConfig.class}, cfg);
 		return app;
 	}
 	
@@ -316,16 +350,11 @@ public class TerminalApp {
 		return JREUtil.newInstance(JREUtil.getClass(System.getProperty("openterminal.appClass"), true), new Class<?>[]{String[].class}, (Object)args);
 	}
 
-	private static void addArgs(List<String> args, String argId) 
+	private static void addArgs(List<String> args, String argStr) 
 	{
-		String[] arr = System.getProperty(argId).split(" ");
+		String[] arr = argStr.split(" ");
 		for(String s : arr)
 			args.add(s.replaceAll(OpenTerminalConstants.spacefeed, " "));
-	}
-
-	public void onReboot() 
-	{
-		
 	}
 
 

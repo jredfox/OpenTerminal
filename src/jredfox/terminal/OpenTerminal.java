@@ -126,7 +126,7 @@ public class OpenTerminal {
 	{
 		System.out.println("re-launching");
 		this.app = TerminalApp.fromFile(reboot);
-		reboot.delete();
+//		reboot.delete();
 		this.app.process = this.launch(this.app.shouldOpen());
 	}
 	
