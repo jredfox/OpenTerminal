@@ -28,6 +28,19 @@ public class OpenTerminal {
 		
 	}
 	
+	/**
+	 * recommended way of running OpenTerminal. Otherwise you need to manual check on whether or not to parse the configs for the TerminalApp properties
+	 */
+	public TerminalApp run(Class<? extends ITerminalApp> clazz, String[] args)
+	{
+		TerminalApp app = OpenTerminal.isLaunching() ? ((ITerminalApp)JREUtil.newInstance(clazz)).newApp(args) : TerminalApp.fromProperties(args);
+		this.run(app);
+		return this.app;
+	}
+	
+	/**
+	 * allow custom TerminalApp's to run even if it's not instaceof ITerminalApp
+	 */
 	public void run(TerminalApp app)
 	{
 		this.app = app;
@@ -114,7 +127,6 @@ public class OpenTerminal {
     	String command = builder.toString();
     	try
     	{
-    		System.out.println(command);
     		return open ? OpenTerminalUtil.runInNewTerminal(this.app.getAppdata(), this.app.terminal, this.app.name, this.app.shName, command, this.app.userDir) : OpenTerminalUtil.runInTerminal(this.app.terminal, command, this.app.userDir);
     	}
     	catch(Throwable t)

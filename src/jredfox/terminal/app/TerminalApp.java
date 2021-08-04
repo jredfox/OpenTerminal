@@ -26,11 +26,11 @@ public class TerminalApp {
 	public String name;
 	public String version;
 	/**
-	 * the main(String[] args) class of your program running an TerminalApp program. Must be extending ITerminalApp
+	 * the main class of your program that is never a wrapper class
 	 */
 	public Class<?> iclass;
 	/**
-	 * the main(String[] args) of the jvm may not be equal to the IAppClass if there are wrappers involved
+	 * the main class of your program which may be a wrapper
 	 */
 	public Class<?> mainClass;
 	public boolean runDeob;
@@ -49,25 +49,25 @@ public class TerminalApp {
 	
 	public TerminalApp(Class<?> iclass, String[] args)
 	{
-		this(suggestAppId(), iclass, args);
+		this(iclass, suggestAppId(iclass), args);
 	}
 	
-	public TerminalApp(String id, Class<?> iclass, String[] args)
+	public TerminalApp(Class<?> iclass, String id, String[] args)
 	{
-		this(id, id, "1.0.0", iclass, args);
+		this(iclass, id, id, "1.0.0", args);
 	}
 	
-	public TerminalApp(String id, String name, String version, Class<?> iclass, String[] args)
+	public TerminalApp(Class<?> iclass, String id, String name, String version, String[] args)
 	{
-		this(id, name, version, iclass, JREUtil.getMainClass(), args);
+		this(iclass, id, name, version, JREUtil.getMainClass(), args);
 	}
 	
-	public TerminalApp(String id, String name, String version, Class<?> iclass, Class<?> jvmMain, String[] args)
+	public TerminalApp(Class<?> iclass, String id, String name, String version, Class<?> jvmMain, String[] args)
 	{
-		this(id, name, version, iclass, jvmMain, args, true);
+		this(iclass, id, name, version, jvmMain, args, true);
 	}
 	
-	public TerminalApp(String id, String name, String version, Class<?> iclass, Class<?> jvmMain, String[] args, boolean runDeob)
+	public TerminalApp(Class<?> iclass, String id, String name, String version, Class<?> jvmMain, String[] args, boolean runDeob)
 	{
     	if(JavaUtil.containsAny(id, OpenTerminalConstants.INVALID))
     		throw new RuntimeException("appId contains illegal parsing characters:(" + id + "), invalid:" + OpenTerminalConstants.INVALID);
@@ -323,14 +323,6 @@ public class TerminalApp {
 	{
 		return new File(OpenTerminalConstants.data, this.id);
 	}
-    
-	/**
-	 * return the suggested appId based on the main class name
-	 */
-	public static String suggestAppId()
-	{
-		return suggestAppId(JREUtil.getMainClassName());
-	}
 	
 	/**
 	 * return the suggested appId based on the main class name
@@ -364,7 +356,7 @@ public class TerminalApp {
 		return app;
 	}
 	
-	public static TerminalApp newInstance(String[] args) 
+	public static TerminalApp fromProperties(String[] args) 
 	{
 		return JREUtil.newInstance(JREUtil.getClass(System.getProperty("openterminal.appClass"), true), new Class<?>[]{Class.class, String[].class}, JREUtil.getClass(System.getProperty("openterminal.iclass"), true), (Object)args);
 	}
