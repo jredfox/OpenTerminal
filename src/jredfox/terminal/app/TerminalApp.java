@@ -205,6 +205,9 @@ public class TerminalApp {
 		}
 	}
 	
+	/**
+	 * WARNING: TerminalApp doesn't get re-initialized on re-boot so call your config to change the TerminalApp vars or create a new one before calling reboot. If you create a new one make sure to preserve the JVM arguments
+	 */
 	public void reboot()
 	{
 		this.save();
