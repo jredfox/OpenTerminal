@@ -269,6 +269,13 @@ public class TerminalApp {
 	 */
 	public void reboot(boolean newApp)
 	{
+		//clear properties for new Terminal app
+		for(Object o : JavaUtil.asArray(System.getProperties().keySet()))
+		{
+			String s = String.valueOf(o);
+			if(s.startsWith("openterminal."))
+				System.clearProperty(s);
+		}
 		TerminalApp app = newApp ? ((ITerminalApp)JREUtil.newInstance(this.iclass)).newApp(this.getProgramArgs()) : this;
 		app.jvmArgs = this.jvmArgs;
 		app.save();
@@ -375,6 +382,8 @@ public class TerminalApp {
 
 	private static void addArgs(List<String> args, String argStr) 
 	{
+		if(argStr.isEmpty())
+			return;
 		String[] arr = argStr.split(" ");
 		for(String s : arr)
 			args.add(s.replaceAll(OpenTerminalConstants.spacefeed, " "));

@@ -2,8 +2,6 @@ package jredfox.common.utils;
 
 import java.io.File;
 import java.lang.reflect.Array;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -283,6 +281,74 @@ public class JavaUtil {
 	public static boolean isAscii(int cp) 
 	{
 		return cp <= Byte.MAX_VALUE;
+	}
+
+	public static String[] parseCommandLine(String line)
+	{
+		return parseCommandLine(line, '\\', '"');
+	}
+
+	public static String[] parseCommandLine(String line, char esq, char q)
+	{
+		List<String> args = new ArrayList<>();
+		StringBuilder builder = new StringBuilder();
+		String previous = "";
+		boolean quoted = false;
+		String replaceEsq = esq == '\\' ? "\\\\" : "" + esq;
+		for(int index = 0; index < line.length(); index++)
+		{
+			String character = line.substring(index, index + 1);
+			String compare = character;
+			
+			//escape the escape sequence
+			if(previous.equals("" + esq) && compare.equals("" + esq))
+			{
+				previous = "aa";
+				compare = "aa";
+			}
+			
+			boolean escaped = previous.equals("" + esq);
+			
+			if(!escaped && compare.equals("" + q))
+				quoted = !quoted;
+			
+			if(!quoted && compare.equals(" "))
+			{
+				args.add(replaceAll(builder.toString(), q, "", esq).replaceAll(replaceEsq + q, "" + q));
+				builder = new StringBuilder();
+				previous = compare;
+				continue;
+			}
+			builder.append(character);
+			previous = compare;
+		}
+		if(!builder.toString().isEmpty())
+			args.add(replaceAll(builder.toString(), q, "", esq).replaceAll(replaceEsq + q, "" + q));
+		
+		return JavaUtil.toArray(args, String.class);
+	}
+
+	public static String replaceAll(String str, char what, String with, char esq)
+	{
+		if(what == '§')
+			throw new IllegalArgumentException("unsupported opperend:" + what);
+		StringBuilder builder = new StringBuilder();
+		String previous = "";
+		for(int index = 0; index < str.length(); index++)
+		{
+			String character = str.substring(index, index + 1);
+			if(previous.equals("" + esq) && character.equals("" + esq))
+			{
+				previous = "§";
+				character = "§"; 
+			}
+			boolean escaped = previous.equals("" + esq);
+			previous = character;
+			if(!escaped && character.equals("" + what))
+				character = with;
+			builder.append(character);
+		}
+		return builder.toString();
 	}
 
 }

@@ -77,7 +77,6 @@ public class TerminalAppWrapper extends TerminalApp {
 
 	public String[] getWrappedArgs(String[] args) 
 	{
-		System.out.print(this.wrappedMsg());
 		return this.shouldWrapArgs() ? this.getInputArgs() : args;
 	}
 
@@ -86,7 +85,8 @@ public class TerminalAppWrapper extends TerminalApp {
 	 */
 	public String[] getInputArgs()
 	{
-		return JavaUtil.split(OpenTerminalConstants.scanner.nextLine(), ' ', '"', '"');
+		System.out.print(this.wrappedMsg());
+		return JavaUtil.parseCommandLine(OpenTerminalConstants.scanner.nextLine());
 	}
 
 }
