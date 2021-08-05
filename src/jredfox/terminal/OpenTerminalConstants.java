@@ -18,6 +18,7 @@ public class OpenTerminalConstants {
 	public static final String init = "init";
 	public static final String wrapping = "wrapping";
 	public static final String exe = "exe";
+	public static final String reboot = "reboot";
 	public static final int rebootExit = 20214097;
 	public static final int forceExit =  20214098;
 	public static final String jvmArgs = "openterminal.jvmArgs";

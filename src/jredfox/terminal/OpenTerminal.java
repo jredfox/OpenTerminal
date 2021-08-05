@@ -6,6 +6,7 @@ import java.util.List;
 import jredfox.common.exe.ExeBuilder;
 import jredfox.common.io.IOUtils;
 import jredfox.common.os.OSUtil;
+import jredfox.common.utils.FileUtil;
 import jredfox.common.utils.JREUtil;
 import jredfox.common.utils.JavaUtil;
 import jredfox.terminal.app.ITerminalApp;
@@ -151,7 +152,7 @@ public class OpenTerminal {
 	 */
 	public void relaunch(File reboot) 
 	{
-		System.out.println("re-launching");
+		System.out.println("re-launching: " + FileUtil.getRealtivePath(OpenTerminalConstants.data, reboot) + " exists:" + reboot.exists());
 		this.app = TerminalApp.fromFile(reboot);
 		reboot.delete();
 		this.app.process = this.launch(this.app.shouldOpen());
@@ -162,7 +163,8 @@ public class OpenTerminal {
 	 */
 	public static boolean isLaunching()
 	{
-		return System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.init);
+		String s = System.getProperty(OpenTerminalConstants.launchStage);
+		return s.equals(OpenTerminalConstants.init) || s.equals(OpenTerminalConstants.reboot);
 	}
 	
 	/**

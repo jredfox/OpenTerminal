@@ -90,7 +90,7 @@ public class TerminalApp {
 		boolean isLaunching = OpenTerminal.isLaunching();
 		if(isLaunching)
 			this.syncConfig();
-		this.terminal = isLaunching ? this.getProperty("openterminal.terminal", this.terminal) : this.getProperty("openterminal.terminal");
+		this.terminal = this.getProperty("openterminal.terminal", this.terminal);
 		this.idHash = isLaunching ? this.getProperty("openterminal.hash", "" + System.currentTimeMillis()) : this.getProperty("openterminal.hash");
 		this.background = this.getProperty("openterminal.background", false);
 		this.shouldPause = this.getProperty("openterminal.shoulPause", false);
@@ -265,7 +265,8 @@ public class TerminalApp {
 	}
 	
 	/**
-	 * reboot your TerminalApp using {@link #programArgs} and {@link #jvmArgs}. in order to have a clean reboot clear them before calling this.
+	 * reboot your TerminalApp using {@link #programArgs} and {@link #jvmArgs}. in order to have a clean reboot clear them before calling this. 
+	 * WARNING: your {@link TerminalApp#iclass} must be instanceof ITerminalApp in order to reboot if newApp is true
 	 */
 	public void reboot(boolean newApp)
 	{
@@ -276,12 +277,15 @@ public class TerminalApp {
 			if(s.startsWith("openterminal."))
 				System.clearProperty(s);
 		}
+		//TODO: have original openterminal jvm args applied here
+		System.setProperty(OpenTerminalConstants.launchStage, OpenTerminalConstants.reboot);
 		TerminalApp app = newApp ? ((ITerminalApp)JREUtil.newInstance(this.iclass)).newApp(this.getProgramArgs()) : this;
+		app.idHash = this.idHash;
 		app.jvmArgs = this.jvmArgs;
 		app.save();
 		JREUtil.shutdown(OpenTerminalConstants.rebootExit);
 	}
-	
+
 	/**
 	 * save this app to a disk
 	 */
