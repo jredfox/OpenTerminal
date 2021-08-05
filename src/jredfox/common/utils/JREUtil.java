@@ -22,7 +22,7 @@ public class JREUtil {
 		{
 			System.setProperty("user.appdata", OSUtil.getAppData().getPath());
 		}
-		JREUtil.patchMacOsDir();//patch os's screwing up initial directory untested, patch macOs java launcher returning junk //TODO: test make sure it works
+		JREUtil.patchDir();//patch os's screwing up initial directory untested, patch macOs java launcher returning junk //TODO: test make sure it works
 	}
 
 	/**
@@ -37,7 +37,7 @@ public class JREUtil {
 	/**
 	 * patch macOs
 	 */
-	public static void patchMacOsDir()
+	public static void patchDir()
 	{
 		String dir = System.getProperty("user.dir");
 		String tmp = System.getProperty("java.io.tmpdir");

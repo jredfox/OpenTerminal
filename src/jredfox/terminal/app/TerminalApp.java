@@ -88,7 +88,9 @@ public class TerminalApp {
 		this.forceTerminal = this.getProperty("openterminal.forceTerminal", false);
 		
 		boolean isLaunching = OpenTerminal.isLaunching();
-		this.terminal = isLaunching ? this.getProperty("openterminal.terminal", OSUtil.getTerminal()) : this.getProperty("openterminal.terminal");//TODO: get the terminal per app config and pull the terminal from the global one
+		if(isLaunching)
+			this.syncConfig();
+		this.terminal = isLaunching ? this.getProperty("openterminal.terminal", this.terminal) : this.getProperty("openterminal.terminal");
 		this.idHash = isLaunching ? this.getProperty("openterminal.hash", "" + System.currentTimeMillis()) : this.getProperty("openterminal.hash");
 		this.background = this.getProperty("openterminal.background", false);
 		this.shouldPause = this.getProperty("openterminal.shoulPause", false);
@@ -99,6 +101,23 @@ public class TerminalApp {
 		this.appdata = new File(this.getProperty(OpenTerminalConstants.p_appdata));
 	}
 	
+	/**
+	 * sync your global TerminalApp properties
+	 */
+	public void syncConfig()
+	{
+		File cfgFile = new File(this.getRootAppData(), this.shName + ".cfg");
+		MapConfig cfg = new MapConfig(cfgFile);
+		cfg.load();
+		this.terminal = cfg.get("terminal", "");
+		if(this.terminal.isEmpty() || !OSUtil.isTerminalValid(this.terminal))
+		{
+			this.terminal = OSUtil.getTerminal();
+			cfg.set("terminal", this.terminal);
+			cfg.save();
+		}
+	}
+
 	/**
 	 * used when parsing from a file usually a reboot
 	 */
@@ -309,7 +328,7 @@ public class TerminalApp {
 	 */
 	public File getAppdata()
 	{
-		return new File(OpenTerminalConstants.data, this.id + "/" + this.idHash);
+		return new File(OpenTerminalConstants.data, this.id + "/instances/" + this.idHash);
 	}
 	
 	public File getRootAppData()

@@ -32,7 +32,7 @@ public class OpenTerminalUtil {
         	cmds.add("clear && printf '\\e[3J'");//clear the console
         	cmds.add("set +v");//@Echo off
         	cmds.add("echo -n -e \"\\033]0;" + appName + "\\007\"");//Title
-        	cmds.add("cd " + JREUtil.getProgramDir().getPath().replaceAll(" ", "\\\\ "));//set the proper directory
+        	cmds.add("cd " + dir.getPath().replaceAll(" ", "\\\\ "));//set the proper directory
         	cmds.add(command);//actual command
         	cmds.add("echo -n -e \"\\033]0;" + "_closeMe_" + "\\007\"");//set the title to prepare for the close command
         	cmds.add("osascript " + OpenTerminalConstants.closeMe.getPath().replaceAll(" ", "\\\\ ") + " & exit");

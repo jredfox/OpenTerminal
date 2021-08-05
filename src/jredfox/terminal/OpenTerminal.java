@@ -15,6 +15,10 @@ public class OpenTerminal {
 	
 	public static OpenTerminal INSTANCE = new OpenTerminal();
 	public TerminalApp app;
+	/**
+	 * change this to false if you run multiple OpenTerminal instances per init launch
+	 */
+	public boolean exitOnAppExit;
 	
 	static
 	{
@@ -85,9 +89,15 @@ public class OpenTerminal {
 			else
 				JREUtil.sleep(1000);
 		}
+		this.cleanup();
+		if(this.exitOnAppExit)
+			this.exit(exit);
+	}
+	
+	public void exit(int exit)
+	{
 		System.out.println("shutting down OpenTerminal Launcher:" + exit);
-//		this.cleanup();
-		this.exit(exit);
+		JREUtil.shutdown(exit);
 	}
 
 	public void cleanup() 
@@ -145,11 +155,6 @@ public class OpenTerminal {
 		this.app = TerminalApp.fromFile(reboot);
 		reboot.delete();
 		this.app.process = this.launch(this.app.shouldOpen());
-	}
-	
-	public void exit(int code)
-	{
-		System.exit(code);
 	}
 	
 	/**
