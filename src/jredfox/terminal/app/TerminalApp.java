@@ -30,7 +30,7 @@ public class TerminalApp {
 	 */
 	public Class<?> iclass;
 	/**
-	 * the main class of your program which may be a wrapper
+	 * the main class of your program via jvm which may be a wrapper
 	 */
 	public Class<?> mainClass;
 	public boolean runDeob;

@@ -18,7 +18,7 @@ public class OpenTerminal {
 	/**
 	 * change this to false if you run multiple OpenTerminal instances per init launch
 	 */
-	public boolean exitOnAppExit;
+	public boolean exitOnAppExit = true;
 	
 	static
 	{

@@ -14,7 +14,7 @@ public class TestConsole implements ITerminalApp {
 		TerminalAppWrapper app = (TerminalAppWrapper) OpenTerminal.INSTANCE.run(TestConsole.class, args);
 		app.name = "" + System.currentTimeMillis();
 //		JREUtil.sleep(2500);
-//		app.reboot(false);
+		app.reboot(false);
 	}
 
 	@Override
