@@ -3,7 +3,6 @@ package jredfox.terminal.testrun;
 import java.io.IOException;
 import java.util.UUID;
 
-import jredfox.common.utils.JREUtil;
 import jredfox.terminal.OpenTerminal;
 import jredfox.terminal.app.ITerminalApp;
 import jredfox.terminal.app.TerminalApp;
@@ -14,9 +13,9 @@ public class TestConsole implements ITerminalApp {
 	{
 		TerminalApp app = OpenTerminal.INSTANCE.run(TestConsole.class, args);
 //		app.name = "" + System.currentTimeMillis();
-		System.out.println(app.jvmArgs);
-		JREUtil.sleep(2500);
-		app.reboot();
+//		System.out.println(app.jvmArgs);
+//		JREUtil.sleep(2500);
+//		app.reboot();
 	}
 
 	@Override

@@ -193,5 +193,10 @@ public class OpenTerminal {
 	{
 		return System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.init);
 	}
+	
+	public static boolean isReboot()
+	{
+		return System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.reboot);
+	}
 
 }

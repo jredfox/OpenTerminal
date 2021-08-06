@@ -288,7 +288,7 @@ public class TerminalApp {
 	{
 		//clear properties for new Terminal app
 		for(String s : this.toPropertyMap().keySet())
-			if(!s.startsWith("user.") && !s.equals(OpenTerminalConstants.p_tmp))
+			if(!this.isReservedProperty(s))
 				JREUtil.clearProperty(s);
 		
 		//set properties back into jvm
@@ -300,6 +300,11 @@ public class TerminalApp {
 				System.setProperty(pair[0], pair.length > 1 ? pair[1] : "");
 			}
 		}
+	}
+
+	public boolean isReservedProperty(String s)
+	{
+		return s.startsWith("user.") || s.equals(OpenTerminalConstants.p_tmp);
 	}
 
 	/**
