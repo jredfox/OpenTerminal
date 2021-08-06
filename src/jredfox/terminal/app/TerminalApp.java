@@ -73,7 +73,7 @@ public class TerminalApp {
     		throw new RuntimeException("appId contains illegal parsing characters:(" + id + "), invalid:" + OpenTerminalConstants.INVALID);
     	
 		this.jvmArgs = OpenTerminal.isInit() ? JavaUtil.asArray(JREUtil.getJVMArgs()) : new ArrayList<>();
-		TerminalApp.addArgs(this.jvmArgs, this.getProperty("ot.jvm", ""));
+		TerminalApp.addArgs(this.jvmArgs, this.getProperty(OpenTerminalConstants.jvm, ""));
 		
 		this.programArgs = new ArrayList<>(args.length);
 		for(String s : args)
@@ -236,7 +236,7 @@ public class TerminalApp {
 		props.put("ot.runDeob", "" + this.runDeob);
 		props.put("ot.forceTerminal", "" + this.forceTerminal);
 		props.put("ot.canReboot", "" + this.canReboot);
-		props.put("ot.jvm", OpenTerminalUtil.wrapArgsToCmd(this.jvmArgs));
+		props.put(OpenTerminalConstants.jvm, OpenTerminalUtil.wrapArgsToCmd(this.jvmArgs));
 		props.put(OpenTerminalConstants.p_userDir, this.userDir.getPath());
 		props.put(OpenTerminalConstants.p_userHome, this.userHome.getPath());
 		props.put(OpenTerminalConstants.p_tmp, this.tmp.getPath());
@@ -274,6 +274,7 @@ public class TerminalApp {
 	{
 		this.clearProperties();
 		System.setProperty(OpenTerminalConstants.launchStage, OpenTerminalConstants.reboot);
+		System.setProperty(OpenTerminalConstants.jvm, OpenTerminalUtil.wrapArgsToCmd(this.jvmArgs));
 		TerminalApp app = newApp ? ((ITerminalApp)JREUtil.newInstance(this.iclass)).newApp(this.getProgramArgs()) : this;
 		app.idHash = this.idHash;
 		app.save();
@@ -287,7 +288,8 @@ public class TerminalApp {
 	{
 		//clear properties for new Terminal app
 		for(String s : this.toPropertyMap().keySet())
-			JREUtil.clearProperty(s);
+			if(!s.startsWith("user.") && !s.equals(OpenTerminalConstants.p_tmp))
+				JREUtil.clearProperty(s);
 		
 		//set properties back into jvm
 		for(String s : this.jvmArgs)

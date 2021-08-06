@@ -16,7 +16,7 @@ public class TestConsole implements ITerminalApp {
 //		app.name = "" + System.currentTimeMillis();
 		System.out.println(app.jvmArgs);
 		JREUtil.sleep(2500);
-		app.reboot(false);
+		app.reboot();
 	}
 
 	@Override
