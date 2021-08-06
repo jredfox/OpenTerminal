@@ -62,7 +62,10 @@ public class OpenTerminal {
 		
 		String stage = System.getProperty(OpenTerminalConstants.launchStage);
 		if(stage.equals(OpenTerminalConstants.exe))
+		{
+			this.app.clearProperties();
 			return;
+		}
 		else if(stage.equals(OpenTerminalConstants.wrapping))
 		{
 			OpenTerminalWrapper.run(this.app);
@@ -154,7 +157,7 @@ public class OpenTerminal {
 	{
 		System.out.println("re-launching: " + FileUtil.getRealtivePath(OpenTerminalConstants.data, reboot) + " exists:" + reboot.exists());
 		this.app = TerminalApp.fromFile(reboot);
-		reboot.delete();
+//		reboot.delete();
 		this.app.process = this.launch(this.app.shouldOpen());
 	}
 	
@@ -181,6 +184,14 @@ public class OpenTerminal {
 	public static boolean canExe()
 	{
 		return System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.exe);
+	}
+
+	/**
+	 * Mostly internal use {@link OpenTerminal#isLaunching()} instead. Currently used for populating jvm arguments
+	 */
+	public static boolean isInit()
+	{
+		return System.getProperty(OpenTerminalConstants.launchStage).equals(OpenTerminalConstants.init);
 	}
 
 }

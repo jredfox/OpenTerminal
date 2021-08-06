@@ -189,6 +189,14 @@ public class JavaUtil {
 		}
 	}
 
+	public static <T> List<T> asArray(T[] li) 
+	{
+		ArrayList<T> arr = new ArrayList<>(li.length);
+		for(T t : li)
+			arr.add(t);
+		return arr;
+	}
+	
 	public static <T> List<T> asArray(Collection<T> li) 
 	{
 		ArrayList<T> arr = new ArrayList<>(li.size());
@@ -330,8 +338,6 @@ public class JavaUtil {
 
 	public static String replaceAll(String str, char what, String with, char esq)
 	{
-		if(what == '§')
-			throw new IllegalArgumentException("unsupported opperend:" + what);
 		StringBuilder builder = new StringBuilder();
 		String previous = "";
 		for(int index = 0; index < str.length(); index++)
@@ -339,8 +345,8 @@ public class JavaUtil {
 			String character = str.substring(index, index + 1);
 			if(previous.equals("" + esq) && character.equals("" + esq))
 			{
-				previous = "§";
-				character = "§"; 
+				previous = "aa";
+				character = "aa"; 
 			}
 			boolean escaped = previous.equals("" + esq);
 			previous = character;

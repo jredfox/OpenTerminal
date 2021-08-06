@@ -42,7 +42,7 @@ public class TerminalAppWrapper extends TerminalApp {
 	public TerminalAppWrapper(String msg, Class<?> iclass, String id, String name, String version, Class<?> jvmMain, String[] args, boolean runDeob)
 	{
 		super(iclass, id, name, version, jvmMain, args, runDeob);
-		this.wrappedMsg = this.getProperty("openterminal.wrappedMsg", msg);
+		this.wrappedMsg = this.getProperty("ot.wrappedMsg", msg);
 	}
 	
 	/**
@@ -51,14 +51,14 @@ public class TerminalAppWrapper extends TerminalApp {
 	public TerminalAppWrapper(MapConfig cfg)
 	{
 		super(cfg);
-		this.wrappedMsg = cfg.get("openterminal.wrappedMsg", null);
+		this.wrappedMsg = cfg.get("ot.wrappedMsg", null);
 	}
 	
 	@Override
 	public Map<String, String> toPropertyMap()
 	{
 		Map<String, String> props = super.toPropertyMap();
-		props.put("openterminal.wrappedMsg", this.wrappedMsg);
+		props.put("ot.wrappedMsg", this.wrappedMsg);
 		return props;
 	}
 	

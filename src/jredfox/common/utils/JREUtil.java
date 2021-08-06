@@ -267,5 +267,17 @@ public class JREUtil {
 		return null;
 	}
 
+	public static void clearProperty(String s) 
+	{
+		try
+		{
+			System.clearProperty(s);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
 
 }

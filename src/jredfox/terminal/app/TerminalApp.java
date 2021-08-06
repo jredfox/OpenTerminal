@@ -72,29 +72,30 @@ public class TerminalApp {
     	if(JavaUtil.containsAny(id, OpenTerminalConstants.INVALID))
     		throw new RuntimeException("appId contains illegal parsing characters:(" + id + "), invalid:" + OpenTerminalConstants.INVALID);
     	
-		//non properties vars
+		this.jvmArgs = OpenTerminal.isInit() ? JavaUtil.asArray(JREUtil.getJVMArgs()) : new ArrayList<>();
+		TerminalApp.addArgs(this.jvmArgs, this.getProperty("ot.jvm", ""));
+		
 		this.programArgs = new ArrayList<>(args.length);
 		for(String s : args)
 			this.programArgs.add(s);
-		this.jvmArgs = JavaUtil.asArray(JREUtil.getJVMArgs());
 		
-		this.id = this.getProperty("openterminal.id", id);
-		this.shName = this.getProperty("openterminal.shName", this.id.contains("/") ? JavaUtil.getLastSplit(this.id, "/") : this.id);
-		this.name = this.getProperty("openterminal.name", name);
-		this.version = this.getProperty("openterminal.version", version);
-		this.iclass = JREUtil.getClass(this.getProperty("openterminal.iclass", iclass.getName()), true);
-		this.mainClass = JREUtil.getClass(this.getProperty("openterminal.mainClass", jvmMain.getName()), true);
-		this.runDeob = this.getProperty("openterminal.runDeob", runDeob);
-		this.forceTerminal = this.getProperty("openterminal.forceTerminal", false);
+		this.id = this.getProperty("ot.id", id);
+		this.shName = this.getProperty("ot.shName", this.id.contains("/") ? JavaUtil.getLastSplit(this.id, "/") : this.id);
+		this.name = this.getProperty("ot.name", name);
+		this.version = this.getProperty("ot.version", version);
+		this.iclass = JREUtil.getClass(this.getProperty("ot.iclass", iclass.getName()), true);
+		this.mainClass = JREUtil.getClass(this.getProperty("ot.mainClass", jvmMain.getName()), true);
+		this.runDeob = this.getProperty("ot.runDeob", runDeob);
+		this.forceTerminal = this.getProperty("ot.forceTerminal", false);
 		
 		boolean isLaunching = OpenTerminal.isLaunching();
 		if(isLaunching)
 			this.syncConfig();
-		this.terminal = this.getProperty("openterminal.terminal", this.terminal);
-		this.idHash = isLaunching ? this.getProperty("openterminal.hash", "" + System.currentTimeMillis()) : this.getProperty("openterminal.hash");
-		this.background = this.getProperty("openterminal.background", false);
-		this.shouldPause = this.getProperty("openterminal.shoulPause", false);
-		this.hardPause = this.getProperty("openterminal.hardPause", false);
+		this.terminal = this.getProperty("ot.terminal", this.terminal);
+		this.idHash = isLaunching ? this.getProperty("ot.hash", "" + System.currentTimeMillis()) : this.getProperty("ot.hash");
+		this.background = this.getProperty("ot.background", false);
+		this.shouldPause = this.getProperty("ot.shoulPause", false);
+		this.hardPause = this.getProperty("ot.hardPause", false);
 		this.userDir = new File(this.getProperty(OpenTerminalConstants.p_userDir));
 		this.userHome = new File(this.getProperty(OpenTerminalConstants.p_userHome));
 		this.tmp = new File(this.getProperty(OpenTerminalConstants.p_tmp));
@@ -123,26 +124,26 @@ public class TerminalApp {
 	 */
 	public TerminalApp(MapConfig cfg)
 	{
-		this.terminal = cfg.get("openterminal.terminal", null);
-		this.idHash = cfg.get("openterminal.hash", null);
-		this.background = Boolean.parseBoolean(cfg.get("openterminal.background", null));
-		this.shouldPause = Boolean.parseBoolean(cfg.get("openterminal.shouldPause", null));
-		this.hardPause = Boolean.parseBoolean(cfg.get("openterminal.hardPause", null));
-		this.id = cfg.get("openterminal.id", null);
-		this.shName = cfg.get("openterminal.shName", null);
-		this.name = cfg.get("openterminal.name", null);
-		this.version = cfg.get("openterminal.version", null);
-		this.iclass = JREUtil.getClass(cfg.get("openterminal.iclass", null), true);
-		this.mainClass = JREUtil.getClass(cfg.get("openterminal.mainClass", null), true);
-		this.runDeob = Boolean.parseBoolean(cfg.get("openterminal.runDeob", null));
-		this.forceTerminal = Boolean.parseBoolean(cfg.get("openterminal.forceTerminal", null));
-		this.canReboot = Boolean.parseBoolean(cfg.get("openterminal.canReboot", null));
+		this.terminal = cfg.get("ot.terminal", null);
+		this.idHash = cfg.get("ot.hash", null);
+		this.background = Boolean.parseBoolean(cfg.get("ot.background", null));
+		this.shouldPause = Boolean.parseBoolean(cfg.get("ot.shouldPause", null));
+		this.hardPause = Boolean.parseBoolean(cfg.get("ot.hardPause", null));
+		this.id = cfg.get("ot.id", null);
+		this.shName = cfg.get("ot.shName", null);
+		this.name = cfg.get("ot.name", null);
+		this.version = cfg.get("ot.version", null);
+		this.iclass = JREUtil.getClass(cfg.get("ot.iclass", null), true);
+		this.mainClass = JREUtil.getClass(cfg.get("ot.mainClass", null), true);
+		this.runDeob = Boolean.parseBoolean(cfg.get("ot.runDeob", null));
+		this.forceTerminal = Boolean.parseBoolean(cfg.get("ot.forceTerminal", null));
+		this.canReboot = Boolean.parseBoolean(cfg.get("ot.canReboot", null));
 		this.userDir = new File((String)cfg.get(OpenTerminalConstants.p_userDir, null));
 		this.userHome = new File((String)cfg.get(OpenTerminalConstants.p_userHome, null));
 		this.tmp = new File((String)cfg.get(OpenTerminalConstants.p_tmp, null));
 		this.appdata = new File((String)cfg.get(OpenTerminalConstants.p_appdata, null));
-		String jvm = cfg.get(OpenTerminalConstants.jvmArgs, null);
-		String args = cfg.get(OpenTerminalConstants.programArgs, null);
+		String jvm = cfg.get(OpenTerminalConstants.jvm, null);
+		String args = cfg.get(OpenTerminalConstants.args, null);
 		this.jvmArgs = new ArrayList<>();
 		this.programArgs = new ArrayList<>();
 		addArgs(this.jvmArgs, jvm);
@@ -220,21 +221,22 @@ public class TerminalApp {
 	public Map<String, String> toPropertyMap()
 	{
 		Map<String, String> props = new HashMap<>(25);
-		props.put("openterminal.appClass", this.getClass().getName());
-		props.put("openterminal.terminal", this.terminal);
-		props.put("openterminal.hash", "" + this.idHash);
-		props.put("openterminal.background", "" + this.background);
-		props.put("openterminal.shoulPause", "" + this.shouldPause);
-		props.put("openterminal.hardPause", "" + this.hardPause);
-		props.put("openterminal.id", this.id);
-		props.put("openterminal.shName", this.shName);
-		props.put("openterminal.name", this.name);
-		props.put("openterminal.version", this.version);
-		props.put("openterminal.iclass", this.iclass.getName());
-		props.put("openterminal.mainClass", this.mainClass.getName());
-		props.put("openterminal.runDeob", "" + this.runDeob);
-		props.put("openterminal.forceTerminal", "" + this.forceTerminal);
-		props.put("openterminal.canReboot", "" + this.canReboot);
+		props.put("ot.appClass", this.getClass().getName());
+		props.put("ot.terminal", this.terminal);
+		props.put("ot.hash", "" + this.idHash);
+		props.put("ot.background", "" + this.background);
+		props.put("ot.shoulPause", "" + this.shouldPause);
+		props.put("ot.hardPause", "" + this.hardPause);
+		props.put("ot.id", this.id);
+		props.put("ot.shName", this.shName);
+		props.put("ot.name", this.name);
+		props.put("ot.version", this.version);
+		props.put("ot.iclass", this.iclass.getName());
+		props.put("ot.mainClass", this.mainClass.getName());
+		props.put("ot.runDeob", "" + this.runDeob);
+		props.put("ot.forceTerminal", "" + this.forceTerminal);
+		props.put("ot.canReboot", "" + this.canReboot);
+		props.put("ot.jvm", OpenTerminalUtil.wrapArgsToCmd(this.jvmArgs));
 		props.put(OpenTerminalConstants.p_userDir, this.userDir.getPath());
 		props.put(OpenTerminalConstants.p_userHome, this.userHome.getPath());
 		props.put(OpenTerminalConstants.p_tmp, this.tmp.getPath());
@@ -270,20 +272,32 @@ public class TerminalApp {
 	 */
 	public void reboot(boolean newApp)
 	{
-		//clear properties for new Terminal app
-		for(Object o : JavaUtil.asArray(System.getProperties().keySet()))
-		{
-			String s = String.valueOf(o);
-			if(s.startsWith("openterminal."))
-				System.clearProperty(s);
-		}
-		//TODO: have original openterminal jvm args applied here
+		this.clearProperties();
 		System.setProperty(OpenTerminalConstants.launchStage, OpenTerminalConstants.reboot);
 		TerminalApp app = newApp ? ((ITerminalApp)JREUtil.newInstance(this.iclass)).newApp(this.getProgramArgs()) : this;
 		app.idHash = this.idHash;
-		app.jvmArgs = this.jvmArgs;
 		app.save();
 		JREUtil.shutdown(OpenTerminalConstants.rebootExit);
+	}
+
+	/**
+	 * clears the extra generated open terminal properties that were not in the jvm to begin with from the initial command
+	 */
+	public void clearProperties() 
+	{
+		//clear properties for new Terminal app
+		for(String s : this.toPropertyMap().keySet())
+			JREUtil.clearProperty(s);
+		
+		//set properties back into jvm
+		for(String s : this.jvmArgs)
+		{
+			if(s.startsWith("-D"))
+			{
+				String[] pair = JavaUtil.splitFirst(s, '=', '"', '"');
+				System.setProperty(pair[0], pair.length > 1 ? pair[1] : "");
+			}
+		}
 	}
 
 	/**
@@ -292,13 +306,12 @@ public class TerminalApp {
 	public void save() 
 	{
 		List<String> jvm = JavaUtil.asArray(this.jvmArgs);
-		this.writeProperties(jvm);//overwrite jvmArgs with app properties
+		this.writeProperties(jvm);//overwrite jvm properties with app properties
 		File reboot = new File(this.getAppdata(), "reboot.properties");
 		MapConfig cfg = new MapConfig(reboot);
 		for(Map.Entry<String, String> entry : this.toPropertyMap().entrySet())
 			cfg.list.put(entry.getKey(), entry.getValue());
-		cfg.list.put(OpenTerminalConstants.jvmArgs, OpenTerminalUtil.wrapArgsToCmd(jvm).replaceAll(System.lineSeparator(), OpenTerminalConstants.linefeed));
-		cfg.list.put(OpenTerminalConstants.programArgs, OpenTerminalUtil.wrapArgsToCmd(this.programArgs).replaceAll(System.lineSeparator(), OpenTerminalConstants.linefeed));//stop illegal line feed characters from messing up parsing
+		cfg.list.put(OpenTerminalConstants.args, OpenTerminalUtil.wrapArgsToCmd(this.programArgs).replaceAll(System.lineSeparator(), OpenTerminalConstants.linefeed));//stop illegal line feed characters from messing up parsing
 		cfg.save();
 	}
 	
@@ -335,13 +348,16 @@ public class TerminalApp {
 	}
 	
 	/**
-	 * returns the appdata contained in %appdata%/SelfCommandPrompt/appId
+	 * returns the appdata current instance
 	 */
 	public File getAppdata()
 	{
 		return new File(OpenTerminalConstants.data, this.id + "/instances/" + this.idHash);
 	}
 	
+	/**
+	 * returns the global appdata folder for this application
+	 */
 	public File getRootAppData()
 	{
 		return new File(OpenTerminalConstants.data, this.id);
@@ -375,22 +391,23 @@ public class TerminalApp {
 	{
 		MapConfig cfg = new MapConfig(reboot);
 		cfg.load();
-		TerminalApp app = JREUtil.newInstance(JREUtil.getClass(cfg.get("openterminal.appClass", null), true), new Class<?>[]{MapConfig.class}, cfg);
+		TerminalApp app = JREUtil.newInstance(JREUtil.getClass(cfg.get("ot.appClass", null), true), new Class<?>[]{MapConfig.class}, cfg);
 		return app;
 	}
 	
 	public static TerminalApp fromProperties(String[] args) 
 	{
-		return JREUtil.newInstance(JREUtil.getClass(System.getProperty("openterminal.appClass"), true), new Class<?>[]{Class.class, String[].class}, JREUtil.getClass(System.getProperty("openterminal.iclass"), true), (Object)args);
+		return JREUtil.newInstance(JREUtil.getClass(System.getProperty("ot.appClass"), true), new Class<?>[]{Class.class, String[].class}, JREUtil.getClass(System.getProperty("ot.iclass"), true), (Object)args);
 	}
 
-	private static void addArgs(List<String> args, String argStr) 
+	private static List<String> addArgs(List<String> args, String argStr) 
 	{
 		if(argStr.isEmpty())
-			return;
+			return args;
 		String[] arr = argStr.split(" ");
 		for(String s : arr)
 			args.add(s.replaceAll(OpenTerminalConstants.spacefeed, " "));
+		return args;
 	}
 
 
