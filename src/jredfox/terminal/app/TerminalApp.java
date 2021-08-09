@@ -1,18 +1,22 @@
 package jredfox.terminal.app;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import jredfox.common.config.MapConfig;
+import jredfox.common.exe.ExeBuilder;
 import jredfox.common.os.OSUtil;
 import jredfox.common.utils.JREUtil;
 import jredfox.common.utils.JavaUtil;
 import jredfox.terminal.OpenTerminal;
 import jredfox.terminal.OpenTerminalConstants;
 import jredfox.terminal.OpenTerminalUtil;
+import jredfox.terminal.OpenTerminalWrapper;
 
 public class TerminalApp {
 	
@@ -30,7 +34,7 @@ public class TerminalApp {
 	 */
 	public Class<?> iclass;
 	/**
-	 * the main class of your program via jvm which may be a wrapper
+	 * the main class the jvm. may be equal to your program's main class or a wrapper class
 	 */
 	public Class<?> mainClass;
 	public boolean runDeob;
@@ -46,6 +50,7 @@ public class TerminalApp {
 	//non serializable vars
 	public boolean compiled = JREUtil.isCompiled();
 	public Process process;
+	public boolean isRebooting;
 	
 	public TerminalApp(Class<?> iclass, String[] args)
 	{
@@ -280,11 +285,11 @@ public class TerminalApp {
 		app.save();
 		JREUtil.shutdown(OpenTerminalConstants.rebootExit);
 	}
-
+	
 	/**
 	 * clears the extra generated open terminal properties that were not in the jvm to begin with from the initial command
 	 */
-	public void clearProperties() 
+	public void clearProperties()
 	{
 		//clear properties for new Terminal app
 		for(String s : this.toPropertyMap().keySet())

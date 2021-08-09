@@ -72,7 +72,7 @@ public class OpenTerminal {
 			return;//return as the TerminalApp is done executing and System#exit has already been called on the child process
 		}
 		
-		this.app.process = this.launch(this.shouldOpen());
+		this.app.process = this.launch();
 		if(this.app.process != null)
 			JREUtil.sleep(700);
 		int exit = this.app.process != null ? 0 : -1;
@@ -121,8 +121,9 @@ public class OpenTerminal {
 	/**
 	 * make sure that all System properties are set before calling this. In memory properties override other properties
 	 */
-	public Process launch(boolean open)
+	public Process launch()
 	{
+		boolean open = this.shouldOpen();
         String libs = System.getProperty("java.class.path");
         if(JavaUtil.containsAny(libs, OpenTerminalConstants.INVALID))
         	throw new RuntimeException("one or more LIBRARIES contains illegal parsing characters:(" + libs + "), invalid:" + OpenTerminalConstants.INVALID);
@@ -158,7 +159,7 @@ public class OpenTerminal {
 		System.out.println("re-launching: " + FileUtil.getRealtivePath(OpenTerminalConstants.data, reboot) + " exists:" + reboot.exists());
 		this.app = TerminalApp.fromFile(reboot);
 //		reboot.delete();
-		this.app.process = this.launch(this.app.shouldOpen());
+		this.app.process = this.launch();
 	}
 	
 	/**
