@@ -7,7 +7,6 @@ import java.util.List;
 
 import jredfox.common.exe.ExeBuilder;
 import jredfox.common.utils.JREUtil;
-import jredfox.common.utils.JavaUtil;
 import jredfox.terminal.app.TerminalApp;
 import jredfox.terminal.app.TerminalAppWrapper;
 
@@ -56,9 +55,10 @@ public class OpenTerminalWrapper {
 		
 		ExeBuilder b = new ExeBuilder();
 		b.addCommand("java");
-		List<String> jvm = JavaUtil.asArray(JREUtil.getJVMArgs());
+		List<String> jvm = app.jvmArgs;
+		app.writeProperties(jvm);
 		b.addCommand(OpenTerminalUtil.writeProperty(jvm, OpenTerminalConstants.launchStage, OpenTerminalConstants.exe));
-		b.addCommand(OpenTerminalUtil.wrapProgramArgs(jvm));
+		b.addCommand(jvm);
 		b.addCommand("-cp");
 		b.addCommand("\"" + System.getProperty("java.class.path") + "\"");
 		b.addCommand(app.mainClass.getName());

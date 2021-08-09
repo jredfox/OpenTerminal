@@ -1,6 +1,7 @@
 package jredfox.terminal;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import jredfox.common.exe.ExeBuilder;
@@ -63,7 +64,7 @@ public class OpenTerminal {
 		String stage = System.getProperty(OpenTerminalConstants.launchStage);
 		if(stage.equals(OpenTerminalConstants.exe))
 		{
-			this.app.clearProperties();
+//			this.app.clearProperties();
 			return;
 		}
 		else if(stage.equals(OpenTerminalConstants.wrapping))
@@ -123,16 +124,15 @@ public class OpenTerminal {
 	 */
 	public Process launch()
 	{
-		boolean open = this.shouldOpen();
         String libs = System.getProperty("java.class.path");
         if(JavaUtil.containsAny(libs, OpenTerminalConstants.INVALID))
         	throw new RuntimeException("one or more LIBRARIES contains illegal parsing characters:(" + libs + "), invalid:" + OpenTerminalConstants.INVALID);
         
         ExeBuilder builder = new ExeBuilder();
     	builder.addCommand("java");
-    	List<String> jvm = JavaUtil.asArray(this.app.jvmArgs);
-    	builder.addCommand(OpenTerminalUtil.writeProperty(jvm, OpenTerminalConstants.launchStage, OpenTerminalConstants.wrapping));//always use wrapper due to character limit on the command line
+    	List<String> jvm = this.app.hardPause ? new ArrayList<>() : JavaUtil.asArray(this.app.jvmArgs);
     	this.app.writeProperties(jvm);
+    	builder.addCommand(OpenTerminalUtil.writeProperty(jvm, OpenTerminalConstants.launchStage, OpenTerminalConstants.wrapping));//always use wrapper due to character limit on the command line
     	builder.addCommand(jvm);
     	builder.addCommand("-cp");
     	String q = OSUtil.getQuote();
@@ -142,7 +142,7 @@ public class OpenTerminal {
     	String command = builder.toString();
     	try
     	{
-    		return open ? OpenTerminalUtil.runInNewTerminal(this.app.getAppdata(), this.app.terminal, this.app.name, this.app.shName, command, this.app.userDir) : OpenTerminalUtil.runInTerminal(this.app.terminal, command, this.app.userDir);
+    		return this.shouldOpen() ? OpenTerminalUtil.runInNewTerminal(this.app.getAppdata(), this.app.terminal, this.app.name, this.app.shName, command, this.app.userDir) : OpenTerminalUtil.runInTerminal(this.app.terminal, command, this.app.userDir);
     	}
     	catch(Throwable t)
     	{

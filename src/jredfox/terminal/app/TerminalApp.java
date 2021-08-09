@@ -1,22 +1,18 @@
 package jredfox.terminal.app;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import jredfox.common.config.MapConfig;
-import jredfox.common.exe.ExeBuilder;
 import jredfox.common.os.OSUtil;
 import jredfox.common.utils.JREUtil;
 import jredfox.common.utils.JavaUtil;
 import jredfox.terminal.OpenTerminal;
 import jredfox.terminal.OpenTerminalConstants;
 import jredfox.terminal.OpenTerminalUtil;
-import jredfox.terminal.OpenTerminalWrapper;
 
 public class TerminalApp {
 	
