@@ -1,6 +1,5 @@
 package jredfox.terminal;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -48,30 +47,37 @@ public class OpenTerminalWrapper {
 	/**
 	 * hard wrapper catches {@link System#exit(int)}
 	 */
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args)
 	{
-		TerminalApp app = TerminalApp.fromProperties(args);
-		args = app instanceof TerminalAppWrapper ? (((TerminalAppWrapper)app).getWrappedArgs(args)) : app.getProgramArgs();
-		
-		ExeBuilder b = new ExeBuilder();
-		b.addCommand("java");
-		List<String> jvm = app.jvmArgs;
-		app.writeProperties(jvm);
-		b.addCommand(OpenTerminalUtil.writeProperty(jvm, OpenTerminalConstants.launchStage, OpenTerminalConstants.exe));
-		b.addCommand(jvm);
-		b.addCommand("-cp");
-		b.addCommand("\"" + System.getProperty("java.class.path") + "\"");
-		b.addCommand(app.mainClass.getName());
-		b.addCommand(OpenTerminalUtil.wrapProgramArgs(args));
-		Process p = OpenTerminalUtil.runInTerminal(app.terminal, b.toString(), app.userDir);
-		JREUtil.sleep(100);
-		while(p.isAlive())
+		try
 		{
+			TerminalApp app = TerminalApp.fromProperties(args);
+			args = app instanceof TerminalAppWrapper ? (((TerminalAppWrapper)app).getWrappedArgs(args)) : app.getProgramArgs();
+			ExeBuilder b = new ExeBuilder();
+			b.addCommand("java");
+			List<String> jvm = app.jvmArgs;
+			app.writeProperties(jvm);
+			b.addCommand(OpenTerminalUtil.writeProperty(jvm, OpenTerminalConstants.launchStage, OpenTerminalConstants.exe));
+			b.addCommand(jvm);
+			b.addCommand("-cp");
+			b.addCommand("\"" + System.getProperty("java.class.path") + "\"");
+			b.addCommand(app.mainClass.getName());
+			b.addCommand(OpenTerminalUtil.wrapProgramArgs(args));
+			Process p = OpenTerminalUtil.runInTerminal(app.terminal, b.toString(), app.userDir);
+			JREUtil.sleep(100);
+			while(p.isAlive())
+			{
 			
-		}
+			}
 		
-		if(app.shouldPause(p.exitValue()))
-			app.pause();
+			if(app.shouldPause(p.exitValue()))
+				app.pause();
+		}
+		catch(Throwable t)
+		{
+			System.err.println("unhandled / unexpected exception:");
+			t.printStackTrace();
+		}
 	}
 
 }

@@ -74,6 +74,7 @@ public class TerminalApp {
     		throw new RuntimeException("appId contains illegal parsing characters:(" + id + "), invalid:" + OpenTerminalConstants.INVALID);
     	
 		this.jvmArgs = OpenTerminal.isInit() ? JavaUtil.asArray(JREUtil.getJVMArgs()) : new ArrayList<>();
+		JavaUtil.removeStarts(this.jvmArgs, "-D" + OpenTerminalConstants.jvm, false);
 		TerminalApp.addArgs(this.jvmArgs, this.getProperty(OpenTerminalConstants.jvm, ""));
 		
 		this.programArgs = new ArrayList<>(args.length);
@@ -408,13 +409,16 @@ public class TerminalApp {
 		return JREUtil.newInstance(JREUtil.getClass(System.getProperty("ot.appClass"), true), new Class<?>[]{Class.class, String[].class}, JREUtil.getClass(System.getProperty("ot.iclass"), true), (Object)args);
 	}
 
-	private static List<String> addArgs(List<String> args, String argStr) 
+	public static List<String> addArgs(List<String> args, String argStr) 
 	{
 		if(argStr.isEmpty())
 			return args;
-		String[] arr = argStr.split(" ");
+		String[] arr = JavaUtil.parseCommandLine(argStr);
 		for(String s : arr)
+		{
+			JavaUtil.removeStarts(args, JavaUtil.splitFirst(s, '=', '"', '"')[0], false);
 			args.add(s.replaceAll(OpenTerminalConstants.spacefeed, " "));
+		}
 		return args;
 	}
 

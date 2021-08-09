@@ -64,7 +64,7 @@ public class OpenTerminal {
 		String stage = System.getProperty(OpenTerminalConstants.launchStage);
 		if(stage.equals(OpenTerminalConstants.exe))
 		{
-//			this.app.clearProperties();
+			this.app.clearProperties();
 			return;
 		}
 		else if(stage.equals(OpenTerminalConstants.wrapping))
@@ -142,6 +142,8 @@ public class OpenTerminal {
     	String command = builder.toString();
     	try
     	{
+    		System.out.println(builder.toString());
+//    		System.out.println("calling from launcher:" + command);
     		return this.shouldOpen() ? OpenTerminalUtil.runInNewTerminal(this.app.getAppdata(), this.app.terminal, this.app.name, this.app.shName, command, this.app.userDir) : OpenTerminalUtil.runInTerminal(this.app.terminal, command, this.app.userDir);
     	}
     	catch(Throwable t)
