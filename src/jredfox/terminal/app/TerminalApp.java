@@ -47,6 +47,11 @@ public class TerminalApp {
 	public boolean compiled = JREUtil.isCompiled();
 	public Process process;
 	public boolean isRebooting;
+	/**
+	 * should your app exit OpenTerminal Launcher when done executing
+	 *
+	 */
+	public boolean shouldExit = true;//TODO: get working
 	
 	public TerminalApp(Class<?> iclass, String[] args)
 	{

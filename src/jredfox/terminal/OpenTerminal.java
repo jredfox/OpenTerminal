@@ -17,10 +17,6 @@ public class OpenTerminal {
 	
 	public static OpenTerminal INSTANCE = new OpenTerminal();
 	public TerminalApp app;
-	/**
-	 * change this to false if you run multiple OpenTerminal instances per init launch
-	 */
-	public boolean exitOnAppExit = true;
 	
 	static
 	{
@@ -45,7 +41,8 @@ public class OpenTerminal {
 	}
 	
 	/**
-	 * allow custom TerminalApp's to run even if it's not instaceof ITerminalApp
+	 * allow custom TerminalApp's to run even if it's not instaceof ITerminalApp.
+	 * NOTE: this will continue to run until the program is done being executed
 	 */
 	public void run(TerminalApp app)
 	{
@@ -95,12 +92,13 @@ public class OpenTerminal {
 				JREUtil.sleep(1000);
 		}
 		this.cleanup();
-		if(this.exitOnAppExit)
-			this.exit(exit);
+		this.exit(exit);
 	}
 	
 	public void exit(int exit)
 	{
+		if(this.app.shouldExit)//TODO:
+			return;
 		System.out.println("shutting down OpenTerminal Launcher:" + exit);
 		JREUtil.shutdown(exit);
 	}
