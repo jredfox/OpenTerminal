@@ -122,37 +122,6 @@ public class TerminalApp {
 	}
 
 	/**
-	 * used when parsing from a file usually a reboot
-	 */
-	public TerminalApp(MapConfig cfg)
-	{
-		this.terminal = cfg.get("ot.terminal", null);
-		this.idHash = cfg.get("ot.hash", null);
-		this.background = Boolean.parseBoolean(cfg.get("ot.background", null));
-		this.shouldPause = Boolean.parseBoolean(cfg.get("ot.shouldPause", null));
-		this.hardPause = Boolean.parseBoolean(cfg.get("ot.hardPause", null));
-		this.id = cfg.get("ot.id", null);
-		this.shName = cfg.get("ot.shName", null);
-		this.name = cfg.get("ot.name", null);
-		this.version = cfg.get("ot.version", null);
-		this.iclass = JREUtil.getClass(cfg.get("ot.iclass", null), true);
-		this.mainClass = JREUtil.getClass(cfg.get("ot.mainClass", null), true);
-		this.runDeob = Boolean.parseBoolean(cfg.get("ot.runDeob", null));
-		this.forceTerminal = Boolean.parseBoolean(cfg.get("ot.forceTerminal", null));
-		this.canReboot = Boolean.parseBoolean(cfg.get("ot.canReboot", null));
-		this.userDir = new File((String)cfg.get(OpenTerminalConstants.p_userDir, null));
-		this.userHome = new File((String)cfg.get(OpenTerminalConstants.p_userHome, null));
-		this.tmp = new File((String)cfg.get(OpenTerminalConstants.p_tmp, null));
-		this.appdata = new File((String)cfg.get(OpenTerminalConstants.p_appdata, null));
-		String jvm = cfg.get(OpenTerminalConstants.jvm, null);
-		String args = cfg.get(OpenTerminalConstants.args, null);
-		this.jvmArgs = new ArrayList<>();
-		this.programArgs = new ArrayList<>();
-		addArgs(this.jvmArgs, jvm);
-		addArgs(this.programArgs, args);
-	}
-
-	/**
 	 * should your TerminalApp open the terminal gui?
 	 */
 	public boolean shouldOpen()
@@ -219,87 +188,6 @@ public class TerminalApp {
 	}
 	
 	/**
-	 * used for serialization of the app
-	 */
-	public Map<String, String> toPropertyMap()
-	{
-		Map<String, String> props = new HashMap<>(25);
-		props.put("ot.appClass", this.getClass().getName());
-		props.put("ot.terminal", this.terminal);
-		props.put("ot.hash", "" + this.idHash);
-		props.put("ot.background", "" + this.background);
-		props.put("ot.shoulPause", "" + this.shouldPause);
-		props.put("ot.hardPause", "" + this.hardPause);
-		props.put("ot.id", this.id);
-		props.put("ot.shName", this.shName);
-		props.put("ot.name", this.name);
-		props.put("ot.version", this.version);
-		props.put("ot.iclass", this.iclass.getName());
-		props.put("ot.mainClass", this.mainClass.getName());
-		props.put("ot.runDeob", "" + this.runDeob);
-		props.put("ot.forceTerminal", "" + this.forceTerminal);
-		props.put("ot.canReboot", "" + this.canReboot);
-		props.put(OpenTerminalConstants.jvm, OpenTerminalUtil.wrapArgsToCmd(this.jvmArgs));
-		props.put(OpenTerminalConstants.p_userDir, this.userDir.getPath());
-		props.put(OpenTerminalConstants.p_userHome, this.userHome.getPath());
-		props.put(OpenTerminalConstants.p_tmp, this.tmp.getPath());
-		props.put(OpenTerminalConstants.p_appdata, this.appdata.getPath());
-		return props;
-	}
-	
-	/**
-	 * write your app vars to jvm properties for wrapping/execution
-	 */
-	public void writeProperties(List<String> jvm)
-	{
-		for(Map.Entry<String, String> entry : this.toPropertyMap().entrySet())
-		{
-			String id = entry.getKey();
-			String v = entry.getValue();
-			jvm.add(OpenTerminalUtil.writeProperty(jvm, id, v));
-		}
-	}
-	
-	/**
-	 * reboot your TerminalApp using {@link #programArgs} and {@link #jvmArgs}. in order to have a clean reboot clear them before calling this. 
-	 * WARNING: your {@link TerminalApp#iclass} must be instanceof ITerminalApp in order to reboot
-	 */
-	public void reboot()
-	{
-		this.reboot(true);
-	}
-	
-	/**
-	 * reboot your TerminalApp using {@link #programArgs} and {@link #jvmArgs}. in order to have a clean reboot clear them before calling this. 
-	 * WARNING: your {@link TerminalApp#iclass} must be instanceof ITerminalApp in order to reboot if newApp is true
-	 */
-	public void reboot(boolean newApp)
-	{
-		this.clearProperties();
-		System.setProperty(OpenTerminalConstants.launchStage, OpenTerminalConstants.reboot);
-		System.setProperty(OpenTerminalConstants.jvm, OpenTerminalUtil.wrapArgsToCmd(this.jvmArgs));
-		TerminalApp app = newApp ? ((ITerminalApp)JREUtil.newInstance(this.iclass)).newApp(this.getProgramArgs()) : this;
-		app.idHash = this.idHash;
-		app.save();
-		JREUtil.shutdown(OpenTerminalConstants.rebootExit);
-	}
-
-	/**
-	 * save this app to a disk
-	 */
-	public void save() 
-	{
-		List<String> jvm = JavaUtil.asArray(this.jvmArgs);
-		this.writeProperties(jvm);//overwrite jvm properties with app properties
-		File reboot = new File(this.getAppdata(), "reboot.properties");
-		MapConfig cfg = new MapConfig(reboot);
-		for(Map.Entry<String, String> entry : this.toPropertyMap().entrySet())
-			cfg.list.put(entry.getKey(), entry.getValue());
-		cfg.list.put(OpenTerminalConstants.args, OpenTerminalUtil.wrapArgsToCmd(this.programArgs).replaceAll(System.lineSeparator(), OpenTerminalConstants.linefeed));//stop illegal line feed characters from messing up parsing
-		cfg.save();
-	}
-	
-	/**
 	 * sync user dirs from the properties. call this if you set system properties and want to reboot or use the TerminalApp directory vars again
 	 */
 	public void syncDirs()
@@ -308,27 +196,6 @@ public class TerminalApp {
 		this.userHome = new File(this.getProperty(OpenTerminalConstants.p_userHome));
 		this.tmp = new File(this.getProperty(OpenTerminalConstants.p_tmp));
 		this.appdata = new File(this.getProperty(OpenTerminalConstants.p_appdata));
-	}
-	
-	public boolean getProperty(String propId, boolean b)
-	{
-		return Boolean.parseBoolean(this.getProperty(propId, String.valueOf(b)));
-	}
-
-	public String getProperty(String propId, String defaults) 
-	{
-		String p = System.getProperty(propId);
-		return p != null ? p : defaults;
-	}
-
-	public boolean getBooleanProperty(String propId) 
-	{
-		return Boolean.parseBoolean(this.getProperty(propId));
-	}
-
-	public String getProperty(String propId)
-	{
-		return System.getProperty(propId);
 	}
 	
 	/**
@@ -367,34 +234,10 @@ public class TerminalApp {
 	{
 		return JavaUtil.toArray(this.programArgs, String.class);
 	}
-
-	/**
-	 * used to parse any TerminalApp from the disk into memory not just a specific class
-	 */
-	public static TerminalApp fromFile(File reboot)
-	{
-		MapConfig cfg = new MapConfig(reboot);
-		cfg.load();
-		TerminalApp app = JREUtil.newInstance(JREUtil.getClass(cfg.get("ot.appClass", null), true), new Class<?>[]{MapConfig.class}, cfg);
-		return app;
-	}
 	
 	public static TerminalApp fromProperties(String[] args) 
 	{
 		return JREUtil.newInstance(JREUtil.getClass(System.getProperty("ot.appClass"), true), new Class<?>[]{Class.class, String[].class}, (Object)args);
-	}
-
-	public static List<String> addArgs(List<String> args, String argStr) 
-	{
-		if(argStr.isEmpty())
-			return args;
-		String[] arr = JavaUtil.parseCommandLine(argStr);
-		for(String s : arr)
-		{
-			JavaUtil.removeStarts(args, JavaUtil.splitFirst(s, '=', '"', '"')[0], false);
-			args.add(s.replaceAll(OpenTerminalConstants.spacefeed, " "));
-		}
-		return args;
 	}
 
 

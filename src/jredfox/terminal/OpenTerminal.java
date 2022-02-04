@@ -157,10 +157,7 @@ public class OpenTerminal {
 	 */
 	public void relaunch(File reboot) 
 	{
-		System.out.println("re-launching: " + FileUtil.getRealtivePath(OpenTerminalConstants.data, reboot) + " exists:" + reboot.exists());
-		this.app = TerminalApp.fromFile(reboot);
-//		reboot.delete();
-		this.app.process = this.launch();
+		//TODO:
 	}
 	
 	/**
