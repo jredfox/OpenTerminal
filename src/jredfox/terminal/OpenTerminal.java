@@ -17,6 +17,7 @@ public class OpenTerminal {
 	
 	public static OpenTerminal INSTANCE = new OpenTerminal();
 	public TerminalApp app;
+	public boolean shouldExit = true;
 	
 	static
 	{
@@ -97,7 +98,7 @@ public class OpenTerminal {
 	
 	public void exit(int exit)
 	{
-		if(this.app.shouldExit)//TODO:
+		if(this.shouldExit)
 			return;
 		System.out.println("shutting down OpenTerminal Launcher:" + exit);
 		JREUtil.shutdown(exit);
@@ -140,7 +141,9 @@ public class OpenTerminal {
     	String command = builder.toString();
     	try
     	{
-    		return this.shouldOpen() ? OpenTerminalUtil.runInNewTerminal(this.app.getAppdata(), this.app.terminal, this.app.name, this.app.shName, command, this.app.userDir) : OpenTerminalUtil.runInTerminal(this.app.terminal, command, this.app.userDir);
+    		return this.shouldOpen() ? 
+    				OpenTerminalUtil.runInNewTerminal(this.app.terminal, this.app.name, this.app.shName, command, this.app.userDir, this.app.getAppdata()) : 
+    					OpenTerminalUtil.runInTerminal(this.app.terminal, command, this.app.userDir);
     	}
     	catch(Throwable t)
     	{

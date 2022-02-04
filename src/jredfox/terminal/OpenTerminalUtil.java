@@ -17,7 +17,7 @@ public class OpenTerminalUtil {
 	 * runs a command in a new terminal window.
 	 * the sh name is the file name you want the shell script stored. The appId is to locate your folder
 	 */
-	public static Process runInNewTerminal(File appdata, String terminal, String appName, String shName, String command, File dir) throws IOException
+	public static Process runInNewTerminal(String terminal, String appName, String shName, String command, File dir, File appdata) throws IOException
 	{
         if(OSUtil.isWindows())
         {

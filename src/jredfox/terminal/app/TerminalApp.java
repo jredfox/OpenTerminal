@@ -47,11 +47,6 @@ public class TerminalApp {
 	public boolean compiled = JREUtil.isCompiled();
 	public Process process;
 	public boolean isRebooting;
-	/**
-	 * should your app exit OpenTerminal Launcher when done executing
-	 *
-	 */
-	public boolean shouldExit = true;//TODO: get working
 	
 	public TerminalApp(Class<?> iclass, String[] args)
 	{
@@ -162,7 +157,8 @@ public class TerminalApp {
 	 */
 	public boolean shouldOpen()
     {
-        return !this.background && (!this.compiled ? this.runDeob && System.console() == null && !JREUtil.isDebugMode() : this.forceTerminal || System.console() == null);
+		boolean runDeob = this.runDeob && !JREUtil.isDebugMode();
+		return !this.background && (this.forceTerminal ? (this.compiled || runDeob) : (System.console() == null && (this.compiled || runDeob) ));
     }
 	
 	public boolean shouldPause(int exit)
@@ -287,32 +283,6 @@ public class TerminalApp {
 		app.save();
 		JREUtil.shutdown(OpenTerminalConstants.rebootExit);
 	}
-	
-	/**
-	 * clears the extra generated open terminal properties that were not in the jvm to begin with from the initial command
-	 */
-	public void clearProperties()
-	{
-		//clear properties for new Terminal app
-		for(String s : this.toPropertyMap().keySet())
-			if(!this.isReservedProperty(s))
-				JREUtil.clearProperty(s);
-		
-		//set properties back into jvm
-		for(String s : this.jvmArgs)
-		{
-			if(s.startsWith("-D"))
-			{
-				String[] pair = JavaUtil.splitFirst(s, '=', '"', '"');
-				System.setProperty(pair[0], pair.length > 1 ? pair[1] : "");
-			}
-		}
-	}
-
-	public boolean isReservedProperty(String s)
-	{
-		return s.startsWith("user.") || s.equals(OpenTerminalConstants.p_tmp);
-	}
 
 	/**
 	 * save this app to a disk
@@ -411,7 +381,7 @@ public class TerminalApp {
 	
 	public static TerminalApp fromProperties(String[] args) 
 	{
-		return JREUtil.newInstance(JREUtil.getClass(System.getProperty("ot.appClass"), true), new Class<?>[]{Class.class, String[].class}, JREUtil.getClass(System.getProperty("ot.iclass"), true), (Object)args);
+		return JREUtil.newInstance(JREUtil.getClass(System.getProperty("ot.appClass"), true), new Class<?>[]{Class.class, String[].class}, (Object)args);
 	}
 
 	public static List<String> addArgs(List<String> args, String argStr) 
