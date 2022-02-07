@@ -16,23 +16,17 @@ import jredfox.terminal.OpenTerminalUtil;
 
 public class TerminalApp {
 	
-	public String terminal;
-	public String idHash;
-	public boolean background;
-	public boolean shouldPause;
-	public boolean hardPause;
+	public Class<?> appClass;//main class of your program
+	public Class<?> jvmClass;//main class of your program according to JVM may be a wrapper
 	public String id;
-	public String shName;
 	public String name;
 	public String version;
-	/**
-	 * the main class of your program that is never a wrapper class
-	 */
-	public Class<?> iclass;
-	/**
-	 * the main class the jvm. may be equal to your program's main class or a wrapper class
-	 */
-	public Class<?> mainClass;
+	public String terminal;
+	public String idHash;
+	public String shName;
+	public boolean background;
+	public boolean pause;
+	public boolean hardPause;
 	public boolean runDeob;
 	public boolean forceTerminal;//set this to true to always open up a new window
 	public boolean canReboot = true;
@@ -46,62 +40,53 @@ public class TerminalApp {
 	//non serializable vars
 	public boolean compiled = JREUtil.isCompiled();
 	public Process process;
-	public boolean isRebooting;
 	
-	public TerminalApp(Class<?> iclass, String[] args)
+	public TerminalApp(Class<?> appClass, String[] args)
 	{
-		this(iclass, suggestAppId(iclass), args);
+		this(appClass, suggestAppId(appClass), args);
 	}
 	
-	public TerminalApp(Class<?> iclass, String id, String[] args)
+	public TerminalApp(Class<?> appClass, String id, String[] args)
 	{
-		this(iclass, id, id, "1.0.0", args);
+		this(appClass, id, id, "1.0.0", args);
 	}
 	
-	public TerminalApp(Class<?> iclass, String id, String name, String version, String[] args)
+	public TerminalApp(Class<?> appClass, String id, String name, String version, String[] args)
 	{
-		this(iclass, id, name, version, JREUtil.getMainClass(), args);
+		this(appClass, id, name, version, JREUtil.getMainClass(), args);
 	}
 	
-	public TerminalApp(Class<?> iclass, String id, String name, String version, Class<?> jvmMain, String[] args)
+	public TerminalApp(Class<?> appClass, String id, String name, String version, Class<?> jvmMain, String[] args)
 	{
-		this(iclass, id, name, version, jvmMain, args, true);
+		this(appClass, id, name, version, jvmMain, args, true);
 	}
 	
-	public TerminalApp(Class<?> iclass, String id, String name, String version, Class<?> jvmMain, String[] args, boolean runDeob)
+	public TerminalApp(Class<?> appClass, String id, String name, String version, Class<?> jvmMain, String[] args, boolean runDeob)
 	{
     	if(JavaUtil.containsAny(id, OpenTerminalConstants.INVALID))
     		throw new RuntimeException("appId contains illegal parsing characters:(" + id + "), invalid:" + OpenTerminalConstants.INVALID);
     	
-		this.jvmArgs = OpenTerminal.isInit() ? JavaUtil.asArray(JREUtil.getJVMArgs()) : new ArrayList<>();
-		JavaUtil.removeStarts(this.jvmArgs, "-D" + OpenTerminalConstants.jvm, false);
-		TerminalApp.addArgs(this.jvmArgs, this.getProperty(OpenTerminalConstants.jvm, ""));
-		
-		this.programArgs = new ArrayList<>(args.length);
-		for(String s : args)
-			this.programArgs.add(s);
-		
-		this.id = this.getProperty("ot.id", id);
-		this.shName = this.getProperty("ot.shName", this.id.contains("/") ? JavaUtil.getLastSplit(this.id, "/") : this.id);
-		this.name = this.getProperty("ot.name", name);
-		this.version = this.getProperty("ot.version", version);
-		this.iclass = JREUtil.getClass(this.getProperty("ot.iclass", iclass.getName()), true);
-		this.mainClass = JREUtil.getClass(this.getProperty("ot.mainClass", jvmMain.getName()), true);
-		this.runDeob = this.getProperty("ot.runDeob", runDeob);
-		this.forceTerminal = this.getProperty("ot.forceTerminal", false);
-		
-		boolean isLaunching = OpenTerminal.isLaunching();
-		if(isLaunching)
-			this.syncConfig();
-		this.terminal = this.getProperty("ot.terminal", this.terminal);
-		this.idHash = isLaunching ? this.getProperty("ot.hash", "" + System.currentTimeMillis()) : this.getProperty("ot.hash");
-		this.background = this.getProperty("ot.background", false);
-		this.shouldPause = this.getProperty("ot.shoulPause", false);
-		this.hardPause = this.getProperty("ot.hardPause", false);
-		this.userDir = new File(this.getProperty(OpenTerminalConstants.p_userDir));
-		this.userHome = new File(this.getProperty(OpenTerminalConstants.p_userHome));
-		this.tmp = new File(this.getProperty(OpenTerminalConstants.p_tmp));
-		this.appdata = new File(this.getProperty(OpenTerminalConstants.p_appdata));
+    	if(OpenTerminal.isLaunching())
+    		this.loadLaunch();
+    	
+    	this.appClass = appClass;
+    	this.jvmClass = jvmMain;
+    	this.id = id;
+    	this.name = name;
+    	this.version = version;
+       	this.runDeob = runDeob;
+    	this.jvmClass = jvmMain;
+    	this.jvmArgs = JavaUtil.asArray(JREUtil.getJVMArgs());
+    	this.programArgs = JavaUtil.asArray(args);
+	}
+	
+	/**
+	 * loads init launch data needed for launching the TerminalApp
+	 */
+	protected void loadLaunch()
+	{
+		this.syncConfig();
+		this.idHash = "" + System.currentTimeMillis();
 	}
 	
 	/**
@@ -135,9 +120,12 @@ public class TerminalApp {
 		return exit != OpenTerminalConstants.rebootExit && exit != OpenTerminalConstants.forceExit && this.shouldPause();
 	}
     
+	/**
+	 * pauses if pause is enabled and background is disabled
+	 */
 	public boolean shouldPause() 
 	{
-		return this.shouldPause || this.hardPause;
+		return !this.background && (this.shouldPause || this.hardPause);
 	}
 	
 	/**

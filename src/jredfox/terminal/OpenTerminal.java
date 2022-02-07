@@ -98,7 +98,7 @@ public class OpenTerminal {
 	
 	public void exit(int exit)
 	{
-		if(this.shouldExit)
+		if(!this.shouldExit)
 			return;
 		System.out.println("shutting down OpenTerminal Launcher:" + exit);
 		JREUtil.shutdown(exit);
