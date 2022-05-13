@@ -11,6 +11,11 @@ custom jvm args pre-determined from file
 finish all todo flags
 macOs
 
+Different app support:
+javaw = no support turns into java command as javaw is the same app command without the console
+support javaws java web start re-launching that with the console window open
+support java applets with an applet viewer #appletviewer is the command instead of java
+
 Lib Loader:
 have wrapper to ship java.class.path in it
 have jar in jar extractor add to java.class.path
