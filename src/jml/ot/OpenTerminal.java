@@ -27,7 +27,7 @@ public class OpenTerminal {
 			switch(terminal)
 			{
 				case "cmd":
-					runInTerminal(terminal, OSUtil.getExeAndClose(), "start " + "\"" + app.getAppName() + "\" " + java_home + " " + java, new File("").getAbsoluteFile());
+					runInTerminal(terminal, OSUtil.getExeAndClose(), "start " + "\"" + app.getTitle() + "\" " + java_home + " " + java, new File("").getAbsoluteFile());
 				break;
 				case "wt":
 					runInTerminal("cmd", OSUtil.getExeAndClose(), "wt -w -1 new-tab -p \"Command Prompt\" " + java_home + " " + java, new File("").getAbsoluteFile());
@@ -47,10 +47,18 @@ public class OpenTerminal {
 		{
 			
 		}
-		else if(OSUtil.isLinux())
-		{
-			
-		}
+        else if(OSUtil.isLinux())
+        {
+            File sh = new File(home, app.id + ".sh");
+            List<String> cmds = new ArrayList<>();
+            cmds.add("#!/bin/bash");
+            cmds.add("set +v");//@Echo off
+            cmds.add("echo -n -e \"\\033]0;" + app.getTitle() + "\\007\"");//Title
+            cmds.add(java_home + " " + java);//actual command
+            IOUtils.saveFileLines(cmds, sh, true);//save the file
+            IOUtils.makeExe(sh);//make it executable
+            Runtime.getRuntime().exec(terminal + " " + OSUtil.getLinuxNewWin() + " bash " + sh.getAbsolutePath());
+        }
 	}
 
     /**

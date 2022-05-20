@@ -24,7 +24,7 @@ public class TerminalApp {
 		this.force = force;
 	}
 	
-	public String getAppName()
+	public String getTitle()
 	{
 		return this.name + " " + this.version;
 	}
