@@ -10,7 +10,7 @@ import jredfox.common.io.IOUtils;
 
 public class OpenTerminal {
 	
-	public static final String terminal = "wt";
+	public static final String terminal = "powershell";
 	
 	public static void open(TerminalApp app) throws IOException
 	{
@@ -20,7 +20,7 @@ public class OpenTerminal {
 			return;
 		}
 		String java_home = "\"" + System.getProperty("java.home") + "/bin/java\"";
-		String java = "-cp " + System.getProperty("java.class.path") + " jml.ot.OTMain";
+		String java = "-cp \"" + System.getProperty("java.class.path") + "\" jml.ot.OTMain";
 		File home = new File(System.getProperty("user.home"), "OpenTerminal/" + app.id + "/" + System.currentTimeMillis());
 		if(OSUtil.isWindows())
 		{
@@ -39,6 +39,8 @@ public class OpenTerminal {
 					cmds.add("Start-Process '" + java_home + "' -ArgumentList '" + java + "' -NoNewWindow");
 					IOUtils.saveFileLines(cmds, ps1, true);
 					IOUtils.makeExe(ps1);
+					String c = "powershell /c start-process powershell -ArgumentList '-File', '\"C:/Users/jredfox/Desktop/spacing test.ps1\"', '-ExecutionPolicy', 'Bypass'";
+					System.out.println(c);
 					runInTerminal(terminal, OSUtil.getExeAndClose(), "start-process powershell -ArgumentList \"" + ps1.getAbsolutePath() + "\"", home);
 				break;
 			}
