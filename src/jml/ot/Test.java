@@ -7,7 +7,7 @@ public class Test {
 	public static void main(String[] args) throws IOException, InterruptedException 
 	{
 		long ms = System.currentTimeMillis();
-		OpenTerminal.open(new TerminalApp("test", "Test App", "1.0.0"));
+		OpenTerminal.open(new TerminalApp("test", "MF POWERSHELL", "1.0.0"));
 		System.out.println("launch in:" + (System.currentTimeMillis() - ms) + "ms");
 	}
 

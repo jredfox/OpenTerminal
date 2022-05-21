@@ -1,6 +1,7 @@
 package jml.ot;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 public class OTMain {
 	
@@ -16,8 +17,9 @@ public class OTMain {
 			System.out.println("booted");
 			while(true)
 			{
-
+				
 			}
+//			new Scanner(System.in).nextLine();
 		}
 	}
 

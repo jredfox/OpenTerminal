@@ -37,6 +37,11 @@ public class TerminalApp {
 		return null;
 	}
 	
+	public File getHome()
+	{
+		return new File(OTConstants.home + "/" + this.id + "/" + System.currentTimeMillis());
+	}
+	
 	class Profile
 	{
 		public Color bg;

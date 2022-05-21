@@ -59,17 +59,31 @@ public class OSUtil {
 			"/usr/bin/uxterm",
 			"/usr/bin/xfce4-terminal.wrapper",
 			"/usr/bin/xterm",
-			"/usr/bin/xvt"
+			"/usr/bin/xvt",
+	};
+	
+	public static final String[] crossplat_terminals = new String[]
+	{
+		"powershell"//Apparently the sh*t powershell is crossplatform now			
 	};
 	
 	public static String getTerminal()
 	{
-		String[] cmds = getTerminals();
+		String[][] tlist = getTerminals();
+		for(String[] cmds : tlist)
 		for(String cmd : cmds)
 		{
 			try 
 			{
-				Runtime.getRuntime().exec(cmd + " " + getExeAndClose() + " cd " + System.getProperty("user.dir"));
+				if(!cmd.equals("wt"))
+					Runtime.getRuntime().exec(cmd + " " + getExeAndClose() + " cd " + System.getProperty("user.dir"));
+				else
+				{
+					//TODO: figure out a better way then creating the UI to figure out if it exists
+					ProcessBuilder pb = new ProcessBuilder(cmd);
+					Process p = pb.start();
+					p.destroy();
+				}
 				return cmd;
 			}
 			catch (Throwable e) {}
@@ -92,11 +106,21 @@ public class OSUtil {
 		return false;
 	}
 
-	public static String[] getTerminals()
+	public static String[][] getTerminals()
+	{
+		return new String[][]{getOsTerminal(), getCrossPlatTerminal()};
+	}
+	
+	public static String[] getCrossPlatTerminal() 
+	{
+		return crossplat_terminals;
+	}
+
+	public static String[] getOsTerminal()
 	{
 		return isWindows() ? windows_terminals : isMac() ? mac_terminals : isLinux() ? linux_terminals : null;
 	}
-	
+
 	/**
 	 * runs the command in the background by default and closes
 	 */

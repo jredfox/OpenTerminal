@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jredfox.common.file.FileUtils;
+import jml.ot.app.PowerShellExe;
 import jredfox.common.io.IOUtils;
 
 public class OpenTerminal {
@@ -19,29 +19,19 @@ public class OpenTerminal {
 			System.out.println("returning");
 			return;
 		}
-		String java_home = "\"" + System.getProperty("java.home") + "/bin/java\"";
-		String java = "-cp \"" + System.getProperty("java.class.path") + "\" jml.ot.OTMain";
-		File home = new File(System.getProperty("user.home"), "OpenTerminal/" + app.id + "/" + System.currentTimeMillis());
 		if(OSUtil.isWindows())
 		{
 			switch(terminal)
 			{
 				case "cmd":
-					runInTerminal(terminal, OSUtil.getExeAndClose(), "start " + "\"" + app.getTitle() + "\" " + java_home + " " + java, new File("").getAbsoluteFile());
+					runInTerminal(terminal, OSUtil.getExeAndClose(), "start " + "\"" + app.getTitle() + "\" " + OTConstants.java_home + " " + OTConstants.args, new File("").getAbsoluteFile());
 				break;
 				case "wt":
-					runInTerminal("cmd", OSUtil.getExeAndClose(), "wt -w -1 new-tab -p \"Command Prompt\" " + java_home + " " + java, new File("").getAbsoluteFile());
+					runInTerminal("cmd", OSUtil.getExeAndClose(), "wt -w -1 new-tab -p \"Command Prompt\" " + OTConstants.java_home + " " + OTConstants.args, new File("").getAbsoluteFile());
 				break;
 				case "powershell":
-					System.err.println("powershell has a known bug with spaces and the Start-Process command! So it won't execute if the path contains a space. Go spam them on their github!");
-					File ps1 = new File(home, app.id + ".ps1");
-					List<String> cmds = new ArrayList<>();
-					cmds.add("Start-Process '" + java_home + "' -ArgumentList '" + java + "' -NoNewWindow");
-					IOUtils.saveFileLines(cmds, ps1, true);
-					IOUtils.makeExe(ps1);
-					String c = "powershell /c start-process powershell -ArgumentList '-File', '\"C:/Users/jredfox/Desktop/spacing test.ps1\"', '-ExecutionPolicy', 'Bypass'";
-					System.out.println(c);
-					runInTerminal(terminal, OSUtil.getExeAndClose(), "start-process powershell -ArgumentList \"" + ps1.getAbsolutePath() + "\"", home);
+					System.err.println("powershell is very buggy when it comes to the start-process command it's not recommended as a default terminal for your java application!");
+					new PowerShellExe(app).run();
 				break;
 			}
 		}
@@ -51,12 +41,12 @@ public class OpenTerminal {
 		}
         else if(OSUtil.isLinux())
         {
-            File sh = new File(home, app.id + ".sh");
+            File sh = new File(OTConstants.home, app.id + ".sh");
             List<String> cmds = new ArrayList<>();
             cmds.add("#!/bin/bash");
             cmds.add("set +v");//@Echo off
             cmds.add("echo -n -e \"\\033]0;" + app.getTitle() + "\\007\"");//Title
-            cmds.add(java_home + " " + java);//actual command
+            cmds.add(OTConstants.java_home + " " + OTConstants.args);//actual command
             IOUtils.saveFileLines(cmds, sh, true);//save the file
             IOUtils.makeExe(sh);//make it executable
             Runtime.getRuntime().exec(terminal + " " + OSUtil.getLinuxNewWin() + " bash " + sh.getAbsolutePath());
@@ -73,7 +63,7 @@ public class OpenTerminal {
 	
     public static Process run(String[] cmdarray, File dir) throws IOException
     {
-        return new ProcessBuilder(cmdarray).directory(dir).start();
+        return new ProcessBuilder(cmdarray).directory(dir).inheritIO().start();
     }
 
 }
