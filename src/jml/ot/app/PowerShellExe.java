@@ -38,7 +38,7 @@ public class PowerShellExe extends TerminalExe {
 			OTConstants.args,
 			"-title",
 			this.app.getTitle()
-		}).directory(OTConstants.userDir);
+		}).directory(OTConstants.userDir).inheritIO();
 		pb.start();
 	}
 	

@@ -15,9 +15,14 @@ public class OpenTerminal {
 	
 	public static void open(TerminalApp app) throws IOException
 	{
-		if(System.console() != null && (!app.force || app.id.equals("ot")))
+		if(System.console() == null && System.getProperty("ot.l") != null)
 		{
-			System.out.println("console is not null while forcing a new window isn't allowed or enabled!");
+			System.err.println("System console boot failed report to https://github.com/jredfox/OpenTerminal/issues");
+			System.exit(-1);
+		}
+		else if(System.console() != null && !app.force)
+		{
+			System.out.println("console is not null while forcing a new window isn't allowed!");
 			return;
 		}
 		if(OSUtil.isWindows())
@@ -30,10 +35,13 @@ public class OpenTerminal {
 					break;
 				}
 				case "wt":
-					runInTerminal("cmd", OSUtil.getExeAndClose(), "wt -w -1 new-tab -p \"Command Prompt\" " + OTConstants.java_home + " " + OTConstants.args, new File("").getAbsoluteFile());
-				break;
+				{
+					//--tabColor //custom profile for the exe
+					runInTerminal("cmd", OSUtil.getExeAndClose(), "wt -w -1 new-tab -f --title \"" + app.getTitle() + "\"" +  " -p \"Command Prompt\" " + OTConstants.java_home + " " + OTConstants.args, new File("").getAbsoluteFile());
+					break;
+				}
 				case "powershell":
-					System.err.println("powershell is very buggy when it comes to the start-process command it's not recommended as a default terminal for your java application!");
+					System.out.println("powershell is very buggy when it comes to the start-process command it's not recommended as a default terminal for your java application!");
 					new PowerShellExe(app).run();
 				break;
 			}
@@ -61,7 +69,6 @@ public class OpenTerminal {
      */
     public static Process runInTerminal(String terminal, String flag, String command, File dir) throws IOException
     {
-    	System.out.println(command);
         return run(new String[]{terminal, flag, command}, dir);
     }
 	

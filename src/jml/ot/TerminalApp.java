@@ -1,6 +1,5 @@
 package jml.ot;
 
-import java.awt.Color;
 import java.io.File;
 
 public class TerminalApp {
@@ -18,6 +17,7 @@ public class TerminalApp {
 	public TerminalApp(String id, String name, String version, boolean force)
 	{
 		assert !id.contains(" ") : "Terminal app id cannot contain spaces!";
+		assert !name.contains("\"") : "Terminal app id cannot contain double quotes!";
 		this.id = id;
 		this.name = name;
 		this.version = version;
@@ -46,12 +46,19 @@ public class TerminalApp {
 	{
 		public String bg;
 		public String fg;
+		public String tab_color;//windows terminal only so far
 		public File termProfile;//only supported on macOs the file to apply an entire profile
 		
 		public Profile(String b, String f)
 		{
 			this.bg = b;
 			this.fg = f;
+		}
+		
+		public Profile tabColor(String t)
+		{
+			this.tab_color = t;
+			return this;
 		}
 		
 		public Profile(File mp)

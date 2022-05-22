@@ -10,5 +10,5 @@ public class OTConstants {
 	public static final File boot = new File(scripts, "boot");
 	public static final File userDir = new File(System.getProperty("user.dir")).getAbsoluteFile();
 	public static final String java_home = "\"" + System.getProperty("java.home") + "/bin/java\"";
-	public static final String args = "-cp \"" + System.getProperty("java.class.path") + "\" jml.ot.OTMain";
+	public static final String args = "-Dot.l=t -cp \"" + System.getProperty("java.class.path") + "\" jml.ot.OTMain";
 }
