@@ -5,10 +5,20 @@ import java.util.Scanner;
 
 public class OTMain {
 	
+	/**
+	 * call this main method directy using java -jar OpenTerminal.jar
+	 * @param appId
+	 * @param appName
+	 * @param appVersion
+	 * @param boolean forceNewWindow
+	 */
 	public static void main(String[] args) throws IOException, InterruptedException
 	{
 		if(System.console() == null)
-			OpenTerminal.open(new TerminalApp("ot", "Open Terminal", "1.0.0"));
+		{
+			TerminalApp app = args.length != 0 ? new TerminalApp(args[0], args[1], args[2], Boolean.parseBoolean(args[3])) : new TerminalApp("ot", "Open Terminal", "1.0.0");
+			OpenTerminal.open(app);
+		}
 		else
 		{
 			System.out.println("booted:" + OTConstants.userDir);

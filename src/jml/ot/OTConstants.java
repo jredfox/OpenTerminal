@@ -4,6 +4,7 @@ import java.io.File;
 
 public class OTConstants {
 	
+	public static final String OTVERSION = "1.0.0";
 	public static final File home = new File(System.getProperty("user.home"), "OpenTerminal").getAbsoluteFile();
 	public static final File scripts = new File(home, "scripts");
 	public static final File start = new File(scripts, "start");
