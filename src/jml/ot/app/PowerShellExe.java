@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jml.ot.OSUtil;
 import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
-import jredfox.common.io.IOUtils;
 
 public class PowerShellExe extends TerminalExe {
 
@@ -22,30 +22,41 @@ public class PowerShellExe extends TerminalExe {
 	public void run() throws IOException 
 	{
 		super.run();
+		String q = OSUtil.getQuote();
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
 			"powershell",
-			"-File",
-			"\"" + start_ps + "\"",
-			"\"" + this.shell + "\"",
 			"-ExecutionPolicy",
-			"Bypass"
-		});
+			"Bypass",
+			"-File",
+			q + start_ps + q,
+			"-boot",
+			q + this.shell + q,
+			"-java_home",
+			OTConstants.java_home,
+			"-java_args",
+			OTConstants.args,
+			"-title",
+			this.app.getTitle()
+		}).directory(OTConstants.userDir);
 		pb.start();
 	}
 	
 	@Override
 	public void createShell() throws IOException
 	{
-		//create the shell script
-		File home = this.app.getHome();
-		File ps1 = new File(home, this.app.id + ".ps1");
-		List<String> cmds = new ArrayList<>();
-		cmds.add("$host.UI.RawUI.WindowTitle = \"" + this.app.getTitle()  + "\"");
-		cmds.add("Start-Process '" + OTConstants.java_home + "' -ArgumentList '" + OTConstants.args + "' -NoNewWindow");
-		IOUtils.saveFileLines(cmds, ps1, true);
-		IOUtils.makeExe(ps1);
-		this.shell = ps1;
+		if(!this.shell.exists())
+		{
+			List<String> li = new ArrayList<>();
+			li.add("param(");
+			li.add("[Parameter(Mandatory = $true)] $title,");
+			li.add("[Parameter(Mandatory = $true)] $java_home,");
+			li.add("[Parameter(Mandatory = $true)] $java_args");
+			li.add(")");
+			li.add("$host.UI.RawUI.WindowTitle = \"$title\"");
+			li.add("Start-Process -NoNewWindow $java_home -ArgumentList $java_args");
+			this.makeShell(li);
+		}
 	}
 
 	@Override
@@ -53,12 +64,15 @@ public class PowerShellExe extends TerminalExe {
 	{
 		if (!start_ps.exists())
 		{
-			List<String> li = new ArrayList<>();
-			li.add("$file=$args[0]");
-			li.add("echo \"File var: $file\"");
-			li.add("start-process powershell -ArgumentList '-File', \"\"\"$file\"\"\", '-ExecutionPolicy', 'Bypass'");
-			IOUtils.saveFileLines(li, start_ps, true);
-			IOUtils.makeExe(start_ps);
+			List<String> list = new ArrayList<>();
+			list.add("param(");
+			list.add("[Parameter(Mandatory = $true)] $boot,");
+			list.add("[Parameter(Mandatory = $true)] $title,");
+			list.add("[Parameter(Mandatory = $true)] $java_home,");
+			list.add("[Parameter(Mandatory = $true)] $java_args");
+			list.add(")");
+			list.add("start-process powershell -ArgumentList '-File', \"\"\"$boot\"\"\", '-title', \"\"\"$title\"\"\", '-java_home', \"\"\"$java_home\"\"\", '-java_args', \"\"\"$java_args\"\"\"");
+			this.makeShell(list, start_ps);
 		}
 	}
 

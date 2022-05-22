@@ -14,7 +14,7 @@ public class OTMain {
 		}
 		else
 		{
-			System.out.println("booted");
+			System.out.println("booted:" + OTConstants.userDir);
 //			while(true)
 //			{
 //				

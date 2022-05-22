@@ -35,8 +35,13 @@ public abstract class TerminalExe {
 	
 	public void makeShell(List<String> li) throws IOException 
 	{
-		IOUtils.saveFileLines(li, this.shell, true);
-		IOUtils.makeExe(this.shell);
+		this.makeShell(li, this.shell);
+	}
+	
+	public void makeShell(List<String> li, File sh) throws IOException 
+	{
+		IOUtils.saveFileLines(li, sh, true);
+		IOUtils.makeExe(sh);
 	}
 	
 	public void printPB(ProcessBuilder pb)
