@@ -11,7 +11,7 @@ import jredfox.common.io.IOUtils;
 
 public class OpenTerminal {
 	
-	public static final String terminal = "cmd";
+	public static final String terminal = "powershell";
 	
 	public static void open(TerminalApp app) throws IOException
 	{
