@@ -22,9 +22,16 @@ public class OpenTerminal {
 		}
 		else if(System.console() != null && !app.force)
 		{
+			System.out.println(app.force);
 			System.out.println("console is not null while forcing a new window isn't allowed!");
 			return;
 		}
+		if(System.getProperty("ot.bg") != null)
+		{
+			System.out.println("background mode enabled");
+			return;
+		}
+		
 		if(OSUtil.isWindows())
 		{
 			switch(terminal)

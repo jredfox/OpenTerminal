@@ -32,13 +32,13 @@ public class PowerShellExe extends TerminalExe {
 			q + start_ps + q,
 			"-boot",
 			q + this.shell + q,
+			"-title",
+			q + this.app.getTitle() + q,
 			"-java_home",
 			OTConstants.java_home,
 			"-java_args",
-			OTConstants.args,
-			"-title",
-			this.app.getTitle()
-		}).directory(OTConstants.userDir).inheritIO();
+			q + OTConstants.args.replaceAll(q, "'") + q,
+		}).directory(OTConstants.userDir);
 		pb.start();
 	}
 	
@@ -54,6 +54,7 @@ public class PowerShellExe extends TerminalExe {
 			li.add("[Parameter(Mandatory = $true)] $java_args");
 			li.add(")");
 			li.add("$host.UI.RawUI.WindowTitle = \"$title\"");
+			li.add("$java_args = $java_args.Replace(\"'\", \"\"\"\")");
 			li.add("Start-Process -NoNewWindow $java_home -ArgumentList $java_args");
 			this.makeShell(li);
 		}

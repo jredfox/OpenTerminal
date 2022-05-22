@@ -17,7 +17,7 @@ public class TerminalApp {
 	public TerminalApp(String id, String name, String version, boolean force)
 	{
 		assert !id.contains(" ") : "Terminal app id cannot contain spaces!";
-		assert !name.contains("\"") : "Terminal app id cannot contain double quotes!";
+		assert !name.contains("\"") : "Terminal app name cannot contain double quotes!";
 		this.id = id;
 		this.name = name;
 		this.version = version;

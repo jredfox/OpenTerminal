@@ -7,7 +7,7 @@ public class Test {
 	public static void main(String[] args) throws IOException, InterruptedException
 	{
 		long ms = System.currentTimeMillis();
-		TerminalApp app = new TerminalApp("test", "Test App", "1.0.0") 
+		TerminalApp app = new TerminalApp("test", "Test App", "1.0.0", true) 
 		{
 			@Override
 			public Profile getProfile() 
