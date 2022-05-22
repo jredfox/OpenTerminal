@@ -71,7 +71,7 @@ public class PowerShellExe extends TerminalExe {
 			list.add("[Parameter(Mandatory = $true)] $java_home,");
 			list.add("[Parameter(Mandatory = $true)] $java_args");
 			list.add(")");
-			list.add("start-process powershell -ArgumentList '-File', \"\"\"$boot\"\"\", '-title', \"\"\"$title\"\"\", '-java_home', \"\"\"$java_home\"\"\", '-java_args', \"\"\"$java_args\"\"\"");
+			list.add("start-process powershell -ArgumentList '-ExecutionPolicy', 'Bypass', '-File', \"\"\"$boot\"\"\", '-title', \"\"\"$title\"\"\", '-java_home', \"\"\"$java_home\"\"\", '-java_args', \"\"\"$java_args\"\"\"");
 			this.makeShell(list, start_ps);
 		}
 	}
