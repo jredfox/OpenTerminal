@@ -15,11 +15,11 @@ public class OTMain {
 		else
 		{
 			System.out.println("booted");
-			while(true)
-			{
-				
-			}
-//			new Scanner(System.in).nextLine();
+//			while(true)
+//			{
+//				
+//			}
+			new Scanner(System.in).nextLine();
 		}
 	}
 

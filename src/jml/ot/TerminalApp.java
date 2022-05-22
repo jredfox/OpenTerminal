@@ -42,21 +42,21 @@ public class TerminalApp {
 		return new File(OTConstants.home + "/" + this.id + "/" + System.currentTimeMillis());
 	}
 	
-	class Profile
+	public static class Profile
 	{
-		public Color bg;
-		public Color txt;
-		public File macProfile;
+		public String bg;
+		public String fg;
+		public File termProfile;//only supported on macOs the file to apply an entire profile
 		
-		public Profile(Color b, Color t)
+		public Profile(String b, String f)
 		{
 			this.bg = b;
-			this.txt = t;
+			this.fg = f;
 		}
 		
 		public Profile(File mp)
 		{
-			this.macProfile = mp;
+			this.termProfile = mp;
 		}
 	}
 

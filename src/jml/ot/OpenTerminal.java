@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jml.ot.app.BatchExe;
 import jml.ot.app.PowerShellExe;
 import jredfox.common.io.IOUtils;
 
@@ -16,7 +17,7 @@ public class OpenTerminal {
 	{
 		if(System.console() != null && (!app.force || app.id.equals("ot")))
 		{
-			System.out.println("returning");
+			System.out.println("console is not null while forcing a new window isn't allowed or enabled!");
 			return;
 		}
 		if(OSUtil.isWindows())
@@ -24,8 +25,10 @@ public class OpenTerminal {
 			switch(terminal)
 			{
 				case "cmd":
-					runInTerminal(terminal, OSUtil.getExeAndClose(), "start " + "\"" + app.getTitle() + "\" " + OTConstants.java_home + " " + OTConstants.args, new File("").getAbsoluteFile());
-				break;
+				{
+					new BatchExe(app).run();
+					break;
+				}
 				case "wt":
 					runInTerminal("cmd", OSUtil.getExeAndClose(), "wt -w -1 new-tab -p \"Command Prompt\" " + OTConstants.java_home + " " + OTConstants.args, new File("").getAbsoluteFile());
 				break;
@@ -58,12 +61,13 @@ public class OpenTerminal {
      */
     public static Process runInTerminal(String terminal, String flag, String command, File dir) throws IOException
     {
+    	System.out.println(command);
         return run(new String[]{terminal, flag, command}, dir);
     }
 	
     public static Process run(String[] cmdarray, File dir) throws IOException
     {
-        return new ProcessBuilder(cmdarray).directory(dir).inheritIO().start();
+        return new ProcessBuilder(cmdarray).directory(dir).start();
     }
 
 }

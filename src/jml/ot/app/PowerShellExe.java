@@ -11,11 +11,11 @@ import jredfox.common.io.IOUtils;
 
 public class PowerShellExe extends TerminalExe {
 
-	public static final File start_ps = new File(OTConstants.home_scripts, "powershell.ps1");
+	public static final File start_ps = new File(OTConstants.start, "powershell.ps1");
 	
 	public PowerShellExe(TerminalApp app) throws IOException
 	{
-		super(app);
+		super(app, new File(OTConstants.boot, "boot.ps1"));
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class PowerShellExe extends TerminalExe {
 	}
 
 	@Override
-	public void genPresets() throws IOException 
+	public void genStart() throws IOException 
 	{
 		if (!start_ps.exists())
 		{

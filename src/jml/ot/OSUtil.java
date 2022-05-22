@@ -59,7 +59,7 @@ public class OSUtil {
 			"/usr/bin/uxterm",
 			"/usr/bin/xfce4-terminal.wrapper",
 			"/usr/bin/xterm",
-			"/usr/bin/xvt",
+			"/usr/bin/xvt"
 	};
 	
 	public static final String[] crossplat_terminals = new String[]
