@@ -6,7 +6,7 @@ import java.util.Scanner;
 public class OTMain {
 	
 	/**
-	 * call this main method directy using java -jar OpenTerminal.jar
+	 * call this main method directly using java -jar OpenTerminal.jar
 	 * @param appId
 	 * @param appName
 	 * @param appVersion
@@ -16,7 +16,7 @@ public class OTMain {
 	{
 		if(System.console() == null)
 		{
-			TerminalApp app = args.length != 0 ? new TerminalApp(args[0], args[1], args[2], Boolean.parseBoolean(args[3])) : new TerminalApp("ot", "Open Terminal", "1.0.0");
+			TerminalApp app = args.length != 0 ? new TerminalApp(args[0], args[1], args[2], Boolean.parseBoolean(args[3])) : new TerminalApp("ot", "Open Terminal", OTConstants.OTVERSION);
 			OpenTerminal.open(app);
 		}
 		else

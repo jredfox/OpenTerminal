@@ -11,7 +11,7 @@ import jredfox.common.io.IOUtils;
 
 public class OpenTerminal {
 	
-	public static final String terminal = "powershell";
+	public static final String terminal = "cmd";
 	
 	public static void open(TerminalApp app) throws IOException
 	{
@@ -22,8 +22,7 @@ public class OpenTerminal {
 		}
 		else if(System.console() != null && !app.force)
 		{
-			System.out.println(app.force);
-			System.out.println("console is not null while forcing a new window isn't allowed!");
+			System.out.println("console is nonnull while forcing a new window isn't enabled!");
 			return;
 		}
 		if(System.getProperty("ot.bg") != null)
