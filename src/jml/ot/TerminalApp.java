@@ -39,7 +39,7 @@ public class TerminalApp {
 	
 	public File getHome()
 	{
-		return new File(OTConstants.home + "/" + this.id + "/" + System.currentTimeMillis());
+		return new File(OTConstants.home + "/" + this.id);
 	}
 	
 	public static class Profile

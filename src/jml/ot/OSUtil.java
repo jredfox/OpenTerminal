@@ -7,11 +7,16 @@ public class OSUtil {
 	private static boolean isLinux = osName.contains("linux");
 	private static boolean isMac = osName.contains("mac") || osName.contains("osx") && !isLinux;
 	
+	public static String[] conHost = new String[]
+	{
+		"conhost",
+		"wt"//windows terminal is a console host not a terminal
+	};
+	
 	public static String[] windows_terminals = new String[]
 	{
 		"cmd",
 		"powershell",//powershell doesn't work and has never worked. it can't execute batch files nor even basic commands or even handle spaces
-		"wt"//Windows Terminal it's not a terminal itself but simply a UI. however it looks nicer then conhost.exe and can switch between terminals only wt-cmd is supported
 	};
 	
 	public static String[] mac_terminals = new String[]
@@ -62,29 +67,14 @@ public class OSUtil {
 			"/usr/bin/xvt"
 	};
 	
-	public static final String[] crossplat_terminals = new String[]
-	{
-		"powershell"//Apparently the sh*t powershell is crossplatform now			
-	};
-	
 	public static String getTerminal()
 	{
-		String[][] tlist = getTerminals();
-		for(String[] cmds : tlist)
+		String[] cmds = getTerminals();
 		for(String cmd : cmds)
 		{
 			try 
 			{
-				if(!cmd.equals("wt"))
-					Runtime.getRuntime().exec(cmd + " " + getExeAndClose() + " cd " + System.getProperty("user.dir"));
-				else
-				{
-					//TODO: figure out a better way then creating the UI to figure out if it exists
-					ProcessBuilder pb = new ProcessBuilder(cmd);
-					Process p = pb.start();
-					p.destroy();
-				}
-				return cmd;
+				Runtime.getRuntime().exec(cmd + " " + getExeAndClose() + " cd " + System.getProperty("user.dir"));
 			}
 			catch (Throwable e) {}
 		}
@@ -106,14 +96,9 @@ public class OSUtil {
 		return false;
 	}
 
-	public static String[][] getTerminals()
+	public static String[] getTerminals()
 	{
-		return new String[][]{getOsTerminal(), getCrossPlatTerminal()};
-	}
-	
-	public static String[] getCrossPlatTerminal() 
-	{
-		return crossplat_terminals;
+		return getOsTerminal();
 	}
 
 	public static String[] getOsTerminal()

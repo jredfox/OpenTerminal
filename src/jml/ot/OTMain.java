@@ -6,11 +6,17 @@ import java.util.Scanner;
 public class OTMain {
 	
 	/**
-	 * call this main method directly using java -jar OpenTerminal.jar
+	 * call this main method directly using "java -jar OpenTerminal.jar" or "path/To/JavaRuntime/bin/java -jar OpenTerminal.jar" for the same JRE enforced on use everytime
 	 * @param appId
 	 * @param appName
 	 * @param appVersion
 	 * @param boolean forceNewWindow
+	 * @param Profile use {@link TerminalApp#getProfile#toString()} or null
+	 * @param terminal
+	 * @param consoleHost default is null
+	 * @param PID of the host
+	 * @category NOTE: this doesn't support custom terminal app classes nor can it due to the fact it's an external jar with no deps. use {@link OpenTerminal#open(TerminalApp)} for custom terminal apps
+	 * @author jredfox
 	 */
 	public static void main(String[] args) throws IOException, InterruptedException
 	{
