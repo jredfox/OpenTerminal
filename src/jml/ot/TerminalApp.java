@@ -13,6 +13,8 @@ public class TerminalApp {
 	public String name;
 	public String version;
 	public boolean force;//when enabled will always open a window
+	public String terminal = OpenTerminal.terminal;
+	public String conHost = OpenTerminal.console_host;
 	
 	public TerminalApp(String id, String name, String version)
 	{
@@ -42,9 +44,9 @@ public class TerminalApp {
 		return null;
 	}
 	
-	public TerminalExe getTerminal(String terminal) throws IOException
+	public TerminalExe getTerminal() throws IOException
 	{
-		switch(terminal)
+		switch(this.terminal)
 		{
 			case "cmd":
 				return new BatchExe(this);
@@ -65,7 +67,13 @@ public class TerminalApp {
 		public String bg;
 		public String fg;
 		public String tab_color;//windows terminal only so far
+		public String wtScheme;//WT only
 		public File termProfile;//only supported on macOs the file to apply an entire profile
+		
+		public Profile()
+		{
+			
+		}
 		
 		public Profile(String b, String f)
 		{

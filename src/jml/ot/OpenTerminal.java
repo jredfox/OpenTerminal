@@ -11,7 +11,7 @@ import jredfox.common.io.IOUtils;
 public class OpenTerminal {
 	
 	public static final String console_host = "wt";
-	public static final String terminal = "cmd";
+	public static final String terminal = "powershell";
 	
 	public static void open(TerminalApp app) throws IOException
 	{
@@ -43,7 +43,7 @@ public class OpenTerminal {
 		}
 		else if(OSUtil.isWindows())
 		{
-			app.getTerminal(terminal).run();
+			app.getTerminal().run();
 		}
 		else if(OSUtil.isMac())
 		{

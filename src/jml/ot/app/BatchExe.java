@@ -33,7 +33,7 @@ public class BatchExe extends TerminalExe {
 				"\"\"",//app name doesn't work with the batch boot shell for some reason
 				"call",
 				q + this.shell.getPath() + q,//path to the boot shell
-				profile != null ? q + (profile.bg + profile.fg) + q : "-1",//color
+				profile != null && profile.bg != null ? q + (profile.bg + profile.fg) + q : "-1",//color
 				q + this.app.getTitle() + q,
 				q + (OTConstants.java_home + " " + OTConstants.args).replaceAll("\"", ",") + q
 			});
@@ -61,7 +61,7 @@ public class BatchExe extends TerminalExe {
 		cmd.add(OSUtil.getExeAndClose());
 		cmd.add("call");
 		cmd.add(q + this.shell.getPath() + q);//path to the boot shell
-		cmd.add(profile != null ? q + (profile.bg + profile.fg) + q : "-1");//color
+		cmd.add(profile != null && profile.bg != null ? q + (profile.bg + profile.fg) + q : "-1");//color
 		cmd.add(q + this.app.getTitle() + q);
 		cmd.add(q + (OTConstants.java_home + " " + OTConstants.args).replaceAll("\"", ",") + q);
 		return cmd;

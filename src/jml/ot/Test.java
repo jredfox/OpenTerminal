@@ -14,7 +14,12 @@ public class Test {
 			public Profile getProfile() 
 			{
 				if(OSUtil.isWindows())
-					return new Profile("3", "f");
+				{
+					Profile p = new Profile();
+					if(this.terminal.equals("powershell"))
+						p.wtScheme = "Campbell Powershell";
+					return p;
+				}
 				return null;
 			}
 		};
