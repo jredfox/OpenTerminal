@@ -37,14 +37,27 @@ public class PowerShellExe extends TerminalExe {
 			OTConstants.java_home,
 			"-java_args",
 			q + OTConstants.args.replaceAll(q, "'") + q,
-		}).directory(OTConstants.userDir);
+		});
 		this.run(pb);
 	}
 	
 	@Override
 	public List<String> getBootCmd() 
 	{
-		return null;
+		String q = OSUtil.getQuote();
+		List<String> cmd = new ArrayList<>();
+		cmd.add("powershell");
+		cmd.add("-ExecutionPolicy");
+		cmd.add("Bypass");
+		cmd.add("-File");
+		cmd.add(q + this.shell + q);
+		cmd.add("-title");
+		cmd.add(q + this.app.getTitle() + q);
+		cmd.add("-java_home");
+		cmd.add(OTConstants.java_home);
+		cmd.add("-java_args");
+		cmd.add(q + OTConstants.args.replaceAll(q, "'") + q);
+		return cmd;
 	}
 	
 	@Override
@@ -60,7 +73,7 @@ public class PowerShellExe extends TerminalExe {
 			li.add(")");
 			li.add("$host.UI.RawUI.WindowTitle = \"$title\"");
 			li.add("$java_args = $java_args.Replace(\"'\", \"\"\"\")");
-			li.add("Start-Process -NoNewWindow $java_home -ArgumentList $java_args");
+			li.add("Start-Process -Wait -NoNewWindow $java_home -ArgumentList $java_args");
 			this.makeShell(li);
 		}
 	}

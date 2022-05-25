@@ -29,8 +29,8 @@ public class WTHost extends ConsoleHost {
 		cmd.add("-d");
 		cmd.add("\"" + new File("").getAbsolutePath() + "\"");
 		cmd.add("-p");
-		cmd.add("\"Command Prompt\"");
-		cmd.addAll(term.getBootCmd());//TODO: get proper profiling from windows terminal dynamically instead of having a huge switchlist
+		cmd.add(term.equals("cmd") ? "\"Command Prompt\"" : "\"Windows PowerShell\"");//TODO: get dynamic profiles for custom terminals and custom wt json profiles
+		cmd.addAll(term.getBootCmd());
 		term.run(new ProcessBuilder(cmd));
 	}
 
