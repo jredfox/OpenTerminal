@@ -5,15 +5,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jml.ot.app.BatchExe;
-import jml.ot.app.PowerShellExe;
-import jml.ot.app.TerminalExe;
 import jml.ot.app.host.WTHost;
 import jredfox.common.io.IOUtils;
 
 public class OpenTerminal {
 	
-	public static final String console_host = null;//"wt";
+	public static final String console_host = "wt";
 	public static final String terminal = "cmd";
 	
 	public static void open(TerminalApp app) throws IOException
@@ -32,7 +29,8 @@ public class OpenTerminal {
 		else if(System.getProperty("ot.bg") != null)
 			return;
 		
-		if(console_host != null)
+		boolean b = true;
+		if(console_host != null && b)
 		{
 			switch(console_host)
 			{
@@ -45,18 +43,7 @@ public class OpenTerminal {
 		}
 		else if(OSUtil.isWindows())
 		{
-			switch(terminal)
-			{
-				case "cmd":
-				{
-					new BatchExe(app).run();
-					break;
-				}
-				case "powershell":
-					System.out.println("powershell is very buggy when it comes to the start-process command it's not recommended as a default terminal for your java application!");
-					new PowerShellExe(app).run();
-				break;
-			}
+			app.getTerminal(terminal).run();
 		}
 		else if(OSUtil.isMac())
 		{

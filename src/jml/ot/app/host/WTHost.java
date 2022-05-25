@@ -22,17 +22,15 @@ public class WTHost extends ConsoleHost {
 		TerminalExe term = this.app.getTerminal(OpenTerminal.terminal);
 		List<String> cmd = new ArrayList<>();
 		cmd.add("wt");
-		cmd.add("-w");
-		cmd.add("-1");
 		cmd.add("new-tab");
 		cmd.add("-f");
 		cmd.add("--title");
 		cmd.add("\"" + this.app.getTitle() + "\"");
 		cmd.add("-d");
 		cmd.add("\"" + new File("").getAbsolutePath() + "\"");
-//		cmd.add("-p");
-//		cmd.add("\"Command Prompt\"");
-		cmd.addAll(term.getBootCmd());
+		cmd.add("-p");
+		cmd.add("\"Command Prompt\"");
+		cmd.addAll(term.getBootCmd());//TODO: get proper profiling from windows terminal dynamically instead of having a huge switchlist
 		term.run(new ProcessBuilder(cmd));
 	}
 

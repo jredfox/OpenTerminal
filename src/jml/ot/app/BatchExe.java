@@ -77,6 +77,7 @@ public class BatchExe extends TerminalExe {
 			li.add("IF NOT \"%~1%\" == \"-1\" (");
 			li.add("   color %~1%");
 			li.add(")");
+			li.add("cls ::hotfix for Windows Terminal");
 			li.add("title %~2%");
 			li.add("set boot=%~3");
 			li.add("set boot=%boot:,=^\"% ::RE-MAP the boot command to double quotes");
