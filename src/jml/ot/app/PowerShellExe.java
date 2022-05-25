@@ -21,7 +21,6 @@ public class PowerShellExe extends TerminalExe {
 	@Override
 	public void run() throws IOException 
 	{
-		super.run();
 		String q = OSUtil.getQuote();
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
@@ -39,7 +38,13 @@ public class PowerShellExe extends TerminalExe {
 			"-java_args",
 			q + OTConstants.args.replaceAll(q, "'") + q,
 		}).directory(OTConstants.userDir);
-		pb.start();
+		this.run(pb);
+	}
+	
+	@Override
+	public List<String> getBootCmd() 
+	{
+		return null;
 	}
 	
 	@Override

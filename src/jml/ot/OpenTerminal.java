@@ -7,12 +7,14 @@ import java.util.List;
 
 import jml.ot.app.BatchExe;
 import jml.ot.app.PowerShellExe;
+import jml.ot.app.TerminalExe;
+import jml.ot.app.host.WTHost;
 import jredfox.common.io.IOUtils;
 
 public class OpenTerminal {
 	
-	public static final String terminal = "powershell";
-	public static final String console_host = "wt";
+	public static final String console_host = null;//"wt";
+	public static final String terminal = "cmd";
 	
 	public static void open(TerminalApp app) throws IOException
 	{
@@ -30,7 +32,18 @@ public class OpenTerminal {
 		else if(System.getProperty("ot.bg") != null)
 			return;
 		
-		if(OSUtil.isWindows())
+		if(console_host != null)
+		{
+			switch(console_host)
+			{
+				case "wt":
+				{
+					new WTHost(app).run();
+				}
+				break;
+			}
+		}
+		else if(OSUtil.isWindows())
 		{
 			switch(terminal)
 			{
@@ -39,12 +52,6 @@ public class OpenTerminal {
 					new BatchExe(app).run();
 					break;
 				}
-//				case "wt":
-//				{
-//					//--tabColor //custom profile for the exe
-//					runInTerminal("cmd", OSUtil.getExeAndClose(), "wt -w -1 new-tab -f --title \"" + app.getTitle() + "\"" +  " -p \"Command Prompt\" " + OTConstants.java_home + " " + OTConstants.args, new File("").getAbsoluteFile());
-//					break;
-//				}
 				case "powershell":
 					System.out.println("powershell is very buggy when it comes to the start-process command it's not recommended as a default terminal for your java application!");
 					new PowerShellExe(app).run();

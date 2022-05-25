@@ -27,12 +27,8 @@ public class OTMain {
 		}
 		else
 		{
+//			new ProcessBuilder("cmd", "/c", "color 2f").inheritIO().start().waitFor();
 			System.out.println("booted:" + OTConstants.userDir);
-//			while(true)
-//			{
-//				
-//			}
-//			System.out.println("Press \"ENTER\" to continue");
 			new Scanner(System.in).nextLine();
 		}
 	}

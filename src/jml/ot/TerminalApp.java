@@ -1,6 +1,11 @@
 package jml.ot;
 
 import java.io.File;
+import java.io.IOException;
+
+import jml.ot.app.BatchExe;
+import jml.ot.app.PowerShellExe;
+import jml.ot.app.TerminalExe;
 
 public class TerminalApp {
 	
@@ -34,6 +39,19 @@ public class TerminalApp {
 	 */
 	public Profile getProfile()
 	{
+		return null;
+	}
+	
+	public TerminalExe getTerminal(String terminal) throws IOException
+	{
+		switch(terminal)
+		{
+			case "cmd":
+				return new BatchExe(this);
+			case "powershell":
+				System.out.println("powershell is very buggy when it comes to the start-process command it's not recommended as a default terminal for your java application!");
+				return new PowerShellExe(this);
+		}
 		return null;
 	}
 	

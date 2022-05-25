@@ -16,9 +16,7 @@ public abstract class TerminalExe {
 	{
 		this.app = app;
 		this.shell = shell;
-		this.genStart();//enforce the need for pr-runtime setup
 	}
-	
 	/**
 	 * your boot shell script
 	 */
@@ -27,10 +25,24 @@ public abstract class TerminalExe {
 	 * your starting scripts such as the start command for powershell or macOs
 	 */
 	public abstract void genStart() throws IOException;//ensures preset scripts like powershell's start or mac's start script and more are done before execution
+	/**
+	 * execute the command in a new terminal window
+	 */
+	public abstract void run() throws IOException;
+	/**
+	 * get's the boot command used by a console host instead of forcing a new window through other means
+	 */
+	public abstract List<String> getBootCmd() throws IOException;
 	
-	public void run() throws IOException
+	/**
+	 * run the process builder with genStart and the boot shell checks
+	 */
+	public void run(ProcessBuilder pb) throws IOException
 	{
+		this.genStart();
 		this.createShell();
+//		this.printPB(pb);
+		pb.start();
 	}
 	
 	public void makeShell(List<String> li) throws IOException 
