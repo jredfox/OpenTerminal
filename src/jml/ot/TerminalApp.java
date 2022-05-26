@@ -88,6 +88,7 @@ public class TerminalApp {
 		public String wtTab;//WT Tab color
 		public String wtScheme;//WT only
 		public boolean wtFullScreen;
+		public boolean wtMaximized;
 		public File termProfile;//WT json or profile for macOs terminal
 		
 		public Profile()

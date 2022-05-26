@@ -20,6 +20,7 @@ public class Test {
 					{
 						p.wtScheme = "Campbell Powershell";
 						p.wtTab = "42f5ec";
+						p.wtMaximized = true;
 //						p.wtFullScreen = true;
 					}
 					return p;

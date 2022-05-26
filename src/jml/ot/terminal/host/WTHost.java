@@ -9,6 +9,11 @@ import jml.ot.TerminalApp;
 import jml.ot.TerminalApp.Profile;
 import jml.ot.terminal.TerminalExe;
 
+/**
+ * Windows Terminal Console host handler
+ * NOTE: doesn't support multiple panes per tab as WT is the only Console that supports it and I think it's a good idea of having one instance per tab.
+ * Doesn't always create a new window if WT is configured it will just open a new tab instead of a new instance. this is so we don't override the users preferences
+ */
 public class WTHost extends ConsoleHost {
 
 	public WTHost(TerminalApp app) 
@@ -25,8 +30,13 @@ public class WTHost extends ConsoleHost {
 		boolean supportedProfile = isCmd || this.app.terminal.equals("powershell");
 		Profile p = this.app.getProfile();
 		cmd.add("wt");
-		if(p != null && p.wtFullScreen)
-			cmd.add("-F");
+		if(p != null)
+		{
+			if(p.wtFullScreen)
+				cmd.add("-F");
+			if(p.wtMaximized)
+				cmd.add("-M");
+		}
 		cmd.add("new-tab");
 		if(p != null)
 		{
