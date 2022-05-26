@@ -15,11 +15,12 @@ public class Test {
 			{
 				if(OSUtil.isWindows())
 				{
-					Profile p = new Profile("3", "f");
+					Profile p = new Profile("0", "a");
 					if(this.terminal.equals("powershell"))
 					{
 						p.wtScheme = "Campbell Powershell";
 						p.wtTab = "42f5ec";
+//						p.wtFullScreen = true;
 					}
 					return p;
 				}

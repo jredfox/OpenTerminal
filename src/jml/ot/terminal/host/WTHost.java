@@ -23,9 +23,11 @@ public class WTHost extends ConsoleHost {
 		List<String> cmd = new ArrayList<>();
 		boolean isCmd = this.app.terminal.equals("cmd");
 		boolean supportedProfile = isCmd || this.app.terminal.equals("powershell");
-		cmd.add("wt");
-		cmd.add("new-tab");
 		Profile p = this.app.getProfile();
+		cmd.add("wt");
+		if(p != null && p.wtFullScreen)
+			cmd.add("-F");
+		cmd.add("new-tab");
 		if(p != null)
 		{
 			if(p.wtScheme != null)
@@ -39,7 +41,7 @@ public class WTHost extends ConsoleHost {
 				cmd.add("#" + p.wtTab);
 			}
 		}
-		cmd.add("-f");
+		cmd.add("--focus");
 		cmd.add("--title");
 		cmd.add("\"" + this.app.getTitle() + "\"");
 		cmd.add("-d");
