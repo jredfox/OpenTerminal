@@ -1,4 +1,4 @@
-package jml.ot.app;
+package jml.ot.terminal;
 
 import java.io.File;
 import java.io.IOException;

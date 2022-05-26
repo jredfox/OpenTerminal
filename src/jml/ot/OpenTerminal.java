@@ -5,12 +5,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jml.ot.app.host.WTHost;
+import jml.ot.terminal.host.ConsoleHost;
 import jredfox.common.io.IOUtils;
 
 public class OpenTerminal {
 	
-	public static final String console_host = null;//"wt";
+	public static final String console_host = "wt";//"wt";
 	public static final String terminal = "powershell";
 	
 	public static void open(TerminalApp app) throws IOException
@@ -29,15 +29,9 @@ public class OpenTerminal {
 		else if(System.getProperty("ot.bg") != null)
 			return;
 		
-		if(console_host != null)
-		{
-			switch(console_host)
-			{
-				case "wt":
-					new WTHost(app).run();
-				break;
-			}
-		}
+		ConsoleHost console = app.getConsoleHost();
+		if(console != null)
+			console.run();
         else if(OSUtil.isLinux())
         {
             File sh = new File(OTConstants.home, app.id + ".sh");

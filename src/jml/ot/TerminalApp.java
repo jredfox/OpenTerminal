@@ -3,9 +3,11 @@ package jml.ot;
 import java.io.File;
 import java.io.IOException;
 
-import jml.ot.app.BatchExe;
-import jml.ot.app.PowerShellExe;
-import jml.ot.app.TerminalExe;
+import jml.ot.terminal.BatchExe;
+import jml.ot.terminal.PowerShellExe;
+import jml.ot.terminal.TerminalExe;
+import jml.ot.terminal.host.ConsoleHost;
+import jml.ot.terminal.host.WTHost;
 
 public class TerminalApp {
 	
@@ -41,6 +43,23 @@ public class TerminalApp {
 	 */
 	public Profile getProfile()
 	{
+		return null;
+	}
+	
+	/**
+	 * returns the specified ConsoleHost aka the UI for the terminal
+	 * @return null if you want it to use start commands instead of specifying the UI type
+	 */
+	public ConsoleHost getConsoleHost()
+	{
+		if(this.conHost != null)
+		{
+			switch(this.conHost)
+			{
+				case "wt":
+					return new WTHost(this);
+			}
+		}
 		return null;
 	}
 	

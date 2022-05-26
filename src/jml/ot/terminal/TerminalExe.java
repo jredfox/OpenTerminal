@@ -1,4 +1,4 @@
-package jml.ot.app;
+package jml.ot.terminal;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,6 +7,10 @@ import java.util.List;
 import jml.ot.TerminalApp;
 import jredfox.common.io.IOUtils;
 
+/**
+ * the terminal handler.{@link TerminalExe#run()} will give you a new UI from the executing terminal 
+ * while {@link TerminalExe#getBootCmd()} is for when there already is a UI running and you simply want to boot the app
+ */
 public abstract class TerminalExe {
 	
 	public TerminalApp app;
@@ -41,7 +45,7 @@ public abstract class TerminalExe {
 	{
 		this.genStart();
 		this.createShell();
-//		this.printPB(pb);
+		this.printPB(pb);
 		pb.start();
 	}
 	

@@ -1,4 +1,4 @@
-package jml.ot.app.host;
+package jml.ot.terminal.host;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import java.util.List;
 
 import jml.ot.TerminalApp;
 import jml.ot.TerminalApp.Profile;
-import jml.ot.app.TerminalExe;
+import jml.ot.terminal.TerminalExe;
 
 public class WTHost extends ConsoleHost {
 

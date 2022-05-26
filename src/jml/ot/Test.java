@@ -15,7 +15,7 @@ public class Test {
 			{
 				if(OSUtil.isWindows())
 				{
-					Profile p = new Profile();
+					Profile p = new Profile("3", "f");
 					if(this.terminal.equals("powershell"))
 					{
 						p.wtScheme = "Campbell Powershell";
