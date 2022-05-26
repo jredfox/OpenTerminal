@@ -56,7 +56,7 @@ public class BatchExe extends TerminalExe {
 	{
 		String q = OSUtil.getQuote();
 		Profile profile = this.app.getProfile();
-		List<String> cmd = new ArrayList();
+		List<String> cmd = new ArrayList<>();
 		cmd.add("cmd");
 		cmd.add(OSUtil.getExeAndClose());
 		cmd.add("call");

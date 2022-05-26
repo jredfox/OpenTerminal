@@ -10,11 +10,12 @@ public class OTMain {
 	 * @param appId
 	 * @param appName
 	 * @param appVersion
-	 * @param boolean forceNewWindow
+	 * @param forceNewWindow
 	 * @param Profile use {@link TerminalApp#getProfile#toString()} or null
 	 * @param terminal
 	 * @param consoleHost default is null
 	 * @param PID of the host
+	 * @param startupShell or null
 	 * @category NOTE: this doesn't support custom terminal app classes nor can it due to the fact it's an external jar with no deps. use {@link OpenTerminal#open(TerminalApp)} for custom terminal apps
 	 * @author jredfox
 	 */
@@ -28,6 +29,7 @@ public class OTMain {
 		else
 		{
 //			new ProcessBuilder("cmd", "/c", "color 2f").inheritIO().start().waitFor();
+//			new ProcessBuilder("cmd", "/c", "").inheritIO().start().waitFor();
 			System.out.println("booted:" + OTConstants.userDir);
 			new Scanner(System.in).nextLine();
 		}

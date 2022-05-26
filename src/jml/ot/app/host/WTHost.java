@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jml.ot.TerminalApp;
+import jml.ot.TerminalApp.Profile;
 import jml.ot.app.TerminalExe;
 
 public class WTHost extends ConsoleHost {
@@ -18,23 +19,36 @@ public class WTHost extends ConsoleHost {
 	@Override
 	public void run() throws IOException
 	{
-		TerminalExe term = this.app.getTerminal();
+		TerminalExe term = this.app.getTerminalExe();
 		List<String> cmd = new ArrayList<>();
 		boolean isCmd = this.app.terminal.equals("cmd");
+		boolean supportedProfile = isCmd || this.app.terminal.equals("powershell");
 		cmd.add("wt");
 		cmd.add("new-tab");
-		if(this.app.getProfile() != null && this.app.getProfile().wtScheme != null)
+		Profile p = this.app.getProfile();
+		if(p != null)
 		{
-			cmd.add("--colorScheme");
-			cmd.add("\"" + this.app.getProfile().wtScheme + "\"");
+			if(p.wtScheme != null)
+			{
+				cmd.add("--colorScheme");
+				cmd.add("\"" + this.app.getProfile().wtScheme + "\"");
+			}
+			if(p.wtTab != null)
+			{
+				cmd.add("--tabColor");
+				cmd.add("#" + p.wtTab);
+			}
 		}
 		cmd.add("-f");
 		cmd.add("--title");
 		cmd.add("\"" + this.app.getTitle() + "\"");
 		cmd.add("-d");
 		cmd.add("\"" + new File("").getAbsolutePath() + "\"");
-		cmd.add("-p");
-		cmd.add(isCmd ? "\"Command Prompt\"" : "\"Windows PowerShell\"");//TODO: get dynamic profiles for custom terminals and custom wt json profiles
+		if(supportedProfile)
+		{
+			cmd.add("-p");
+			cmd.add(isCmd ? "\"Command Prompt\"" : "\"Windows PowerShell\"");
+		}
 		cmd.addAll(term.getBootCmd());
 		term.run(new ProcessBuilder(cmd));
 	}

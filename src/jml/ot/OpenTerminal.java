@@ -10,7 +10,7 @@ import jredfox.common.io.IOUtils;
 
 public class OpenTerminal {
 	
-	public static final String console_host = "wt";
+	public static final String console_host = null;//"wt";
 	public static final String terminal = "powershell";
 	
 	public static void open(TerminalApp app) throws IOException
@@ -29,25 +29,14 @@ public class OpenTerminal {
 		else if(System.getProperty("ot.bg") != null)
 			return;
 		
-		boolean b = true;
-		if(console_host != null && b)
+		if(console_host != null)
 		{
 			switch(console_host)
 			{
 				case "wt":
-				{
 					new WTHost(app).run();
-				}
 				break;
 			}
-		}
-		else if(OSUtil.isWindows())
-		{
-			app.getTerminal().run();
-		}
-		else if(OSUtil.isMac())
-		{
-			
 		}
         else if(OSUtil.isLinux())
         {
@@ -61,6 +50,10 @@ public class OpenTerminal {
             IOUtils.makeExe(sh);//make it executable
             Runtime.getRuntime().exec(terminal + " " + OSUtil.getLinuxNewWin() + " bash " + sh.getAbsolutePath());
         }
+		else
+		{
+			app.getTerminalExe().run();
+		}
 	}
 
     /**

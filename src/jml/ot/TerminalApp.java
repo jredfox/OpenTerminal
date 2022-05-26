@@ -44,7 +44,7 @@ public class TerminalApp {
 		return null;
 	}
 	
-	public TerminalExe getTerminal() throws IOException
+	public TerminalExe getTerminalExe() throws IOException
 	{
 		switch(this.terminal)
 		{
@@ -66,9 +66,9 @@ public class TerminalApp {
 	{
 		public String bg;
 		public String fg;
-		public String tab_color;//windows terminal only so far
+		public String wtTab;//WT Tab color
 		public String wtScheme;//WT only
-		public File termProfile;//only supported on macOs the file to apply an entire profile
+		public File termProfile;//WT json or profile for macOs terminal
 		
 		public Profile()
 		{
@@ -79,12 +79,6 @@ public class TerminalApp {
 		{
 			this.bg = b;
 			this.fg = f;
-		}
-		
-		public Profile tabColor(String t)
-		{
-			this.tab_color = t;
-			return this;
 		}
 		
 		public Profile(File mp)

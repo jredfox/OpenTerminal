@@ -17,7 +17,10 @@ public class Test {
 				{
 					Profile p = new Profile();
 					if(this.terminal.equals("powershell"))
+					{
 						p.wtScheme = "Campbell Powershell";
+						p.wtTab = "42f5ec";
+					}
 					return p;
 				}
 				return null;
