@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jml.ot.OSUtil;
 import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
 import jredfox.common.io.IOUtils;
@@ -40,12 +41,12 @@ public class MacBashExe extends TerminalExe {
 					+ "clear && printf '\\e[3J' #clears screen\n"
 					+ "if ! [ -z \"$1\" ]\n"
 					+ "then\n"
-					+ "     echo -n -e \"\\033]0;$1\\007\" #changes the title if and only if the variable exists\n"
+					+ "     echo -n -e \"\\033]0;\"$1\"\\007\" #changes the title if and only if the variable exists\n"
 					+ "fi\n"
-					+ "cd $2\n"
-					+ "$3\n"
+					+ "cd \"$2\"\n"
+					+ "eval \"$3\"\n"
 					+ "echo -n -e \"\\033]0;_closeMe_\\007\"\n"
-					+ "osascript $4 \"_closeMe_\"");
+					+ "osascript \"$4\" \"_closeMe_\"");
 			this.makeShell(li);
 		}
 	}
@@ -121,7 +122,7 @@ public class MacBashExe extends TerminalExe {
 			this.makeAs(li, start2As, start2Scpt);
 		}
 	}
-	
+	//osascript <start2.scpt> "bash <boot.sh> \"\" \"<cd>\" \"<command>\" \"<closeMe.scpt>\"" "<AppName>" "profileName"
 	public void makeAs(List<String> commands, File applescript, File scpt) throws IOException
 	{
 		this.makeShell(commands, applescript);
@@ -145,11 +146,36 @@ public class MacBashExe extends TerminalExe {
 		IOUtils.makeExe(scpt);
 	}
 
+	/**
+	 * bash 
+$1 = title
+$2 = working dir
+$3 = command
+$4 = closeMe.scpt
+bash "<boot.sh>" "<myAppName>" "<cd>" "<comamnd>" "<closeMe.scpt>"
+	 */
 	@Override
 	public void run() throws IOException 
 	{
-		this.createShell();
-		this.genStart();
+		String q = OSUtil.getQuote();
+		String profile = this.app.getProfile() != null ? this.app.getProfile().profileName : "";
+		String command = (OTConstants.java_home + " " + OTConstants.args).replaceAll(q, "\\\\" + q);
+		String bash = "bash " + q + this.shell.getPath() + q + " " + q + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + closeMeScpt.getPath() + q;
+		ProcessBuilder pb = new ProcessBuilder(new String[]
+		{
+			this.app.terminal,
+			OSUtil.getExeAndClose(),
+			"osascript " + q + start2Scpt.getPath() + q + " " + q + q + " " + q + this.app.getTitle() + q + " " + q + profile + q,
+		}).inheritIO();
+		try 
+		{
+			this.run(pb);
+		} 
+		catch (Exception e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override

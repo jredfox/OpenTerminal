@@ -94,6 +94,7 @@ public class TerminalApp {
 		public String wtScheme;//WT only
 		public boolean wtFullScreen;
 		public boolean wtMaximized;
+		public String profileName;
 		public File termProfile;//WT json or profile for macOs terminal
 		
 		public Profile()
@@ -110,6 +111,11 @@ public class TerminalApp {
 		public Profile(File mp)
 		{
 			this.termProfile = mp;
+		}
+
+		public String getMacProfileName()
+		{
+			return this.profileName;
 		}
 	}
 

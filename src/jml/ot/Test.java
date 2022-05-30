@@ -25,6 +25,12 @@ public class Test {
 					}
 					return p;
 				}
+				else if(OSUtil.isMac())
+				{
+					Profile p = new Profile();
+					p.profileName = "Red Sands";
+					return p;
+				}
 				return null;
 			}
 		};
