@@ -146,14 +146,7 @@ public class MacBashExe extends TerminalExe {
 		IOUtils.makeExe(scpt);
 	}
 
-	/**
-	 * bash 
-$1 = title
-$2 = working dir
-$3 = command
-$4 = closeMe.scpt
-bash "<boot.sh>" "<myAppName>" "<cd>" "<comamnd>" "<closeMe.scpt>"
-	 */
+	//TODO: test to see if not running osascript by itself without the terminal works on older macOs versions
 	@Override
 	public void run() throws IOException 
 	{
@@ -163,19 +156,13 @@ bash "<boot.sh>" "<myAppName>" "<cd>" "<comamnd>" "<closeMe.scpt>"
 		String bash = "bash " + q + this.shell.getPath() + q + " " + q + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + closeMeScpt.getPath() + q;
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
-			this.app.terminal,
-			OSUtil.getExeAndClose(),
-			"osascript " + q + start2Scpt.getPath() + q + " " + q + q + " " + q + this.app.getTitle() + q + " " + q + profile + q,
-		}).inheritIO();
-		try 
-		{
-			this.run(pb);
-		} 
-		catch (Exception e) 
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			"osascript",
+			start2Scpt.getPath(),
+			bash,
+			this.app.getTitle(),
+			profile
+		});
+		this.run(pb);
 	}
 
 	@Override

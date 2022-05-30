@@ -45,7 +45,7 @@ public abstract class TerminalExe {
 	{
 		this.genStart();
 		this.createShell();
-		this.printPB(pb);
+//		this.printPB(pb);
 		pb.start();
 	}
 	
