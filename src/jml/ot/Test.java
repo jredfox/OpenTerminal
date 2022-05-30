@@ -30,7 +30,7 @@ public class Test {
 				else if(OSUtil.isMac())
 				{
 					Profile p = new Profile();
-					p.profileName = "Graass";
+					p.profileName = "BlGlass";
 					return p;
 				}
 				return null;

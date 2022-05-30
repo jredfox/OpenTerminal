@@ -2,6 +2,8 @@ package jml.ot;
 
 import java.io.File;
 
+import jredfox.common.utils.JREUtil;
+
 public class OTConstants {
 	
 	public static final String OTVERSION = "1.0.0";
@@ -9,7 +11,7 @@ public class OTConstants {
 	public static final File scripts = new File(home, "scripts");
 	public static final File start = new File(scripts, "start");
 	public static final File boot = new File(scripts, "boot");
-	public static final File userDir = new File(System.getProperty("user.dir")).getAbsoluteFile();
+	public static final File userDir = JREUtil.getProgramDir().getAbsoluteFile();
 	public static final String java_home = "\"" + System.getProperty("java.home") + "/bin/java\"";
 	public static final String args = "-Dot.l -cp \"" + System.getProperty("java.class.path") + "\" jml.ot.OTMain";
 }
