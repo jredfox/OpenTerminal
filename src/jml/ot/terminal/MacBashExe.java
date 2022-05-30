@@ -171,8 +171,13 @@ public class MacBashExe extends TerminalExe {
 	@Override
 	public List<String> getBootCmd() throws IOException 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		String q = OSUtil.getQuote();
+		String profile = this.app.getProfile() != null ? this.app.getProfile().profileName : "";
+		String command = (OTConstants.java_home + " " + OTConstants.args).replaceAll(q, "\\\\" + q);
+		String bash = "bash " + q + this.shell.getPath() + q + " " + q + profile + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + closeMeScpt.getPath() + q;
+		List<String> li = new ArrayList<>();
+		li.add(bash);
+		return li;
 	}
 
 }

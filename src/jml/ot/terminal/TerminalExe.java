@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
 import jredfox.common.io.IOUtils;
 
@@ -46,7 +47,7 @@ public abstract class TerminalExe {
 		this.genStart();
 		this.createShell();
 //		this.printPB(pb);
-		pb.start();
+		pb.directory(OTConstants.userDir).start();
 	}
 	
 	public void makeShell(List<String> li) throws IOException 

@@ -23,7 +23,13 @@ public class OSUtil {
 	
 	public static String[] mac_terminals = new String[]
 	{
-		"/bin/bash"
+		"/bin/bash",
+		"/bin/sh",
+		"/bin/zsh",
+		"/bin/csh", 
+		"/bin/dash", 
+		"/bin/ksh", 
+		"/bin/tcsh"
 	};
 	
 	public static String[] linux_terminals = new String[]
