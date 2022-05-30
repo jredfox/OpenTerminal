@@ -10,8 +10,8 @@ import jredfox.common.io.IOUtils;
 
 public class OpenTerminal {
 	
-	public static final String console_host = "wt";//"wt";
-	public static final String terminal = "powershell";
+	public static final String console_host = "";//"wt";
+	public static final String terminal = "/bin/bash";
 	
 	public static void open(TerminalApp app) throws IOException
 	{

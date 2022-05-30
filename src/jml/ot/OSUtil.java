@@ -1,5 +1,7 @@
 package jml.ot;
 
+import java.io.File;
+
 public class OSUtil {
 	
 	private static String osName = System.getProperty("os.name").toLowerCase();
@@ -156,6 +158,16 @@ public class OSUtil {
 	public static boolean isUnsupported()
 	{
 		return !isWindows() && !isMac() && !isLinux();
+	}
+	
+	public static File getAppData()
+	{
+		if(isWindows())
+			return new File(System.getenv("APPDATA"));
+	    String path = System.getProperty("user.home");
+	    if(isMac())
+	    	path += "/Library/Application Support";
+	    return new File(path);
 	}
 
 }
