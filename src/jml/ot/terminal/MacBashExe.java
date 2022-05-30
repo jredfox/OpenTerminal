@@ -106,7 +106,9 @@ public class MacBashExe extends TerminalExe {
 					+ "	set p to third item in argv\n"
 					+ "	tell application \"Terminal\"\n"
 					+ "		set newTab to do script scpt\n"
-					+ "		if p is not equal to \"\" then set current settings of newTab to settings set p\n"
+					+ "		try\n"
+					+ "			if p is not equal to \"\" then set current settings of newTab to settings set p\n"
+					+ "		end try\n"
 					+ "		set custom title of newTab to n\n"
 					+ "		activate\n"
 					+ "		delay 0.1\n"
@@ -118,7 +120,8 @@ public class MacBashExe extends TerminalExe {
 					+ "			close bwindow\n"
 					+ "		end if\n"
 					+ "	end tell\n"
-					+ "end run");
+					+ "end run\n"
+					+ "");
 			this.makeAs(li, start2As, start2Scpt);
 		}
 	}
