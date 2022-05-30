@@ -1,26 +1,31 @@
 package jml.ot.terminal;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import jml.ot.OSUtil;
 import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
+import jml.ot.TerminalApp.Profile;
 import jredfox.common.io.IOUtils;
 
 public class MacBashExe extends TerminalExe {
 	
 	public static final File macStart = new File(OTConstants.start, "mac");
 	public static final File closeMeAs = new File(macStart, "closeMe.applescript");
-	public static final File importProfileAs = new File(macStart, "import.applescript");
+	public static final File importAs = new File(macStart, "import.applescript");
 	public static final File profileAs = new File(macStart, "profile.applescript");
 	public static final File start2As = new File(macStart, "start2.applescript");
 	public static final File closeMeScpt = new File(macStart, "closeMe.scpt");
-	public static final File importProfileScpt = new File(macStart, "import.scpt");
+	public static final File importScpt = new File(macStart, "import.scpt");
 	public static final File profileScpt = new File(macStart, "profile.scpt");
 	public static final File start2Scpt = new File(macStart, "start2.scpt");
+	public static final File profileHome = new File(OTConstants.scripts, "profiles/mac");
 
 	public MacBashExe(TerminalApp app) throws IOException 
 	{
@@ -72,17 +77,17 @@ public class MacBashExe extends TerminalExe {
 					+ "end run");
 			this.makeAs(li, closeMeAs, closeMeScpt);
 		}
-		if(!importProfileScpt.exists())
+		if(!importScpt.exists())
 		{
 			List<String> li = new ArrayList<>();
 			li.add("on run argv\n"
 					+ "	set importScript to first item of argv\n"
-					+ "	set closeScript to second item of argv\n"
-					+ "	set profileId to third item of argv\n"
+					+ "	set profileId to second item of argv\n"
+					+ "	set closeScript to third item of argv\n"
 					+ "	do shell script \"open -a Terminal \" & importScript\n"
 					+ "	do shell script \"osascript \" & closeScript & \" _oti_\" & profileId & \"_\"\n"
 					+ "end run");
-			this.makeAs(li, importProfileAs, importProfileScpt);
+			this.makeAs(li, importAs, importScpt);
 		}
 		if(!profileScpt.exists())
 		{
@@ -120,12 +125,14 @@ public class MacBashExe extends TerminalExe {
 					+ "			close bwindow\n"
 					+ "		end if\n"
 					+ "	end tell\n"
-					+ "end run\n"
-					+ "");
+					+ "end run");
 			this.makeAs(li, start2As, start2Scpt);
 		}
+		
+		//import the profile
+		importProfile(this.app.getProfile());
 	}
-	//osascript <start2.scpt> "bash <boot.sh> \"\" \"<cd>\" \"<command>\" \"<closeMe.scpt>\"" "<AppName>" "profileName"
+
 	public void makeAs(List<String> commands, File applescript, File scpt) throws IOException
 	{
 		this.makeShell(commands, applescript);
@@ -178,6 +185,34 @@ public class MacBashExe extends TerminalExe {
 		List<String> li = new ArrayList<>();
 		li.add(bash);
 		return li;
+	}
+	
+	//TODO: WIP
+	public static void importProfile(Profile p) throws IOException
+	{
+		if(p != null && p.profileId != null)
+		{
+			File pf = new File(profileHome, p.profileId + ".terminal");
+			if(!pf.exists())
+			{
+				System.out.println("importing Terminal.app profile " + p.profileId + " from:" + pf.getPath());
+				
+				//copy the profile.terminal to the disk
+				InputStream in = ClassLoader.getSystemClassLoader().getResourceAsStream(p.profilePath);
+				IOUtils.makeParentDirs(pf);
+				IOUtils.copy(in, new BufferedOutputStream(new FileOutputStream(pf)));
+				
+				//import the profile.terminal
+				new ProcessBuilder(new String[] 
+				{
+					"osascript",
+					importScpt.getPath(),
+					pf.getPath(),
+					p.profileId,
+					closeMeScpt.getPath()
+				}).directory(OTConstants.userDir).start();
+			}
+		}
 	}
 
 }
