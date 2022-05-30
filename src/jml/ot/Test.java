@@ -3,12 +3,14 @@ package jml.ot;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.JFrame;
+
 public class Test {
 
 	public static void main(String[] args) throws IOException, InterruptedException
 	{
 		long ms = System.currentTimeMillis();
-		TerminalApp app = new TerminalApp("test", "Test App", "1.0.0", false) 
+		TerminalApp app = new TerminalApp("test", "Test App", "1.0.0", true) 
 		{
 			@Override
 			public Profile getProfile() 
