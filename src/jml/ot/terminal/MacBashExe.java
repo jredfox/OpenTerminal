@@ -112,14 +112,14 @@ public class MacBashExe extends TerminalExe {
 			li.add("on run argv\n"
 					+ "	set flag to application \"Terminal\" is not running\n"
 					+ "	set scpt to first item in argv\n"
-					+ "	set n to second item in argv\n"
-					+ "	set p to third item in argv\n"
+					+ "	--	set n to second item in argv\n"
+					+ "	set p to second item in argv\n"
 					+ "	tell application \"Terminal\"\n"
 					+ "		set newTab to do script scpt\n"
 					+ "		try\n"
 					+ "			if p is not equal to \"\" then set current settings of newTab to settings set p\n"
 					+ "		end try\n"
-					+ "		set custom title of newTab to n\n"
+					+ "		--set custom title of newTab to n --commented out as sometimes this would fire after the closing title\n"
 					+ "		activate\n"
 					+ "		delay 0.1\n"
 					+ "		set badFlag to back window is equal to window 1\n"
@@ -174,7 +174,6 @@ public class MacBashExe extends TerminalExe {
 			"osascript",
 			start2Scpt.getPath(),
 			bash,
-			this.app.getTitle(),
 			profile
 		});
 		this.run(pb);
