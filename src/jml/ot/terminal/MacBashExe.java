@@ -51,7 +51,7 @@ public class MacBashExe extends TerminalExe {
 					+ "cd \"$2\"\n"
 					+ "eval \"$3\"\n"
 					+ "echo -n -e \"\\033]0;_closeMe_\\007\"\n"
-					+ "osascript \"$4\" \"_closeMe_\" & exit");
+					+ "osascript \"$4\" \"_closeMe_\"");
 			this.makeShell(li);
 		}
 	}
@@ -63,8 +63,22 @@ public class MacBashExe extends TerminalExe {
 		{
 			List<String> li = new ArrayList<>();
 			li.add("on run argv\n"
-					+ "	set closeMe to first item of argv\n"
-					+ "	tell application \"Terminal\" to close (every window whose name contains closeMe)\n"
+					+ "	set closeMe to first item in argv\n"
+					+ "	tell application \"Terminal\"\n"
+					+ "		activate\n"
+					+ "		delay 1.0E-4\n"
+					+ "		set winList to windows\n"
+					+ "		repeat with win in winList\n"
+					+ "			try\n"
+					+ "				if name of win contains closeMe then\n"
+					+ "					set processList to processes of win\n"
+					+ "					set clean commands of current settings of win to processList\n"
+					+ "					delay 1.0E-5\n"
+					+ "					close win\n"
+					+ "				end if\n"
+					+ "			end try\n"
+					+ "		end repeat\n"
+					+ "	end tell\n"
 					+ "end run");
 			this.makeAs(li, closeMeAs, closeMeScpt);
 		}
@@ -152,9 +166,9 @@ public class MacBashExe extends TerminalExe {
 	public void run() throws IOException 
 	{
 		String q = OSUtil.getQuote();
-		String profile = this.app.getProfile() != null ? this.app.getProfile().profileName : "";
+		String profile = this.app.getProfile() != null && this.app.getProfile().profileName != null ? this.app.getProfile().profileName : "";
 		String command = (OTConstants.java_home + " " + OTConstants.args).replaceAll(q, "\\\\" + q);
-		String bash = "bash " + q + this.shell.getPath() + q + " " + q + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + closeMeScpt.getPath() + q;
+		String bash = "bash " + q + this.shell.getPath() + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + closeMeScpt.getPath() + q;
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
 			"osascript",
