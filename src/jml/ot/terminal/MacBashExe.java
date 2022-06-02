@@ -51,7 +51,7 @@ public class MacBashExe extends TerminalExe {
 					+ "cd \"$2\"\n"
 					+ "eval \"$3\"\n"
 					+ "echo -n -e \"\\033]0;_closeMe_\\007\"\n"
-					+ "osascript \"$4\" \"_closeMe_\"");
+					+ "osascript \"$4\" \"_closeMe_\" & exit");
 			this.makeShell(li);
 		}
 	}
@@ -63,19 +63,8 @@ public class MacBashExe extends TerminalExe {
 		{
 			List<String> li = new ArrayList<>();
 			li.add("on run argv\n"
-					+ "	set closeMe to first item in argv\n"
-					+ "	tell application \"Terminal\"\n"
-					+ "		set winList to windows\n"
-					+ "		repeat with win in winList\n"
-					+ "			if name of win contains closeMe then\n"
-					+ "				try\n"
-					+ "					set processList to processes of win\n"
-					+ "					set clean commands of current settings of win to processList\n"
-					+ "					close win\n"
-					+ "				end try\n"
-					+ "			end if\n"
-					+ "		end repeat\n"
-					+ "	end tell\n"
+					+ "	set closeMe to first item of argv\n"
+					+ "	tell application \"Terminal\" to close (every window whose name contains closeMe)\n"
 					+ "end run");
 			this.makeAs(li, closeMeAs, closeMeScpt);
 		}

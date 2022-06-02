@@ -31,7 +31,7 @@ public class OTMain {
 //			new ProcessBuilder("cmd", "/c", "color 2f").inheritIO().start().waitFor();
 //			new ProcessBuilder("cmd", "/c", "").inheritIO().start().waitFor();
 			System.out.println("booted:" + OTConstants.userDir);
-			new Scanner(System.in).nextLine();
+//			new Scanner(System.in).nextLine();
 		}
 	}
 
