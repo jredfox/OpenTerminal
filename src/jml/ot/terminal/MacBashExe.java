@@ -101,8 +101,8 @@ public class MacBashExe extends TerminalExe {
 		{
 			List<String> li = new ArrayList<>();
 			li.add("on run argv\n"
-					+ "	set profileId to \"_pf\" & first item in argv & \"_\"\n"
-					+ "	set profileName to second item in argv\n"
+					+ "	set profileName to first item in argv\n"
+					+ "	set profileId to \"_pf\" & profileName & \"_\"\n"
 					+ "	tell application \"Terminal\"\n"
 					+ "		set current settings of (every window whose name contains profileId) to settings set profileName\n"
 					+ "	end tell\n"
