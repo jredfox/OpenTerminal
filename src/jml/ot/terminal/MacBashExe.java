@@ -25,7 +25,7 @@ public class MacBashExe extends TerminalExe {
 	public static final File importScpt = new File(macStart, "import.scpt");
 	public static final File profileScpt = new File(macStart, "profile.scpt");
 	public static final File start2Scpt = new File(macStart, "start2.scpt");
-	public static final File profileHome = new File(OTConstants.scripts, "profiles/mac");
+	public static final File profileMac = new File(OTConstants.profiles, "mac");
 
 	public MacBashExe(TerminalApp app) throws IOException 
 	{
@@ -54,8 +54,7 @@ public class MacBashExe extends TerminalExe {
 					+ "    read -p \"Press ENTER to continue...\"\n"
 					+ "fi\n"
 					+ "echo -n -e \"\\033]0;_closeMe_\\007\"\n"
-					+ "osascript \"$5\" \"_closeMe_\"\n"
-					+ "exit");
+					+ "osascript \"$5\" \"_closeMe_\" & exit");
 			this.makeShell(li);
 		}
 	}
@@ -94,7 +93,7 @@ public class MacBashExe extends TerminalExe {
 					+ "	set profileId to second item of argv\n"
 					+ "	set closeScript to third item of argv\n"
 					+ "	do shell script \"open -a Terminal \" & importScript\n"
-					+ "	do shell script \"osascript \" & closeScript & \" _oti_\" & profileId & \"_\"\n"
+					+ "	do shell script \"osascript \" & closeScript & \" oti.\" & profileId & \".profile\"\n"
 					+ "end run");
 			this.makeAs(li, importAs, importScpt);
 		}
@@ -170,7 +169,7 @@ public class MacBashExe extends TerminalExe {
 	public void run() throws IOException 
 	{
 		String q = OSUtil.getQuote();
-		String profile = this.app.getProfile() != null && this.app.getProfile().profileName != null ? this.app.getProfile().profileName : "";
+		String profile = this.app.getProfile() != null && this.app.getProfile().mac_profileName != null ? this.app.getProfile().mac_profileName : "";
 		String command = (OTConstants.java_home + " " + OTConstants.args).replaceAll(q, "\\\\" + q);
 		String bash = "bash " + q + this.shell.getPath() + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + closeMeScpt.getPath() + q;
 		ProcessBuilder pb = new ProcessBuilder(new String[]
@@ -194,30 +193,32 @@ public class MacBashExe extends TerminalExe {
 		return li;
 	}
 	
-	//TODO: WIP
 	public static void importProfile(Profile p) throws IOException
 	{
-		if(p != null && p.profileId != null)
+		String q = OSUtil.getQuote();
+		if(p != null && p.mac_profileId != null)
 		{
-			File pf = new File(profileHome, p.profileId + ".terminal");
+			File pf = new File(profileMac, p.mac_profileId + ".terminal");
 			if(!pf.exists())
 			{
-				System.out.println("importing Terminal.app profile " + p.profileId + " from:" + pf.getPath());
+				System.out.println("importing Terminal.app profile " + p.mac_profileId);
 				
 				//copy the profile.terminal to the disk
-				InputStream in = ClassLoader.getSystemClassLoader().getResourceAsStream(p.profilePath);
+				InputStream in = ClassLoader.getSystemClassLoader().getResourceAsStream(p.mac_profilePath);
 				IOUtils.makeParentDirs(pf);
 				IOUtils.copy(in, new BufferedOutputStream(new FileOutputStream(pf)));
 				
 				//import the profile.terminal
-				new ProcessBuilder(new String[] 
+				ProcessBuilder pb = new ProcessBuilder(new String[] 
 				{
 					"osascript",
 					importScpt.getPath(),
-					pf.getPath(),
-					p.profileId,
-					closeMeScpt.getPath()
-				}).directory(OTConstants.userDir).start();
+					q + pf.getPath() + q,
+					q + p.mac_profileId + q,
+					q + closeMeScpt.getPath() + q
+				}).directory(OTConstants.userDir).inheritIO();
+				Process process = pb.start();
+				while(process.isAlive());
 			}
 		}
 	}

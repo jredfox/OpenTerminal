@@ -98,12 +98,21 @@ public class TerminalApp {
 		public String bg;
 		public String fg;
 		public String wtTab;//WT Tab color
-		public String wtScheme;//WT only
+		public String wtScheme;//WT color scheme
 		public boolean wtFullScreen;
 		public boolean wtMaximized;
-		public String profileName;
-		public String profileId;
-		public String profilePath;
+		/**
+		 * the profile name will be equal to the id for custom profiles due to importing is always the file name of the import
+		 */
+		public String mac_profileName;
+		/**
+		 * make sure you set this unique to your application so it doesn't conflict with another custom terminal profile
+		 */
+		public String mac_profileId;
+		/**
+		 * the terminal profile path within your jar from the root directory
+		 */
+		public String mac_profilePath;
 		
 		public Profile()
 		{
@@ -116,16 +125,26 @@ public class TerminalApp {
 			this.fg = f;
 		}
 		
-		public Profile(String pn, String pid, String pp)
+		/**
+		 * pre-determined macOs terminal profile the End-USER will have this profile installed before executing your program
+		 */
+		public static Profile newMac(String profileName)
 		{
-			this.profileName = pn;
-			this.profileId = pid;
-			this.profilePath = pp;
+			Profile p = new Profile();
+			p.mac_profileName = profileName;
+			return p;
 		}
-
-		public String getMacProfileName()
+		
+		/**
+		 * create your new macOs terminal custom profile
+		 */
+		public static Profile newMac(String prid, String pp)
 		{
-			return this.profileName;
+			Profile p = new Profile();
+			p.mac_profileName = prid;
+			p.mac_profileId = prid;
+			p.mac_profilePath = pp;
+			return p;
 		}
 	}
 

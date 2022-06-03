@@ -2,6 +2,7 @@ package jml.ot;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class Test {
 
@@ -27,8 +28,8 @@ public class Test {
 				}
 				else if(OSUtil.isMac())
 				{
-					Profile p = new Profile();
-					p.profileName = "BlGlass2";
+//					Profile p = Profile.newMac("jredfox.openterminal.blackglass", "resources/jml/ot/mac/BlGlass.terminal");
+					Profile p = Profile.newMac("jredfox.openterminal.purpleCollege", "resources/jml/ot/mac/college.terminal");
 					return p;
 				}
 				return null;
