@@ -229,6 +229,8 @@
 	AOoA7ADuDToNPw1KDVMNYA1jDXANeQ1+DYYAAAAAAAACAQAAAAAAAAAoAAAAAAAAAAAA
 	AAAAAAANiQ==
 	</data>
+	<key>ShowActiveProcessArgumentsInTitle</key>
+	<false/>
 	<key>TextBoldColor</key>
 	<data>
 	YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMS
@@ -380,7 +382,7 @@
 	<key>WindowTitle</key>
 	<string>oti.jredfox.openterminal.blackglass.profile</string>
 	<key>name</key>
-	<string>custom a</string>
+	<string>BlGlass</string>
 	<key>type</key>
 	<string>Window Settings</string>
 </dict>

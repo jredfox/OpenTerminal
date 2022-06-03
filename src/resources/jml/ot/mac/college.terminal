@@ -44,6 +44,8 @@
 	U09iamVjdAgRGiQpMjdJTFFTV11kand+oqSmq7a/x8oAAAAAAAABAQAAAAAAAAAZAAAA
 	AAAAAAAAAAAAAAAA0w==
 	</data>
+	<key>ShowActiveProcessArgumentsInTitle</key>
+	<false/>
 	<key>TextBoldColor</key>
 	<data>
 	YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMS
@@ -67,7 +69,7 @@
 	<key>columnCount</key>
 	<integer>80</integer>
 	<key>name</key>
-	<string>Grass</string>
+	<string>college</string>
 	<key>rowCount</key>
 	<integer>24</integer>
 	<key>type</key>
