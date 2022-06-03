@@ -16,6 +16,7 @@ public class TerminalApp {
 	public String name;
 	public String version;
 	public boolean force;//when enabled will always open a window
+	public boolean pause;
 	public String terminal = OpenTerminal.terminal;
 	public String conHost = OpenTerminal.console_host;
 	
@@ -24,7 +25,12 @@ public class TerminalApp {
 		this(id, name, version, true);
 	}
 	
-	public TerminalApp(String id, String name, String version, boolean force)
+	public TerminalApp(String id, String n, String v, boolean force)
+	{
+		this(id, n, v, force, true);
+	}
+	
+	public TerminalApp(String id, String name, String version, boolean force, boolean pause)
 	{
 		assert !id.contains(" ") : "Terminal app id cannot contain spaces!";
 		assert !name.contains("\"") : "Terminal app name cannot contain double quotes!";
@@ -32,8 +38,9 @@ public class TerminalApp {
 		this.name = name;
 		this.version = version;
 		this.force = force;
+		this.pause = pause;
 	}
-	
+
 	public String getTitle()
 	{
 		return this.name + " " + this.version;

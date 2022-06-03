@@ -10,12 +10,12 @@ public class OTMain {
 	 * @param appId
 	 * @param appName
 	 * @param appVersion
-	 * @param forceNewWindow
-	 * @param Profile use {@link TerminalApp#getProfile#toString()} or null
+	 * @param forceNewWindow(boolean)
+	 * @param pause(boolean)
 	 * @param terminal
 	 * @param consoleHost default is null
+	 * @param Profile use {@link TerminalApp#getProfile#toString()} or null
 	 * @param PID of the host
-	 * @param startupShell or null
 	 * @category NOTE: this doesn't support custom terminal app classes nor can it due to the fact it's an external jar with no deps. use {@link OpenTerminal#open(TerminalApp)} for custom terminal apps
 	 * @author jredfox
 	 */
@@ -23,7 +23,7 @@ public class OTMain {
 	{
 		if(System.console() == null)
 		{
-			TerminalApp app = args.length != 0 ? new TerminalApp(args[0], args[1], args[2], Boolean.parseBoolean(args[3])) : new TerminalApp("ot", "Open Terminal", OTConstants.OTVERSION);
+			TerminalApp app = args.length != 0 ? new TerminalApp(args[0], args[1], args[2], Boolean.parseBoolean(args[3]), Boolean.parseBoolean(args[4])) : new TerminalApp("ot", "Open Terminal", OTConstants.OTVERSION);
 			OpenTerminal.open(app);
 		}
 		else

@@ -3,8 +3,6 @@ package jml.ot;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.JFrame;
-
 public class Test {
 
 	public static void main(String[] args) throws IOException, InterruptedException
@@ -30,7 +28,7 @@ public class Test {
 				else if(OSUtil.isMac())
 				{
 					Profile p = new Profile();
-					p.profileName = "Red Sands";
+					p.profileName = "BlGlass2";
 					return p;
 				}
 				return null;

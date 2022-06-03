@@ -50,8 +50,12 @@ public class MacBashExe extends TerminalExe {
 					+ "fi\n"
 					+ "cd \"$2\"\n"
 					+ "eval \"$3\"\n"
+					+ "if [ \"$4\" = true ]; then\n"
+					+ "    read -p \"Press ENTER to continue...\"\n"
+					+ "fi\n"
 					+ "echo -n -e \"\\033]0;_closeMe_\\007\"\n"
-					+ "osascript \"$4\" \"_closeMe_\"");
+					+ "osascript \"$5\" \"_closeMe_\"\n"
+					+ "exit");
 			this.makeShell(li);
 		}
 	}
@@ -168,7 +172,7 @@ public class MacBashExe extends TerminalExe {
 		String q = OSUtil.getQuote();
 		String profile = this.app.getProfile() != null && this.app.getProfile().profileName != null ? this.app.getProfile().profileName : "";
 		String command = (OTConstants.java_home + " " + OTConstants.args).replaceAll(q, "\\\\" + q);
-		String bash = "bash " + q + this.shell.getPath() + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + closeMeScpt.getPath() + q;
+		String bash = "bash " + q + this.shell.getPath() + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + closeMeScpt.getPath() + q;
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
 			"osascript",
@@ -183,9 +187,8 @@ public class MacBashExe extends TerminalExe {
 	public List<String> getBootCmd() throws IOException 
 	{
 		String q = OSUtil.getQuote();
-		String profile = this.app.getProfile() != null ? this.app.getProfile().profileName : "";
 		String command = (OTConstants.java_home + " " + OTConstants.args).replaceAll(q, "\\\\" + q);
-		String bash = "bash " + q + this.shell.getPath() + q + " " + q + profile + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + closeMeScpt.getPath() + q;
+		String bash = "bash " + q + this.shell.getPath() + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + closeMeScpt.getPath() + q;
 		List<String> li = new ArrayList<>();
 		li.add(bash);
 		return li;
