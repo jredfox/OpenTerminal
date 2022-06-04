@@ -36,6 +36,7 @@ public class Test {
 				return null;
 			}
 		};
+//		app.pause = false;
 		OpenTerminal.open(app);
 		System.out.println("launch in:" + (System.currentTimeMillis() - ms) + "ms");
 	}

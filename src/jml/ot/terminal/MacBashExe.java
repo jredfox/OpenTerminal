@@ -53,8 +53,9 @@ public class MacBashExe extends TerminalExe {
 					+ "if [ \"$4\" = true ]; then\n"
 					+ "    read -p \"Press ENTER to continue...\"\n"
 					+ "fi\n"
-					+ "echo -n -e \"\\033]0;_closeMe_\\007\"\n"
-					+ "osascript \"$5\" \"_closeMe_\" & exit");
+					+ "c=\"closeMe_ ${6}\"\n"
+					+ "echo -n -e \"\\033]0;\"$c\"\\007\"\n"
+					+ "osascript \"$5\" \"$c\" & exit");
 			this.makeShell(li);
 		}
 	}
@@ -113,25 +114,15 @@ public class MacBashExe extends TerminalExe {
 		{
 			List<String> li = new ArrayList<>();
 			li.add("on run argv\n"
-					+ "	set flag to application \"Terminal\" is not running\n"
+					+ "	if not application \"Terminal\" is running then tell application \"Terminal\" to launch\n"
 					+ "	set scpt to first item in argv\n"
-					+ "	--	set n to second item in argv\n"
 					+ "	set p to second item in argv\n"
 					+ "	tell application \"Terminal\"\n"
 					+ "		set newTab to do script scpt\n"
 					+ "		try\n"
 					+ "			if p is not equal to \"\" then set current settings of newTab to settings set p\n"
 					+ "		end try\n"
-					+ "		--set custom title of newTab to n --commented out as sometimes this would fire after the closing title\n"
 					+ "		activate\n"
-					+ "		delay 0.1\n"
-					+ "		set badFlag to back window is equal to window 1\n"
-					+ "		if flag and (not badFlag) then\n"
-					+ "			set bwindow to back window\n"
-					+ "			set processList to processes of bwindow\n"
-					+ "			set clean commands of current settings of bwindow to processList\n"
-					+ "			close bwindow\n"
-					+ "		end if\n"
 					+ "	end tell\n"
 					+ "end run");
 			this.makeAs(li, start2As, start2Scpt);
@@ -171,7 +162,7 @@ public class MacBashExe extends TerminalExe {
 		String q = OSUtil.getQuote();
 		String profile = this.app.getProfile() != null && this.app.getProfile().mac_profileName != null ? this.app.getProfile().mac_profileName : "";
 		String command = (OTConstants.java_home + " " + OTConstants.args).replaceAll(q, "\\\\" + q);
-		String bash = "bash " + q + this.shell.getPath() + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + closeMeScpt.getPath() + q;
+		String bash = "bash " + q + this.shell.getPath() + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + closeMeScpt.getPath() + q + " " + q + System.currentTimeMillis() + q;
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
 			"osascript",
@@ -187,7 +178,7 @@ public class MacBashExe extends TerminalExe {
 	{
 		String q = OSUtil.getQuote();
 		String command = (OTConstants.java_home + " " + OTConstants.args).replaceAll(q, "\\\\" + q);
-		String bash = "bash " + q + this.shell.getPath() + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + closeMeScpt.getPath() + q;
+		String bash = "bash " + q + this.shell.getPath() + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + closeMeScpt.getPath() + q + " " + q + System.currentTimeMillis() + q;
 		List<String> li = new ArrayList<>();
 		li.add(bash);
 		return li;
