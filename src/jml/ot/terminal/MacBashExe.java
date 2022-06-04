@@ -118,10 +118,10 @@ public class MacBashExe extends TerminalExe {
 		{
 			List<String> li = new ArrayList<>();
 			li.add("on run argv\n"
-					+ "	if not application \"Terminal\" is running then tell application \"Terminal\" to launch\n"
 					+ "	set scpt to first item in argv\n"
 					+ "	set p to second item in argv\n"
 					+ "	tell application \"Terminal\"\n"
+					+ "		if not application \"Terminal\" is running then launch\n"
 					+ "		set newTab to do script scpt\n"
 					+ "		try\n"
 					+ "			if p is not equal to \"\" then set current settings of newTab to settings set p\n"
