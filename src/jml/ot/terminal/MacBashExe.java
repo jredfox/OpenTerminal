@@ -77,7 +77,7 @@ public class MacBashExe extends TerminalExe {
 					+ "				if name of win contains closeMe then\n"
 					+ "					set processList to processes of win\n"
 					+ "					set clean commands of current settings of win to processList\n"
-					+ "					delay 1.0E-5\n"
+					+ "					delay 1.0E-4\n"
 					+ "					close win\n"
 					+ "					if exists win then\n"
 					+ "						activate --ensure terminal app is focused\n"

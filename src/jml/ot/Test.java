@@ -29,8 +29,8 @@ public class Test {
 				else if(OSUtil.isMac())
 				{
 //					Profile p = Profile.newMac("jredfox.openterminal.blackglass", "resources/jml/ot/mac/BlGlass.terminal");
-//					Profile p = Profile.newMac("jredfox.openterminal.purpleCollege", "resources/jml/ot/mac/college.terminal");
-					Profile p = Profile.newMac("Red Sands");
+					Profile p = Profile.newMac("jredfox.openterminal.purpleCollege", "resources/jml/ot/mac/college.terminal");
+//					Profile p = Profile.newMac("Red Sands");
 					return p;
 				}
 				return null;
