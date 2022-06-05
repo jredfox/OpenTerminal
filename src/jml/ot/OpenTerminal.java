@@ -11,7 +11,7 @@ import jredfox.common.io.IOUtils;
 public class OpenTerminal {
 	
 	public static final String console_host = "";//"wt";
-	public static final String terminal = "/bin/bash";
+	public static final String terminal = "/usr/bin/tilda"; //OSUtil
 	
 	public static void open(TerminalApp app) throws IOException
 	{
@@ -32,22 +32,8 @@ public class OpenTerminal {
 		ConsoleHost console = app.getConsoleHost();
 		if(console != null)
 			console.run();
-        else if(OSUtil.isLinux())
-        {
-            File sh = new File(OTConstants.home, app.id + ".sh");
-            List<String> cmds = new ArrayList<>();
-            cmds.add("#!/bin/bash");
-            cmds.add("set +v");//@Echo off
-            cmds.add("echo -n -e \"\\033]0;" + app.getTitle() + "\\007\"");//Title
-            cmds.add(OTConstants.java_home + " " + OTConstants.args);//actual command
-            IOUtils.saveFileLines(cmds, sh, true);//save the file
-            IOUtils.makeExe(sh);//make it executable
-            Runtime.getRuntime().exec(terminal + " " + OSUtil.getLinuxNewWin() + " bash " + sh.getAbsolutePath());
-        }
 		else
-		{
 			app.getTerminalExe().run();
-		}
 	}
 
     /**

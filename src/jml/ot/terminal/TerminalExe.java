@@ -46,8 +46,8 @@ public abstract class TerminalExe {
 	{
 		this.genStart();
 		this.createShell();
-//		this.printPB(pb);
-		pb.directory(OTConstants.userDir).start();
+		this.printPB(pb);
+		pb.directory(OTConstants.userDir).inheritIO().start();
 	}
 	
 	public void makeShell(List<String> li) throws IOException 

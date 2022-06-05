@@ -34,7 +34,25 @@ public class OSUtil {
 	
 	public static String[] linux_terminals = new String[]
 	{
-			"/usr/bin/gcm-calibrate",
+			"/usr/bin/sakura",//TODO: fix this terminal
+			"/usr/bin/Eterm",
+			"/usr/bin/mate-terminal",
+			"/usr/bin/xfce4-terminal",
+			"/usr/bin/deepin-terminal",
+			"/usr/bin/kitty",
+			"/usr/bin/konsole",
+			"/usr/bin/lilyterm",
+			"/usr/bin/lxterminal",
+			"/usr/bin/mlterm",
+			"/usr/bin/pterm",
+			"/usr/bin/qterminal",
+			"/usr/bin/rxvt-unicode",
+			"/usr/bin/stterm",
+			"/usr/bin/terminator",
+			"/usr/bin/termit",
+			"/usr/bin/tilix",
+			"/usr/bin/xiterm+thai",
+			"/usr/bin/gcm-calibrate",//old start
 			"/usr/bin/gnome-terminal",
 			"/usr/bin/mosh-client",
 			"/usr/bin/mosh-server",
@@ -42,22 +60,20 @@ public class OSUtil {
 			"/usr/bin/mrxvt-full",        
 			"/usr/bin/roxterm",          
 			"/usr/bin/rxvt-unicode",        
-			"/usr/bin/urxvt",             
+			"/usr/bin/urxvt",           
 			"/usr/bin/urxvtd",
-			"/usr/bin/vinagre",
-			"/usr/bin/x-terminal-emulator",
 			"/usr/bin/xfce4-terminal",   
 			"/usr/bin/xterm",
 			"/usr/bin/aterm",
-			"/usr/bin/guake",
+			"/usr/bin/guake",//TODO fix not executing command
 			"/usr/bin/Kuake",
 			"/usr/bin/rxvt",
 			"/usr/bin/rxvt-unicode",
-			"/usr/bin/Terminator",
-			"/usr/bin/Terminology",
-			"/usr/bin/tilda",
+			"/usr/bin/terminator",
+			"/usr/bin/terminology", //TODO: see if there is a fix for this terminal
+//			"/usr/bin/tilda", //TODO: -c is the execute flag yet it doesn't work as is
 			"/usr/bin/wterm",
-			"/usr/bin/Yakuake",
+//			"/usr/bin/yakuake", //TODO: figure out why there is no execute flag
 			"/usr/bin/Eterm",
 			"/usr/bin/gnome-terminal.wrapper",
 			"/usr/bin/koi8rxterm",
@@ -174,6 +190,30 @@ public class OSUtil {
 	    if(isMac())
 	    	path += "/Library/Application Support";
 	    return new File(path);
+	}
+
+	public static String getLinuxNewWin(String term) 
+	{
+		String e = "-e";
+		String x = "-x";
+		switch (term)
+		{
+			case "/usr/bin/gnome-terminal":
+				return x;
+			case "gnome-terminal.wrapper":
+				return x;
+			case "/usr/bin/xfce4-terminal":
+				return x;
+			case "/usr/bin/terminator":
+				return x;
+			case "/usr/bin/sakura":
+				return x;
+			case "/usr/bin/mate-terminal":
+				return x;
+			case "/usr/bin/tilda":
+				return "-c";
+		}
+		return e;
 	}
 
 }
