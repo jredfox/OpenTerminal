@@ -11,7 +11,7 @@ import jredfox.common.io.IOUtils;
 public class OpenTerminal {
 	
 	public static final String console_host = "";//"wt";
-	public static final String terminal = "/usr/bin/gcm-calibrate"; //OSUtil
+	public static final String terminal = "/usr/bin/koi8rxterm"; //OSUtil
 	
 	public static void open(TerminalApp app) throws IOException
 	{

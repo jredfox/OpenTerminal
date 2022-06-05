@@ -37,12 +37,12 @@ public class OSUtil {
 		"/usr/bin/aterm",
 		"/usr/bin/deepin-terminal",
 		"/usr/bin/Eterm",
-		"/usr/bin/gcm-calibrate",
+//		"/usr/bin/gcm-calibrate", NOT A TERMINAL
 		"/usr/bin/gnome-terminal",
 		"/usr/bin/gnome-terminal.wrapper",
 		"/usr/bin/guake",
 		"/usr/bin/kitty",
-		"/usr/bin/koi8rxterm",
+		"/usr/bin/koi8rxterm",//current index
 		"/usr/bin/konsole",
 		"/usr/bin/Kuake",
 		"/usr/bin/lilyterm",

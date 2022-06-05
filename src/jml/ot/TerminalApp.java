@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import jml.ot.terminal.BatchExe;
+import jml.ot.terminal.GuakeTerminalExe;
 import jml.ot.terminal.LinuxBashExe;
 import jml.ot.terminal.MacBashExe;
 import jml.ot.terminal.PowerShellExe;
@@ -88,6 +89,11 @@ public class TerminalApp {
 		}
 		if(OSUtil.isLinux())
 		{
+			switch(this.terminal)
+			{
+				case "/usr/bin/guake":
+					return new GuakeTerminalExe(this);
+			}
 			return new LinuxBashExe(this);
 		}
 		return null;
