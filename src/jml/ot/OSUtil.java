@@ -35,53 +35,53 @@ public class OSUtil {
 	public static String[] linux_terminals = new String[]
 	{
 		"alacritty",//ubuntu snap app
-		"/usr/bin/aterm",
-		"/usr/bin/cool-retro-term",
-		"/usr/bin/deepin-terminal",
-		"/usr/bin/Eterm",
+		"aterm",
+		"cool-retro-term",
+		"deepin-terminal",
+		"Eterm",
 		"foot",
-		"/usr/bin/gnome-terminal",
-		"/usr/bin/gnome-terminal.wrapper",
-		"/usr/bin/guake",
-		"/usr/bin/kitty",
+		"gnome-terminal",
+		"gnome-terminal.wrapper",
+		"guake",
+		"kitty",
 		"kgx",
-		"/usr/bin/konsole",
-		"/usr/bin/lilyterm",
-		"/usr/bin/lxterm",
-		"/usr/bin/lxterminal",
-		"/usr/bin/mate-terminal",
-		"/usr/bin/mlterm",
-		"/usr/bin/mrxvt",
-		"/usr/bin/mrxvt-full",
-		"/usr/bin/pangoterm",
-		"/usr/bin/pterm",
-		"/usr/bin/qterminal",
-		"/usr/bin/roxterm",
-		"/usr/bin/rxvt",
-		"/usr/bin/rxvt-unicode",
-		"/usr/bin/rxvt-xpm",
-		"/usr/bin/rxvt-xterm",
-		"/usr/bin/sakura",
-		"/usr/bin/st",
-		"/usr/bin/stterm",
-		"terminalpp",//ubuntu snap app
-		"/usr/bin/terminus",
-		"/usr/bin/terminator",
-		"/usr/bin/terminology",
-		"/usr/bin/termit",
-		"/usr/bin/tilda",
-		"/usr/bin/tilix",
-		"/usr/bin/urxvt",
-		"/usr/bin/urxvtc",
-		"/usr/bin/urxvtcd",
-		"/usr/bin/uxterm",
-		"/usr/bin/vala-terminal",
-		"/usr/bin/wterm",
-		"/usr/bin/xfce4-terminal",
-		"/usr/bin/xfce4-terminal.wrapper",
-		"/usr/bin/xiterm+thai",
-		"/usr/bin/xterm",
-		"/usr/bin/xvt",
+		"konsole",
+		"lilyterm",
+		"lxterm",
+		"lxterminal",
+		"mate-terminal",
+		"mlterm",
+		"mrxvt",
+		"mrxvt-full",
+		"pangoterm",
+		"pterm",
+		"qterminal",
+		"roxterm",
+		"rxvt",
+		"rxvt-unicode",
+		"rxvt-xpm",
+		"rxvt-xterm",
+		"sakura",
+		"st",
+		"stterm",
+		"terminalpp",
+		"terminus",
+		"terminator",
+		"terminology",
+		"termit",
+		"tilda",
+		"tilix",
+		"urxvt",
+		"urxvtc",
+		"urxvtcd",
+		"uxterm",
+		"vala-terminal",
+		"wterm",
+		"xfce4-terminal",
+		"xfce4-terminal.wrapper",
+		"xiterm+thai",
+		"xterm",
+		"xvt"
 	};
 	
 	public static String getTerminal()
@@ -183,19 +183,19 @@ public class OSUtil {
 		String x = "-x";
 		switch (term)
 		{
-			case "/usr/bin/gnome-terminal":
+			case "gnome-terminal":
 				return x;
 			case "gnome-terminal.wrapper":
 				return x;
-			case "/usr/bin/xfce4-terminal":
+			case "xfce4-terminal":
 				return x;
-			case "/usr/bin/terminator":
+			case "terminator":
 				return x;
-			case "/usr/bin/sakura":
+			case "sakura":
 				return x;
-			case "/usr/bin/mate-terminal":
+			case "mate-terminal":
 				return x;
-			case "/usr/bin/tilda":
+			case "tilda":
 				return "-c";
 		}
 		return e;

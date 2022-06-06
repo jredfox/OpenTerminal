@@ -94,13 +94,13 @@ public class TerminalApp {
 		{
 			switch(this.terminal)
 			{
-				case "/usr/bin/terminology":
+				case "terminology":
 					return new TerminologyExe(this);
-				case "/usr/bin/guake":
+				case "guake":
 					return new GuakeTerminalExe(this);
-				case "/usr/bin/tilda":
+				case "tilda":
 					return new TildaTerminalExe(this);
-				case "/usr/bin/sakura":
+				case "sakura":
 					return new LinuxCmdTerminalExe(this);
 				case "kgx":
 					return new LinuxCmdTerminalExe(this);
