@@ -60,7 +60,7 @@ public class OSUtil {
 		"/usr/bin/sakura",//TODO: get it working
 		"/usr/bin/stterm",
 		"/usr/bin/terminator",
-		"/usr/bin/terminology",//TODO: get it opening in a new UI
+		"/usr/bin/terminology",
 		"/usr/bin/termit",
 		"/usr/bin/tilda", //TODO: get it working behaves different from other terminals
 		"/usr/bin/tilix",
