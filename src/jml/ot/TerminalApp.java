@@ -102,6 +102,10 @@ public class TerminalApp {
 					return new SakuraTerminalExe(this);
 				case "/usr/bin/tilda":
 					return new TildaTerminalExe(this);
+				case "kgx":
+					return new SakuraTerminalExe(this);
+				case "terminus":
+					return new SakuraTerminalExe(this);
 			}
 			LinuxBashExe bash = new LinuxBashExe(this);
 			if(this.terminal.equals("terminalpp"))
