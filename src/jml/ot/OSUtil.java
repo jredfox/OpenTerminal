@@ -32,16 +32,23 @@ public class OSUtil {
 		"/bin/tcsh"
 	};
 	
+	/**
+		hyper
+		Tabby
+		DomTerm//learn to compile from this don't ever use it
+	 */
 	public static String[] linux_terminals = new String[]
 	{
+		"alacritty",//snap store apps don't belong in the usr/bin
 		"/usr/bin/aterm",
+		"/usr/bin/cool-retro-term",
 		"/usr/bin/deepin-terminal",
 		"/usr/bin/Eterm",
+		"/usr/bin/Extraterm", //TODO: test compiled version
 		"/usr/bin/gnome-terminal",
 		"/usr/bin/gnome-terminal.wrapper",
 		"/usr/bin/guake",
 		"/usr/bin/kitty",
-		"/usr/bin/koi8rxterm",
 		"/usr/bin/konsole",
 		"/usr/bin/lilyterm",
 		"/usr/bin/lxterm",
@@ -58,10 +65,12 @@ public class OSUtil {
 		"/usr/bin/rxvt-xpm",
 		"/usr/bin/rxvt-xterm",
 		"/usr/bin/sakura",
+		"/usr/bin/st",//TODO: test compiled version
 		"/usr/bin/stterm",
 		"/usr/bin/terminator",
 		"/usr/bin/terminology",
 		"/usr/bin/termit",
+		"/usr/bin/TermKit",//TODO: test compiled version
 		"/usr/bin/tilda",
 		"/usr/bin/tilix",
 		"/usr/bin/urxvt",
@@ -74,7 +83,8 @@ public class OSUtil {
 		"/usr/bin/xfce4-terminal.wrapper",
 		"/usr/bin/xiterm+thai",
 		"/usr/bin/xterm",
-		"/usr/bin/xvt"
+		"/usr/bin/xvt",
+		"/usr/bin/koi8rxterm"
 	};
 	
 	public static String getTerminal()
