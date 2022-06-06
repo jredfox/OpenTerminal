@@ -24,8 +24,8 @@ public class OSUtil {
 	public static String[] mac_terminals = new String[]
 	{
 		"/bin/bash",
-		"/bin/sh",
 		"/bin/zsh",
+		"/bin/sh",
 		"/bin/csh", 
 		"/bin/dash", 
 		"/bin/ksh", 
@@ -89,13 +89,12 @@ public class OSUtil {
 		String[] cmds = getTerminals();
 		for(String cmd : cmds)
 		{
-			try 
+			if(findExe(cmd) != null)
 			{
-				Runtime.getRuntime().exec(cmd + " " + getExeAndClose() + " cd " + System.getProperty("user.dir"));
+				return cmd;
 			}
-			catch (Throwable e) {}
 		}
-		System.err.println("Unable to find Os terminal for:" + System.getProperty("os.name") + " report to https://github.com/jredfox/OpenTerminal/issues");
+		System.err.println("Unable to find terminal:" + System.getProperty("os.name") + " report to https://github.com/jredfox/OpenTerminal/issues");
 		return null;
 	}
 	
@@ -104,13 +103,18 @@ public class OSUtil {
 	 */
 	public static boolean isTerminalValid(String term) 
 	{
-		try 
-		{
-			Runtime.getRuntime().exec(term + " " + getExeAndClose() + " cd " + System.getProperty("user.dir"));
-			return true;
-		} 
-		catch (Throwable e) {}
-		return false;
+		return findExe(term) != null;
+	}
+	
+	public static String findExe(String name)
+	{
+	    for (String dirname : System.getenv("PATH").split(File.pathSeparator)) 
+	    {
+	        File file = new File(dirname, name);
+	        if (file.isFile() && file.canExecute())
+	            return file.getAbsolutePath();
+	    }
+	    return null;
 	}
 
 	public static String[] getTerminals()
