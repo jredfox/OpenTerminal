@@ -1,7 +1,6 @@
 package jml.ot.terminal;
 
 import java.io.IOException;
-import java.util.List;
 
 import jml.ot.OSUtil;
 import jml.ot.OTConstants;
@@ -30,12 +29,6 @@ public class LinuxCmdTerminalExe extends LinuxBashExe{
 			+ q + " " + q + command + q + " " + q + this.app.pause + q
 		});
 		this.run(pb);
-	}
-	
-	@Override
-	public List<String> getBootCmd()
-	{
-		return null;
 	}
 
 }

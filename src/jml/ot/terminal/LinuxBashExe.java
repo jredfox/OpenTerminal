@@ -56,7 +56,6 @@ public class LinuxBashExe extends TerminalExe{
 		String command = (OTConstants.java_home + " " + OTConstants.args);
 		if(this.quoteCmd)
 			command = command.replaceAll(OSUtil.getQuote(),"\\\\" + OSUtil.getQuote());
-		String q = OSUtil.getQuote();
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
 			this.app.terminal,

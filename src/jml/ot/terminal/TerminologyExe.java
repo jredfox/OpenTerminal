@@ -1,7 +1,6 @@
 package jml.ot.terminal;
 
 import java.io.IOException;
-import java.util.List;
 
 import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
@@ -10,18 +9,12 @@ import jml.ot.TerminalApp;
  * since terminology doesn't support UI for bash files it needs custom support
  * @author jredfox
  */
-public class TerminologyExe extends TerminalExe{
+public class TerminologyExe extends LinuxBashExe {
 
 	public TerminologyExe(TerminalApp app) throws IOException 
 	{
-		super(app, OTConstants.nullFile);
+		super(app);
 	}
-
-	@Override
-	public void createShell() throws IOException {}
-
-	@Override
-	public void genStart() throws IOException {}
 
 	@Override
 	public void run() throws IOException 
@@ -41,12 +34,6 @@ public class TerminologyExe extends TerminalExe{
 			args
 		});
 		this.run(pb);
-	}
-
-	@Override
-	public List<String> getBootCmd() throws IOException
-	{
-		return null;
 	}
 
 }

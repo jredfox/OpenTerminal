@@ -1,6 +1,5 @@
 package jml.ot;
 
-import java.io.File;
 import java.io.IOException;
 
 import jml.ot.terminal.host.ConsoleHost;
@@ -8,7 +7,7 @@ import jml.ot.terminal.host.ConsoleHost;
 public class OpenTerminal {
 	
 	public static final String console_host = "";//"wt";
-	public static final String terminal = OSUtil.getTerminal();
+	public static final String terminal = "gnome-terminal";//OSUtil.getTerminal();
 	
 	public static void open(TerminalApp app) throws IOException
 	{
@@ -32,18 +31,5 @@ public class OpenTerminal {
 		else
 			app.getTerminalExe().run();
 	}
-
-    /**
-     * enforces it to run in the command prompt terminal as sometimes it doesn't work without it
-     */
-    public static Process runInTerminal(String terminal, String flag, String command, File dir) throws IOException
-    {
-        return run(new String[]{terminal, flag, command}, dir);
-    }
-	
-    public static Process run(String[] cmdarray, File dir) throws IOException
-    {
-        return new ProcessBuilder(cmdarray).directory(dir).start();
-    }
 
 }
