@@ -62,6 +62,7 @@ public class OSUtil {
 		"/usr/bin/terminator",
 		"/usr/bin/terminology",//TODO: get it opening in a new UI
 		"/usr/bin/termit",
+		"/usr/bin/tilda", //TODO: get it working behaves different from other terminals
 		"/usr/bin/tilix",
 		"/usr/bin/urxvt",
 		"/usr/bin/urxvtc",
@@ -121,14 +122,6 @@ public class OSUtil {
 	public static String getExeAndClose()
 	{
 		return isWindows() ? "/c" : (isMac() || isLinux()) ?  "-c" : null;
-	}
-	
-	/**
-	 * returns the linux execute in new window flag
-	 */
-	public static String getLinuxNewWin()
-	{
-		return "-x";
 	}
 	
 	/**

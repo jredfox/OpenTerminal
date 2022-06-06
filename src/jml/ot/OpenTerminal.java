@@ -2,16 +2,13 @@ package jml.ot;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import jml.ot.terminal.host.ConsoleHost;
-import jredfox.common.io.IOUtils;
 
 public class OpenTerminal {
 	
 	public static final String console_host = "";//"wt";
-	public static final String terminal = "/usr/bin/guake"; //OSUtil
+	public static final String terminal = "/usr/bin/aterm"; //OSUtil
 	
 	public static void open(TerminalApp app) throws IOException
 	{
