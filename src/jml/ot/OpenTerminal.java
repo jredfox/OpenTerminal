@@ -8,7 +8,7 @@ import jml.ot.terminal.host.ConsoleHost;
 public class OpenTerminal {
 	
 	public static final String console_host = "";//"wt";
-	public static final String terminal = "/usr/bin/sakura"; //OSUtil
+	public static final String terminal = "/usr/bin/tilda"; //OSUtil
 	
 	public static void open(TerminalApp app) throws IOException
 	{

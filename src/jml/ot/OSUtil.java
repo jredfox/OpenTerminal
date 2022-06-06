@@ -62,7 +62,7 @@ public class OSUtil {
 		"/usr/bin/terminator",
 		"/usr/bin/terminology",
 		"/usr/bin/termit",
-		"/usr/bin/tilda", //TODO: get it working behaves different from other terminals
+		"/usr/bin/tilda",
 		"/usr/bin/tilix",
 		"/usr/bin/urxvt",
 		"/usr/bin/urxvtc",

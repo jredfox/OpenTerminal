@@ -11,6 +11,7 @@ import jml.ot.terminal.PowerShellExe;
 import jml.ot.terminal.SakuraTerminalExe;
 import jml.ot.terminal.TerminalExe;
 import jml.ot.terminal.TerminologyExe;
+import jml.ot.terminal.TildaTerminalExe;
 import jml.ot.terminal.host.ConsoleHost;
 import jml.ot.terminal.host.WTHost;
 
@@ -99,6 +100,8 @@ public class TerminalApp {
 					return new TerminologyExe(this);
 				case "/usr/bin/sakura":
 					return new SakuraTerminalExe(this);
+				case "/usr/bin/tilda":
+					return new TildaTerminalExe(this);
 			}
 			return new LinuxBashExe(this);
 		}

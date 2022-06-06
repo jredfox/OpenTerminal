@@ -1,31 +1,14 @@
 package jml.ot;
 
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class RedSands {
 	
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args) throws IOException, AWTException, InterruptedException
 	{
-		Set<String> list = new TreeSet<>(new Comparator<String>()
-				{
-					@Override
-					public int compare(String t1, String t2) 
-					{
-						return t1.toLowerCase().compareTo(t2.toLowerCase());
-					}
-			
-				}
-			);
-		for(String s : OSUtil.linux_terminals)
-			list.add(s);
-		for(String s : list)
-			System.out.println("\"" + s + "\",");
 //		System.out.println("starting redsands...");
 //		while(true)
 //		{
