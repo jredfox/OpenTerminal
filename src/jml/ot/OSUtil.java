@@ -188,7 +188,7 @@ public class OSUtil {
 		switch (term)
 		{
 			case "gnome-terminal":
-				return x;
+				return "--";//same as -x which doesn't support parameterized parsing of the command but updated to get around the depriated values
 			case "gnome-terminal.wrapper":
 				return x;
 			case "xfce4-terminal":
