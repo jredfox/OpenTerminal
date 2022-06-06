@@ -3,6 +3,7 @@ package jml.ot;
 import java.awt.AWTException;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class RedSands {
 	
@@ -10,6 +11,9 @@ public class RedSands {
 	{
 		long ms = System.currentTimeMillis();
 		System.out.println(OSUtil.getTerminal() + " in:" + (System.currentTimeMillis() - ms) + "ms");
+//		for(String s : OSUtil.linux_terminals)
+//			if(!OSUtil.isTerminalValid(s))
+//				System.out.println("missing:" + s);
 //		System.out.println("starting redsands... " + System.getProperty("java.version"));
 //		while(true)
 //		{

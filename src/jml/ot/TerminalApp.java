@@ -90,7 +90,7 @@ public class TerminalApp {
 				return new MacBashExe(this);
 			}
 		}
-		if(OSUtil.isLinux())
+		if(OSUtil.linux_terminals.contains(this.terminal))
 		{
 			switch(this.terminal)
 			{
