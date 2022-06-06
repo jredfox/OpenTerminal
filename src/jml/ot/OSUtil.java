@@ -32,19 +32,13 @@ public class OSUtil {
 		"/bin/tcsh"
 	};
 	
-	/**
-		hyper
-		Tabby
-		DomTerm//learn to compile from this don't ever use it
-	 */
 	public static String[] linux_terminals = new String[]
 	{
-		"alacritty",//snap store apps don't belong in the usr/bin
+		"alacritty",//ubuntu snap app
 		"/usr/bin/aterm",
 		"/usr/bin/cool-retro-term",
 		"/usr/bin/deepin-terminal",
 		"/usr/bin/Eterm",
-		"/usr/bin/Extraterm", //TODO: test compiled version
 		"/usr/bin/gnome-terminal",
 		"/usr/bin/gnome-terminal.wrapper",
 		"/usr/bin/guake",
@@ -57,20 +51,21 @@ public class OSUtil {
 		"/usr/bin/mlterm",
 		"/usr/bin/mrxvt",
 		"/usr/bin/mrxvt-full",
+		"/usr/bin/pangoterm",
 		"/usr/bin/pterm",
-		"/usr/bin/qterminal",//TODO: test a working compiled version 1.0+
-		"/usr/bin/roxterm",//TODO: test a working compiled version
+		"/usr/bin/qterminal",
+		"/usr/bin/roxterm",
 		"/usr/bin/rxvt",
 		"/usr/bin/rxvt-unicode",
 		"/usr/bin/rxvt-xpm",
 		"/usr/bin/rxvt-xterm",
 		"/usr/bin/sakura",
-		"/usr/bin/st",//TODO: test compiled version
+		"/usr/bin/st",
 		"/usr/bin/stterm",
+		"terminalpp",//ubuntu snap app
 		"/usr/bin/terminator",
 		"/usr/bin/terminology",
 		"/usr/bin/termit",
-		"/usr/bin/TermKit",//TODO: test compiled version
 		"/usr/bin/tilda",
 		"/usr/bin/tilix",
 		"/usr/bin/urxvt",
@@ -78,13 +73,12 @@ public class OSUtil {
 		"/usr/bin/urxvtcd",
 		"/usr/bin/uxterm",
 		"/usr/bin/vala-terminal",
-		"/usr/bin/wterm",//TODO: test a compiled version
+		"/usr/bin/wterm",
 		"/usr/bin/xfce4-terminal",
 		"/usr/bin/xfce4-terminal.wrapper",
 		"/usr/bin/xiterm+thai",
 		"/usr/bin/xterm",
 		"/usr/bin/xvt",
-		"/usr/bin/koi8rxterm"
 	};
 	
 	public static String getTerminal()

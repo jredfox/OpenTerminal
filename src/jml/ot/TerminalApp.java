@@ -103,7 +103,10 @@ public class TerminalApp {
 				case "/usr/bin/tilda":
 					return new TildaTerminalExe(this);
 			}
-			return new LinuxBashExe(this);
+			LinuxBashExe bash = new LinuxBashExe(this);
+			if(this.terminal.equals("terminalpp"))
+				bash.quoteCmd = true;
+			return bash;
 		}
 		return null;
 	}

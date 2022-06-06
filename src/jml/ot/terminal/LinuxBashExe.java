@@ -11,6 +11,8 @@ import jml.ot.TerminalApp;
 
 public class LinuxBashExe extends TerminalExe{
 
+	public boolean quoteCmd;
+	
 	public LinuxBashExe(TerminalApp app) throws IOException 
 	{
 		super(app, new File(OTConstants.boot, "linuxboot.sh"));
@@ -52,6 +54,9 @@ public class LinuxBashExe extends TerminalExe{
 	public void run() throws IOException 
 	{
 		String command = (OTConstants.java_home + " " + OTConstants.args);
+		if(this.quoteCmd)
+			command = command.replaceAll(OSUtil.getQuote(),"\\\\" + OSUtil.getQuote());
+		String q = OSUtil.getQuote();
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
 			this.app.terminal,
