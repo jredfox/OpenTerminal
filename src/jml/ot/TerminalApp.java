@@ -6,9 +6,9 @@ import java.io.IOException;
 import jml.ot.terminal.BatchExe;
 import jml.ot.terminal.GuakeTerminalExe;
 import jml.ot.terminal.LinuxBashExe;
+import jml.ot.terminal.LinuxCmdTerminalExe;
 import jml.ot.terminal.MacBashExe;
 import jml.ot.terminal.PowerShellExe;
-import jml.ot.terminal.SakuraTerminalExe;
 import jml.ot.terminal.TerminalExe;
 import jml.ot.terminal.TerminologyExe;
 import jml.ot.terminal.TildaTerminalExe;
@@ -94,18 +94,18 @@ public class TerminalApp {
 		{
 			switch(this.terminal)
 			{
-				case "/usr/bin/guake":
-					return new GuakeTerminalExe(this);
 				case "/usr/bin/terminology":
 					return new TerminologyExe(this);
-				case "/usr/bin/sakura":
-					return new SakuraTerminalExe(this);
+				case "/usr/bin/guake":
+					return new GuakeTerminalExe(this);
 				case "/usr/bin/tilda":
 					return new TildaTerminalExe(this);
+				case "/usr/bin/sakura":
+					return new LinuxCmdTerminalExe(this);
 				case "kgx":
-					return new SakuraTerminalExe(this);
+					return new LinuxCmdTerminalExe(this);
 				case "terminus":
-					return new SakuraTerminalExe(this);
+					return new LinuxCmdTerminalExe(this);
 			}
 			LinuxBashExe bash = new LinuxBashExe(this);
 			if(this.terminal.equals("terminalpp"))

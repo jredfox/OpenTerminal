@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import jml.ot.TerminalApp;
 
-public class TildaTerminalExe extends SakuraTerminalExe{
+public class TildaTerminalExe extends LinuxCmdTerminalExe{
 
 	public TildaTerminalExe(TerminalApp app) throws IOException
 	{

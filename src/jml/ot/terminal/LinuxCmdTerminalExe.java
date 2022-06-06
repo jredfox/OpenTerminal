@@ -7,9 +7,12 @@ import jml.ot.OSUtil;
 import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
 
-public class SakuraTerminalExe extends LinuxBashExe{
+/**
+ * for the terminals that can't handle pre-parsed arguments
+ */
+public class LinuxCmdTerminalExe extends LinuxBashExe{
 
-	public SakuraTerminalExe(TerminalApp app) throws IOException 
+	public LinuxCmdTerminalExe(TerminalApp app) throws IOException 
 	{
 		super(app);
 	}
@@ -17,7 +20,7 @@ public class SakuraTerminalExe extends LinuxBashExe{
 	@Override
 	public void run() throws IOException 
 	{
-		String q = OSUtil.getQuote();
+		String q = "'";
 		String command = (OTConstants.java_home + " " + OTConstants.args);
 		ProcessBuilder pb = new ProcessBuilder(new String[] 
 		{
