@@ -8,6 +8,7 @@ import jml.ot.terminal.GuakeTerminalExe;
 import jml.ot.terminal.LinuxBashExe;
 import jml.ot.terminal.MacBashExe;
 import jml.ot.terminal.PowerShellExe;
+import jml.ot.terminal.SakuraTerminalExe;
 import jml.ot.terminal.TerminalExe;
 import jml.ot.terminal.TerminologyExe;
 import jml.ot.terminal.host.ConsoleHost;
@@ -96,6 +97,8 @@ public class TerminalApp {
 					return new GuakeTerminalExe(this);
 				case "/usr/bin/terminology":
 					return new TerminologyExe(this);
+				case "/usr/bin/sakura":
+					return new SakuraTerminalExe(this);
 			}
 			return new LinuxBashExe(this);
 		}

@@ -57,7 +57,7 @@ public class OSUtil {
 		"/usr/bin/rxvt-unicode",
 		"/usr/bin/rxvt-xpm",
 		"/usr/bin/rxvt-xterm",
-		"/usr/bin/sakura",//TODO: get it working
+		"/usr/bin/sakura",
 		"/usr/bin/stterm",
 		"/usr/bin/terminator",
 		"/usr/bin/terminology",
