@@ -48,31 +48,34 @@ public class OSUtil {
 		"/usr/bin/lxterminal",
 		"/usr/bin/mate-terminal",
 		"/usr/bin/mlterm",
-		"/usr/bin/mrxvt", //current index
+		"/usr/bin/mrxvt",
 		"/usr/bin/mrxvt-full",
 		"/usr/bin/pterm",
-		"/usr/bin/qterminal",
-		"/usr/bin/roxterm",
+		"/usr/bin/qterminal",//TODO: test a working compiled version 1.0+
+		"/usr/bin/roxterm",//TODO: test a working compiled version
 		"/usr/bin/rxvt",
 		"/usr/bin/rxvt-unicode",
 		"/usr/bin/rxvt-xpm",
 		"/usr/bin/rxvt-xterm",
-		"/usr/bin/sakura",
+		"/usr/bin/sakura",//TODO: get it working
 		"/usr/bin/stterm",
 		"/usr/bin/terminator",
-		"/usr/bin/terminology",
+		"/usr/bin/terminology",//TODO: get it opening in a new UI
 		"/usr/bin/termit",
 		"/usr/bin/tilix",
 		"/usr/bin/urxvt",
-		"/usr/bin/urxvtd",
+		"/usr/bin/urxvtc",
+		"/usr/bin/urxvtcd",
 		"/usr/bin/uxterm",
-		"/usr/bin/wterm",
+		"/usr/bin/vala-terminal",
+		"/usr/bin/wterm",//TODO: test a compiled version
 		"/usr/bin/xfce4-terminal",
 		"/usr/bin/xfce4-terminal.wrapper",
 		"/usr/bin/xiterm+thai",
 		"/usr/bin/xterm",
 		"/usr/bin/xvt"
-	};	
+	};
+	
 	public static String getTerminal()
 	{
 		String[] cmds = getTerminals();
@@ -174,7 +177,7 @@ public class OSUtil {
 	    return new File(path);
 	}
 
-	public static String getLinuxNewWin(String term) 
+	public static String getLinuxNewWin(String term)
 	{
 		String e = "-e";
 		String x = "-x";
