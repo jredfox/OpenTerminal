@@ -8,6 +8,7 @@ import java.util.List;
 import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
 import jml.ot.TerminalApp.Profile;
+import jml.ot.TerminalUtil;
 import jredfox.common.os.OSUtil;
 
 public class BatchExe extends TerminalExe {
@@ -28,7 +29,7 @@ public class BatchExe extends TerminalExe {
 			pb = new ProcessBuilder(new String[]
 			{
 				"cmd",
-				OSUtil.getExeAndClose(),
+				TerminalUtil.getExeAndClose(),
 				"start",
 				"\"\"",//app name doesn't work with the batch boot shell for some reason
 				"call",

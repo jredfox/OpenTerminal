@@ -8,6 +8,7 @@ public class RedSands {
 	
 	public static void main(String[] args) throws IOException, AWTException, InterruptedException
 	{
+		System.out.println(TerminalUtil.windows_terminals.size() + 1 + TerminalUtil.linux_terminals.size());
 //		while(true)
 //		{
 //			try 

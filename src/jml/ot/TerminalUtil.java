@@ -11,7 +11,7 @@ public class TerminalUtil {
 	private static boolean isWindows = osName.contains("windows");
 	private static boolean isLinux = osName.contains("linux") || osName.contains("nux") || osName.contains("aix");
 	private static boolean isMac = osName.contains("mac") && !isLinux || osName.contains("osx") || osName.contains("darwin");
-	private static boolean isChrome = osName.contains("google") || osName.contains("chromeos") || osName.contains("pixelbook"); //complete and random guess
+	private static boolean isChrome = osName.contains("google") || osName.contains("chromeos") || osName.contains("pixelbook"); //TODO: see what the boolean is actually suppose to be
 
 	public static String[] conHost = new String[]
 	{
@@ -149,10 +149,11 @@ public class TerminalUtil {
 
 	/**
 	 * runs the command in the background by default and closes
+	 * NOTE: linux doesn't support run in the background and execute they are two seperate flags assume the background or hide flags exist
 	 */
 	public static String getExeAndClose()
 	{
-		return isWindows() ? "/c" : (isMac() || isLinux()) ?  "-c" : null;
+		return isWindows() ? "/c" : "-c";
 	}
 	
 	/**
@@ -188,7 +189,7 @@ public class TerminalUtil {
 	
 	public static boolean isChromeOs()
 	{
-		return isChrome;
+		return isChrome;//TODO: test and it's probably not working ;)
 	}
 	
 	public static File getAppData()
