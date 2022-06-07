@@ -8,7 +8,8 @@ public class RedSands {
 	
 	public static void main(String[] args) throws IOException, AWTException, InterruptedException
 	{
-		System.out.println(TerminalUtil.findExe("C:/Windows/notepad.exe"));
+		File f = new File("daj");
+		System.out.println(f.canExecute());
 //		while(true)
 //		{
 //			try 

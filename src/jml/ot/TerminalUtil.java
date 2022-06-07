@@ -22,7 +22,7 @@ public class TerminalUtil {
 	public static List<String> windows_terminals = JavaUtil.asArray(new String[]
 	{
 		"cmd",
-		"powershell",//powershell doesn't work and has never worked. it can't execute batch files nor even basic commands or even handle spaces
+		"powershell",//powershell doesn't work and has never worked. it can't execute batch files nor even basic commands nor even handle spaces
 	});
 	
 	public static List<String> mac_terminals = JavaUtil.asArray(new String[]
@@ -123,36 +123,30 @@ public class TerminalUtil {
 		return findExe(term) != null;
 	}
 	
-	public static String findExeSafe(String name)
-	{
-		String exe = findExe(name, true);
-		return exe != null ? exe : name.contains(".") ? null : findExe(name, false);
-	}
-	
-	/**
-	 * assumes application's will always have their extensions
-	 */
 	public static String findExe(String name)
 	{
-		return findExe(name, true);
-	}
-	
-	public static String findExe(String name, boolean hasExt)
-	{
+		String ext = isWindows() ? ".exe" : isMac() ? ".app" : "";//TODO: test macOs and confirm functionality on windows
+		String fname = name + ext;
+		
 		//search the full path of the dir before searching env path
 		if(name.contains("/"))
 		{
-			File fullP = new File(name);
-			if(fullP.isFile() && fullP.canExecute())
-				return fullP.getAbsolutePath();
+			File path = new File(name);
+			File fpath = new File(fname);
+			if(path.canExecute())
+				return path.getPath();
+			else if(fpath.canExecute())
+				return fpath.getPath();
 		}
-		String ext = isWindows() ? ".exe" : isMac() ? ".app" : "";//TODO: test macOs and confirm functionality on windows
-		name = !hasExt || name.contains(".") ? name : name + ext;
+		
 	    for (String dirname : System.getenv("PATH").split(File.pathSeparator)) 
 	    {
 	        File file = new File(dirname, name);
-	        if (file.isFile() && file.canExecute())
-	            return file.getAbsolutePath();
+	        File ffile = new File(dirname, fname);
+	        if (file.canExecute())
+	            return file.getPath();
+	        else if(ffile.canExecute())
+	        	return ffile.getPath();
 	    }
 	    return null;
 	}
