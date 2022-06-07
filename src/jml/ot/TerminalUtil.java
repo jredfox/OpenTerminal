@@ -3,6 +3,7 @@ package jml.ot;
 import java.io.File;
 import java.util.List;
 
+import jredfox.common.os.OSUtil;
 import jredfox.common.utils.JavaUtil;
 
 public class TerminalUtil {
@@ -127,6 +128,7 @@ public class TerminalUtil {
 	{
 		String ext = isWindows() ? ".exe" : isMac() ? ".app" : "";//TODO: test macOs and confirm functionality on windows
 		String fname = name + ext;
+		boolean hasF = !OSUtil.isLinux();
 		
 		//search the full path of the dir before searching env path
 		if(name.contains("/"))
@@ -135,7 +137,7 @@ public class TerminalUtil {
 			File fpath = new File(fname);
 			if(path.canExecute())
 				return path.getPath();
-			else if(fpath.canExecute())
+			else if(hasF && fpath.canExecute())
 				return fpath.getPath();
 		}
 		
@@ -145,7 +147,7 @@ public class TerminalUtil {
 	        File ffile = new File(dirname, fname);
 	        if (file.canExecute())
 	            return file.getPath();
-	        else if(ffile.canExecute())
+	        else if(hasF && ffile.canExecute())
 	        	return ffile.getPath();
 	    }
 	    return null;

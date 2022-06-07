@@ -8,8 +8,7 @@ public class RedSands {
 	
 	public static void main(String[] args) throws IOException, AWTException, InterruptedException
 	{
-		File f = new File("daj");
-		System.out.println(f.canExecute());
+		System.out.println(TerminalUtil.findExe("notepad"));
 //		while(true)
 //		{
 //			try 
