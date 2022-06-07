@@ -14,7 +14,7 @@ public class Test {
 			{
 				if(TerminalUtil.isWindows())
 				{
-					Profile p = new Profile("0", "a");
+					Profile p = new Profile("3", "f");
 					if(this.terminal.equals("powershell"))
 					{
 						p.wtScheme = "Campbell Powershell";
@@ -36,9 +36,9 @@ public class Test {
 		};
 		if(TerminalUtil.isLinux())
 		{
-			app.terminal = "gnome-terminal";
+			app.terminal = "gnome-terminal";//set's the initial terminal the configuration overrides this from TerminalApp#getTerminalExe called by OpenTerminal#open
 		}
-//		app.pause = false;
+		app.pause = true;
 		OpenTerminal.open(app);
 		System.out.println("launch in:" + (System.currentTimeMillis() - ms) + "ms");
 	}

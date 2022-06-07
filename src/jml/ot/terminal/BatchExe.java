@@ -36,7 +36,8 @@ public class BatchExe extends TerminalExe {
 				q + this.shell.getPath() + q,//path to the boot shell
 				profile != null && profile.bg != null ? q + (profile.bg + profile.fg) + q : "-1",//color
 				q + this.app.getTitle() + q,
-				q + (OTConstants.java_home + " " + OTConstants.args).replaceAll("\"", ",") + q
+				q + (OTConstants.java_home + " " + OTConstants.args).replaceAll("\"", ",") + q,
+				q + this.app.pause + q
 			});
 		}
 		else
@@ -83,7 +84,9 @@ public class BatchExe extends TerminalExe {
 			li.add("set boot=%~3");
 			li.add("set boot=%boot:,=^\"% ::RE-MAP the boot command to double quotes");
 			li.add("call %boot%");
+			li.add("IF \"%~4%\" == \"true\" (");
 			li.add("set /p DUMMY=Press ENTER to continue...");
+			li.add(")");
 			li.add("exit ::Work around from a command prompt bug");
 			this.makeShell(li);
 		}
