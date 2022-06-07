@@ -105,7 +105,7 @@ public class TerminalApp {
 				return new MacBashExe(this);
 			}
 		}
-		if(OSUtil.linux_terminals.contains(this.terminal))
+		if(TerminalUtil.linux_terminals.contains(this.terminal))
 		{
 			if(this.linuxCmdsExe.contains(this.terminal))
 				return new LinuxCmdTerminalExe(this);
@@ -142,12 +142,12 @@ public class TerminalApp {
 		cfg.load();
 		this.terminal = cfg.get("terminal", this.terminal);
 		this.conHost = cfg.get("conHost", this.conHost);
-		if(!OSUtil.isExeValid(this.terminal))
+		if(!TerminalUtil.isExeValid(this.terminal))
 		{
-			this.terminal = OSUtil.getTerminal();
+			this.terminal = TerminalUtil.getTerminal();
 			cfg.set("terminal", this.terminal);
 		}
-		if(!this.conHost.isEmpty() && !OSUtil.isExeValid(this.conHost))
+		if(!this.conHost.isEmpty() && !TerminalUtil.isExeValid(this.conHost))
 		{
 			this.conHost = "";
 			cfg.set("conHost", this.conHost);
@@ -182,7 +182,7 @@ public class TerminalApp {
 		if(this.linuxFlags.containsKey(this.terminal))
 			return this.linuxFlags.get(this.terminal);
 		
-		return OSUtil.getLinuxExe(this.terminal);
+		return TerminalUtil.getLinuxExe(this.terminal);
 	}
 	
 	public static class Profile

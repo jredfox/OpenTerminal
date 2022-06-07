@@ -5,7 +5,7 @@ import java.util.List;
 
 import jredfox.common.utils.JavaUtil;
 
-public class OSUtil {
+public class TerminalUtil {
 	
 	private static String osName = System.getProperty("os.name").toLowerCase();
 	private static boolean isWindows = osName.contains("windows");
@@ -89,7 +89,7 @@ public class OSUtil {
 	
 	public static String getTerminal()
 	{
-		List<String> terms = OSUtil.getOsTerminals();
+		List<String> terms = TerminalUtil.getOsTerminals();
 		for(String cmd : terms)
 		{
 			if(findExe(cmd) != null)
@@ -98,7 +98,7 @@ public class OSUtil {
 			}
 		}
 		
-		for(List<String> arr : OSUtil.getTerminals())
+		for(List<String> arr : TerminalUtil.getTerminals())
 		{
 			if(arr == terms)
 				continue;

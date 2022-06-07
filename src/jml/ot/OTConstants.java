@@ -7,7 +7,7 @@ import jredfox.common.utils.JREUtil;
 public class OTConstants {
 	
 	public static final String OTVERSION = "1.0.0";
-	public static final File home = new File(OSUtil.getAppData().getAbsoluteFile(), "OpenTerminal");
+	public static final File home = new File(TerminalUtil.getAppData().getAbsoluteFile(), "OpenTerminal");
 	public static final File configs = new File(home, "configs");
 	public static final File profiles = new File(home, "profiles");
 	public static final File scripts = new File(home, "scripts");

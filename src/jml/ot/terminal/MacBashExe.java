@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import jml.ot.OSUtil;
+import jml.ot.TerminalUtil;
 import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
 import jml.ot.TerminalApp.Profile;
@@ -163,7 +163,7 @@ public class MacBashExe extends TerminalExe {
 	@Override
 	public void run() throws IOException 
 	{
-		String q = OSUtil.getQuote();
+		String q = TerminalUtil.getQuote();
 		String profile = this.app.getProfile() != null && this.app.getProfile().mac_profileName != null ? this.app.getProfile().mac_profileName : "";
 		String command = (OTConstants.java_home + " " + OTConstants.args).replaceAll(q, "\\\\" + q);
 		String bash = "bash " + q + this.shell.getPath() + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + closeMeScpt.getPath() + q + " " + q + System.currentTimeMillis() + q;
@@ -180,7 +180,7 @@ public class MacBashExe extends TerminalExe {
 	@Override
 	public List<String> getBootCmd() throws IOException 
 	{
-		String q = OSUtil.getQuote();
+		String q = TerminalUtil.getQuote();
 		String command = (OTConstants.java_home + " " + OTConstants.args).replaceAll(q, "\\\\" + q);
 		String bash = "bash " + q + this.shell.getPath() + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + closeMeScpt.getPath() + q + " " + q + System.currentTimeMillis() + q;
 		List<String> li = new ArrayList<>();
@@ -190,7 +190,7 @@ public class MacBashExe extends TerminalExe {
 	
 	public static void importProfile(Profile p) throws IOException
 	{
-		String q = OSUtil.getQuote();
+		String q = TerminalUtil.getQuote();
 		if(p != null && p.mac_profileId != null)
 		{
 			File pf = new File(profileMac, p.mac_profileId + ".terminal");

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jml.ot.OSUtil;
+import jml.ot.TerminalUtil;
 import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
 
@@ -55,7 +55,7 @@ public class LinuxBashExe extends TerminalExe{
 	{
 		String command = (OTConstants.java_home + " " + OTConstants.args);
 		if(this.quoteCmd)
-			command = command.replaceAll(OSUtil.getQuote(),"\\\\" + OSUtil.getQuote());
+			command = command.replaceAll(TerminalUtil.getQuote(),"\\\\" + TerminalUtil.getQuote());
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
 			this.app.terminal,

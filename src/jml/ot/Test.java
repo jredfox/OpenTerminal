@@ -13,7 +13,7 @@ public class Test {
 			@Override
 			public Profile getProfile() 
 			{
-				if(OSUtil.isWindows())
+				if(TerminalUtil.isWindows())
 				{
 					Profile p = new Profile("0", "a");
 					if(this.terminal.equals("powershell"))
@@ -25,7 +25,7 @@ public class Test {
 					}
 					return p;
 				}
-				else if(OSUtil.isMac())
+				else if(TerminalUtil.isMac())
 				{
 //					Profile p = Profile.newMac("jredfox.openterminal.blackglass", "resources/jml/ot/mac/BlGlass.terminal");
 					Profile p = Profile.newMac("jredfox.openterminal.purpleCollege", "resources/jml/ot/mac/college.terminal");
@@ -35,7 +35,7 @@ public class Test {
 				return null;
 			}
 		};
-		if(OSUtil.isLinux() && app.terminal.isEmpty())
+		if(TerminalUtil.isLinux() && app.terminal.isEmpty())
 		{
 			app.terminal = "gnome-terminal";
 		}

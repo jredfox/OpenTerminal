@@ -11,7 +11,7 @@ public class RedSands {
 	{
 //		OSUtil.findExe("gnome-terminal");
 		long ms = System.currentTimeMillis();
-		System.out.println(OSUtil.getTerminal() + " in:" + (System.currentTimeMillis() - ms) + "ms");
+		System.out.println(TerminalUtil.getTerminal() + " in:" + (System.currentTimeMillis() - ms) + "ms");
 //		for(String s : OSUtil.linux_terminals)
 //			if(!OSUtil.isTerminalValid(s))
 //				System.out.println("missing:" + s);

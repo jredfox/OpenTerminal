@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jml.ot.OSUtil;
+import jml.ot.TerminalUtil;
 import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
 
@@ -21,7 +21,7 @@ public class PowerShellExe extends TerminalExe {
 	@Override
 	public void run() throws IOException 
 	{
-		String q = OSUtil.getQuote();
+		String q = TerminalUtil.getQuote();
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
 			"powershell",
@@ -44,7 +44,7 @@ public class PowerShellExe extends TerminalExe {
 	@Override
 	public List<String> getBootCmd() 
 	{
-		String q = OSUtil.getQuote();
+		String q = TerminalUtil.getQuote();
 		List<String> cmd = new ArrayList<>();
 		cmd.add("powershell");
 		cmd.add("-ExecutionPolicy");
