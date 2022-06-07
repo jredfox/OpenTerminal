@@ -49,7 +49,7 @@ public abstract class TerminalExe {
 			this.genStart();
 			this.createShell();
 			this.printPB(pb);
-			pb.directory(OTConstants.userDir).inheritIO().start();
+			pb.directory(OTConstants.userDir).start();
 		}
 		catch(Exception e)
 		{

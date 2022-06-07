@@ -3,7 +3,6 @@ package jml.ot;
 import java.io.File;
 import java.util.List;
 
-import jredfox.common.os.OSUtil;
 import jredfox.common.utils.JavaUtil;
 
 public class TerminalUtil {
@@ -28,13 +27,7 @@ public class TerminalUtil {
 	
 	public static List<String> mac_terminals = JavaUtil.asArray(new String[]
 	{
-		"/bin/bash",
-		"/bin/zsh",
-		"/bin/sh",
-		"/bin/csh", 
-		"/bin/dash", 
-		"/bin/ksh", 
-		"/bin/tcsh"
+		"Terminal.app",
 	});
 	
 	public static List<String> linux_terminals = JavaUtil.asArray(new String[]
@@ -124,11 +117,20 @@ public class TerminalUtil {
 		return findExe(term) != null;
 	}
 	
+	public static String[] macAppPaths = new String[]
+	{
+		"/Applications",
+		"/System/Applications/",
+		"/System/Applications/Utilities/",
+		"/System/Library/CoreServices/",
+		"/System/Library/CoreServices/Applications"
+	};
+	
 	public static String findExe(String name)
 	{
 		String ext = isWindows() ? ".exe" : isMac() ? ".app" : "";//TODO: test macOs and confirm functionality on windows
-		String fname = name + ext;
-		boolean hasF = !OSUtil.isLinux();
+		String fname = name.contains(".") ? name : name + ext;
+		boolean hasF = ext.isEmpty();
 		
 		//search the full path of the dir before searching env path
 		if(name.contains("/"))
@@ -137,7 +139,7 @@ public class TerminalUtil {
 			File fpath = new File(fname);
 			if(path.canExecute())
 				return path.getPath();
-			else if(hasF && fpath.canExecute())
+			else if(hasF && isExe(fpath))
 				return fpath.getPath();
 		}
 		
@@ -145,12 +147,26 @@ public class TerminalUtil {
 	    {
 	        File file = new File(dirname, name);
 	        File ffile = new File(dirname, fname);
-	        if (file.canExecute())
+	        if (isExe(file))
 	            return file.getPath();
-	        else if(hasF && ffile.canExecute())
+	        else if(hasF && isExe(ffile))
 	        	return ffile.getPath();
 	    }
+	    
+	    //macOS start here
+	    for(String root : macAppPaths)
+	    {
+	    	File app = new File(root, fname);
+	    	if(isExe(app))
+	    		return app.getPath();
+	    }
+	    
 	    return null;
+	}
+	
+	public static boolean isExe(File f)
+	{
+		return (f.isFile() || f.getName().endsWith(".app")) && f.canExecute();
 	}
 
 	@SuppressWarnings("unchecked")

@@ -8,7 +8,7 @@ public class RedSands {
 	
 	public static void main(String[] args) throws IOException, AWTException, InterruptedException
 	{
-		System.out.println(TerminalUtil.findExe("notepad"));
+		System.out.println(TerminalUtil.findExe("Terminal.app"));
 //		while(true)
 //		{
 //			try 

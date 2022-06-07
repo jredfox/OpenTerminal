@@ -99,7 +99,7 @@ public class TerminalApp {
 			case "powershell":
 				System.out.println("powershell is very buggy when it comes to the start-process command it's not recommended as a default terminal for your java application!");
 				return new PowerShellExe(this);
-			case "/bin/bash":
+			case "Terminal.app":
 			{
 				return new MacBashExe(this);
 			}
