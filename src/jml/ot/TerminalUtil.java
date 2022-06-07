@@ -123,10 +123,24 @@ public class TerminalUtil {
 		return findExe(term) != null;
 	}
 	
+	public static String findExeSafe(String name)
+	{
+		String exe = findExe(name, true);
+		return exe != null ? exe : name.contains(".") ? null : findExe(name, false);
+	}
+	
+	/**
+	 * assumes application's will always have their extensions
+	 */
 	public static String findExe(String name)
 	{
+		return findExe(name, true);
+	}
+	
+	public static String findExe(String name, boolean hasExt)
+	{
 		String ext = isWindows() ? ".exe" : isMac() ? ".app" : "";//TODO: test macOs and confirm functionality on windows
-		name = name.contains(".") ? name : name + ext;
+		name = !hasExt || name.contains(".") ? name : name + ext;
 	    for (String dirname : System.getenv("PATH").split(File.pathSeparator)) 
 	    {
 	        File file = new File(dirname, name);

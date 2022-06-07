@@ -8,7 +8,7 @@ public class RedSands {
 	
 	public static void main(String[] args) throws IOException, AWTException, InterruptedException
 	{
-		System.out.println(TerminalUtil.windows_terminals.size() + 1 + TerminalUtil.linux_terminals.size());
+		System.out.println(TerminalUtil.findExe("github"));
 //		while(true)
 //		{
 //			try 
