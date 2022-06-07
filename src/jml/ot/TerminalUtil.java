@@ -139,6 +139,13 @@ public class TerminalUtil {
 	
 	public static String findExe(String name, boolean hasExt)
 	{
+		//search the full path of the dir before searching env path
+		if(name.contains("/"))
+		{
+			File fullP = new File(name);
+			if(fullP.isFile() && fullP.canExecute())
+				return fullP.getAbsolutePath();
+		}
 		String ext = isWindows() ? ".exe" : isMac() ? ".app" : "";//TODO: test macOs and confirm functionality on windows
 		name = !hasExt || name.contains(".") ? name : name + ext;
 	    for (String dirname : System.getenv("PATH").split(File.pathSeparator)) 
