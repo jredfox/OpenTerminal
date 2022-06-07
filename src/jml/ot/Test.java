@@ -1,6 +1,5 @@
 package jml.ot;
 
-import java.io.File;
 import java.io.IOException;
 
 public class Test {
@@ -35,25 +34,12 @@ public class Test {
 				return null;
 			}
 		};
-		if(TerminalUtil.isLinux() && app.terminal.isEmpty())
+		if(TerminalUtil.isLinux())
 		{
 			app.terminal = "gnome-terminal";
 		}
 //		app.pause = false;
 		OpenTerminal.open(app);
 		System.out.println("launch in:" + (System.currentTimeMillis() - ms) + "ms");
-	}
-	
-	public static String findOnPath(String name)
-	{
-	    for (String dirname : System.getenv("PATH").split(File.pathSeparator))
-	    {
-	        File file = new File(dirname, name);
-	        if (file.isFile() && file.canExecute())
-	        {
-	            return file.getAbsolutePath();
-	        }
-	    }
-	    throw new AssertionError("should have found the executable");
 	}
 }

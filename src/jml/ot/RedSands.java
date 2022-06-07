@@ -3,19 +3,11 @@ package jml.ot;
 import java.awt.AWTException;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class RedSands {
 	
 	public static void main(String[] args) throws IOException, AWTException, InterruptedException
 	{
-//		OSUtil.findExe("gnome-terminal");
-		long ms = System.currentTimeMillis();
-		System.out.println(TerminalUtil.getTerminal() + " in:" + (System.currentTimeMillis() - ms) + "ms");
-//		for(String s : OSUtil.linux_terminals)
-//			if(!OSUtil.isTerminalValid(s))
-//				System.out.println("missing:" + s);
-//		System.out.println("starting redsands... " + System.getProperty("java.version"));
 //		while(true)
 //		{
 //			try 

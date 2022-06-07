@@ -9,8 +9,9 @@ public class TerminalUtil {
 	
 	private static String osName = System.getProperty("os.name").toLowerCase();
 	private static boolean isWindows = osName.contains("windows");
-	private static boolean isLinux = osName.contains("linux");
-	private static boolean isMac = osName.contains("mac") || osName.contains("osx") && !isLinux;
+	private static boolean isLinux = osName.contains("linux") || osName.contains("nux") || osName.contains("aix");
+	private static boolean isMac = osName.contains("mac") && !isLinux || osName.contains("osx") || osName.contains("darwin");
+	private static boolean isChrome = osName.contains("google") || osName.contains("chromeos") || osName.contains("pixelbook"); //complete and random guess
 
 	public static String[] conHost = new String[]
 	{
@@ -135,6 +136,7 @@ public class TerminalUtil {
 	    return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static List<String>[] getTerminals()
 	{
 		return new List[] {windows_terminals, mac_terminals, linux_terminals};
@@ -182,6 +184,11 @@ public class TerminalUtil {
 	public static boolean isLinux()
 	{
 		return isLinux;
+	}
+	
+	public static boolean isChromeOs()
+	{
+		return isChrome;
 	}
 	
 	public static File getAppData()

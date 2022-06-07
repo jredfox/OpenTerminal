@@ -179,10 +179,8 @@ public class TerminalApp {
 	 */
 	public String getLinuxExe()
 	{
-		if(this.linuxFlags.containsKey(this.terminal))
-			return this.linuxFlags.get(this.terminal);
-		
-		return TerminalUtil.getLinuxExe(this.terminal);
+		String cflag = this.linuxFlags.get(this.terminal);
+		return cflag != null ? cflag : TerminalUtil.getLinuxExe(this.terminal);
 	}
 	
 	public static class Profile
