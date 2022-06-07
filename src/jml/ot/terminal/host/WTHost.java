@@ -1,7 +1,6 @@
 package jml.ot.terminal.host;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class WTHost extends ConsoleHost {
 	}
 
 	@Override
-	public void run() throws IOException
+	public void run()
 	{
 		TerminalExe term = this.app.getTerminalExe();
 		List<String> cmd = new ArrayList<>();

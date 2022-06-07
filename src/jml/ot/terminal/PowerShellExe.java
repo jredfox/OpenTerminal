@@ -13,13 +13,13 @@ public class PowerShellExe extends TerminalExe {
 
 	public static final File start_ps = new File(OTConstants.start, "powershell.ps1");
 	
-	public PowerShellExe(TerminalApp app) throws IOException
+	public PowerShellExe(TerminalApp app)
 	{
 		super(app, new File(OTConstants.boot, "boot.ps1"));
 	}
 
 	@Override
-	public void run() throws IOException 
+	public void run() 
 	{
 		String q = TerminalUtil.getQuote();
 		ProcessBuilder pb = new ProcessBuilder(new String[]
@@ -93,6 +93,12 @@ public class PowerShellExe extends TerminalExe {
 			list.add("start-process powershell -ArgumentList '-ExecutionPolicy', 'Bypass', '-File', \"\"\"$boot\"\"\", '-title', \"\"\"$title\"\"\", '-java_home', \"\"\"$java_home\"\"\", '-java_args', \"\"\"$java_args\"\"\"");
 			this.makeShell(list, start_ps);
 		}
+	}
+
+	@Override
+	public void cleanup()
+	{
+		this.shell.delete();
 	}
 
 }

@@ -13,13 +13,13 @@ import jredfox.common.os.OSUtil;
 
 public class BatchExe extends TerminalExe {
 
-	public BatchExe(TerminalApp app) throws IOException 
+	public BatchExe(TerminalApp app) 
 	{
 		super(app, new File(OTConstants.boot, "boot.bat"));
 	}
 
 	@Override
-	public void run() throws IOException
+	public void run()
 	{
 		String q = OSUtil.getQuote();
 		ProcessBuilder pb = null;
@@ -54,7 +54,7 @@ public class BatchExe extends TerminalExe {
 	}
 	
 	@Override
-	public List<String> getBootCmd() throws IOException
+	public List<String> getBootCmd()
 	{
 		String q = OSUtil.getQuote();
 		Profile profile = this.app.getProfile();
@@ -96,6 +96,12 @@ public class BatchExe extends TerminalExe {
 	public void genStart() throws IOException 
 	{
 		// nothing to do here the start command works just find using java
+	}
+
+	@Override
+	public void cleanup() 
+	{
+		this.shell.delete();
 	}
 
 }

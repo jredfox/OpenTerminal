@@ -1,12 +1,10 @@
 package jml.ot;
 
-import java.io.IOException;
-
 import jml.ot.terminal.host.ConsoleHost;
 
 public class OpenTerminal {
 	
-	public static void open(TerminalApp app) throws IOException
+	public static void open(TerminalApp app)
 	{
 		//if open terminal has launched and failed printline and exit the application as it failed
 		if(System.console() == null && System.getProperty("ot.l") != null)

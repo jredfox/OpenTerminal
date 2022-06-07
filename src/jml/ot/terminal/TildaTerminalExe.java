@@ -2,19 +2,18 @@ package jml.ot.terminal;
 
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 
 import jml.ot.TerminalApp;
 
 public class TildaTerminalExe extends LinuxCmdTerminalExe {
 
-	public TildaTerminalExe(TerminalApp app) throws IOException
+	public TildaTerminalExe(TerminalApp app)
 	{
 		super(app);
 	}
 	
 	@Override
-	public void run() throws IOException
+	public void run()
 	{
 		super.run();
 		try

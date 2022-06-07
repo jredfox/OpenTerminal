@@ -17,7 +17,7 @@ public abstract class TerminalExe {
 	public TerminalApp app;
 	public File shell;
 	
-	public TerminalExe(TerminalApp app, File shell) throws IOException
+	public TerminalExe(TerminalApp app, File shell)
 	{
 		this.app = app;
 		this.shell = shell;
@@ -33,22 +33,35 @@ public abstract class TerminalExe {
 	/**
 	 * execute the command in a new terminal window
 	 */
-	public abstract void run() throws IOException;
+	public abstract void run();
 	/**
 	 * get's the boot command used by a console host instead of forcing a new window through other means
 	 */
-	public abstract List<String> getBootCmd() throws IOException;
+	public abstract List<String> getBootCmd();
 	
 	/**
 	 * run the process builder with genStart and the boot shell checks
 	 */
-	public void run(ProcessBuilder pb) throws IOException
+	public void run(ProcessBuilder pb)
 	{
-		this.genStart();
-		this.createShell();
-		this.printPB(pb);
-		pb.directory(OTConstants.userDir).inheritIO().start();
+		try
+		{
+			this.genStart();
+			this.createShell();
+			this.printPB(pb);
+			pb.directory(OTConstants.userDir).inheritIO().start();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			this.cleanup();
+		}
 	}
+	
+	/**
+	 * delete your shells and startup scripts here. this happens when the applications fails to boot
+	 */
+	public abstract void cleanup();
 	
 	public void makeShell(List<String> li) throws IOException 
 	{

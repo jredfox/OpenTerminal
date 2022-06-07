@@ -1,7 +1,6 @@
 package jml.ot;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -88,7 +87,7 @@ public class TerminalApp {
 		return null;
 	}
 	
-	public TerminalExe getTerminalExe() throws IOException
+	public TerminalExe getTerminalExe()
 	{
 		if(!this.cfgLoaded)
 			this.load();

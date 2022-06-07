@@ -1,7 +1,5 @@
 package jml.ot.terminal;
 
-import java.io.IOException;
-
 import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
 
@@ -11,13 +9,13 @@ import jml.ot.TerminalApp;
  */
 public class TerminologyExe extends LinuxBashExe {
 
-	public TerminologyExe(TerminalApp app) throws IOException 
+	public TerminologyExe(TerminalApp app) 
 	{
 		super(app);
 	}
 
 	@Override
-	public void run() throws IOException 
+	public void run() 
 	{
 		String q = "'";
 		String args = "-Dot.p " + OTConstants.args;//add the java pause option

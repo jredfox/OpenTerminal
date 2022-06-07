@@ -13,7 +13,7 @@ public class LinuxBashExe extends TerminalExe{
 
 	public boolean quoteCmd;
 	
-	public LinuxBashExe(TerminalApp app) throws IOException 
+	public LinuxBashExe(TerminalApp app) 
 	{
 		super(app, new File(OTConstants.boot, "linuxboot.sh"));
 	}
@@ -51,7 +51,7 @@ public class LinuxBashExe extends TerminalExe{
 	}
 
 	@Override
-	public void run() throws IOException 
+	public void run() 
 	{
 		String command = (OTConstants.java_home + " " + OTConstants.args);
 		if(this.quoteCmd)
@@ -71,7 +71,7 @@ public class LinuxBashExe extends TerminalExe{
 	}
 
 	@Override
-	public List<String> getBootCmd() throws IOException 
+	public List<String> getBootCmd() 
 	{
 		String command = (OTConstants.java_home + " " + OTConstants.args);
 		List<String> li = new ArrayList<>();
@@ -82,6 +82,12 @@ public class LinuxBashExe extends TerminalExe{
 		li.add(command);
 		li.add(String.valueOf(this.app.pause));
 		return li;
+	}
+
+	@Override
+	public void cleanup() 
+	{
+		this.shell.delete();
 	}
 
 }

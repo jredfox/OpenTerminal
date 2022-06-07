@@ -1,7 +1,5 @@
 package jml.ot.terminal.host;
 
-import java.io.IOException;
-
 import jml.ot.TerminalApp;
 
 /**
@@ -16,6 +14,6 @@ public abstract class ConsoleHost {
 		this.app = app;
 	}
 	
-	public abstract void run() throws IOException;
+	public abstract void run();
 
 }

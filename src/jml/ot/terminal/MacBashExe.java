@@ -27,7 +27,7 @@ public class MacBashExe extends TerminalExe {
 	public static final File start2Scpt = new File(macStart, "start2.scpt");
 	public static final File profileMac = new File(OTConstants.profiles, "mac");
 
-	public MacBashExe(TerminalApp app) throws IOException 
+	public MacBashExe(TerminalApp app) 
 	{
 		super(app, new File(OTConstants.boot, "macboot.sh"));
 	}
@@ -161,7 +161,7 @@ public class MacBashExe extends TerminalExe {
 
 	//TODO: test to see if not running osascript by itself without the terminal works on older macOs versions
 	@Override
-	public void run() throws IOException 
+	public void run() 
 	{
 		String q = TerminalUtil.getQuote();
 		String profile = this.app.getProfile() != null && this.app.getProfile().mac_profileName != null ? this.app.getProfile().mac_profileName : "";
@@ -178,7 +178,7 @@ public class MacBashExe extends TerminalExe {
 	}
 
 	@Override
-	public List<String> getBootCmd() throws IOException 
+	public List<String> getBootCmd() 
 	{
 		String q = TerminalUtil.getQuote();
 		String command = (OTConstants.java_home + " " + OTConstants.args).replaceAll(q, "\\\\" + q);
@@ -216,6 +216,13 @@ public class MacBashExe extends TerminalExe {
 				while(process.isAlive());
 			}
 		}
+	}
+
+	@Override
+	public void cleanup()
+	{
+		this.shell.delete();
+		IOUtils.deleteDirectory(macStart);
 	}
 
 }
