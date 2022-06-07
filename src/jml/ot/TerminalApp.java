@@ -2,6 +2,10 @@ package jml.ot;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import jml.ot.terminal.BatchExe;
 import jml.ot.terminal.GuakeTerminalExe;
@@ -14,6 +18,7 @@ import jml.ot.terminal.TerminologyExe;
 import jml.ot.terminal.TildaTerminalExe;
 import jml.ot.terminal.host.ConsoleHost;
 import jml.ot.terminal.host.WTHost;
+import jredfox.common.config.MapConfig;
 
 public class TerminalApp {
 	
@@ -22,8 +27,11 @@ public class TerminalApp {
 	public String version;
 	public boolean force;//when enabled will always open a window
 	public boolean pause;
-	public String terminal = OpenTerminal.terminal;
-	public String conHost = OpenTerminal.console_host;
+	public String terminal = "";
+	public String conHost = "";
+	public boolean cfgLoaded = false;
+	public List<String> linuxCmdsExe = new ArrayList<>(0);//configurable list to use LinuxCmdExe instead of LinuxBash or another
+	public Map<String, String> linuxFlags = new HashMap<>(0);//override linux new window flags in case you have an updated or outdated version then is currently supported
 	
 	public TerminalApp(String id, String name, String version)
 	{
@@ -71,6 +79,10 @@ public class TerminalApp {
 			{
 				case "wt":
 					return new WTHost(this);
+				case "":
+					break;
+				default:
+					throw new IllegalArgumentException("no console host handler registered for:\"" + this.conHost + "\"");
 			}
 		}
 		return null;
@@ -78,6 +90,9 @@ public class TerminalApp {
 	
 	public TerminalExe getTerminalExe() throws IOException
 	{
+		if(!this.cfgLoaded)
+			this.load();
+		
 		switch(this.terminal)
 		{
 			case "cmd":
@@ -92,6 +107,9 @@ public class TerminalApp {
 		}
 		if(OSUtil.linux_terminals.contains(this.terminal))
 		{
+			if(this.linuxCmdsExe.contains(this.terminal))
+				return new LinuxCmdTerminalExe(this);
+			
 			switch(this.terminal)
 			{
 				case "terminology":
@@ -115,9 +133,56 @@ public class TerminalApp {
 		return null;
 	}
 	
-	public File getHome()
+	/**
+	 * load the configurations for this terminal app
+	 */
+	public void load() 
 	{
-		return new File(OTConstants.home + "/" + this.id);
+		MapConfig cfg = new MapConfig(new File(OTConstants.configs, this.id + ".cfg"));
+		cfg.load();
+		this.terminal = cfg.get("terminal", this.terminal);
+		this.conHost = cfg.get("conHost", this.conHost);
+		if(!OSUtil.isExeValid(this.terminal))
+		{
+			this.terminal = OSUtil.getTerminal();
+			cfg.set("terminal", this.terminal);
+		}
+		if(!this.conHost.isEmpty() && !OSUtil.isExeValid(this.conHost))
+		{
+			this.conHost = "";
+			cfg.set("conHost", this.conHost);
+		}
+		
+		String[] lcmds = cfg.get("linuxCmdExe", "").split(";");
+		for(String c : lcmds)
+		{
+			c = c.trim();
+			if(!c.isEmpty())
+				this.linuxCmdsExe.add(c);
+		}
+		
+		String[] lflags = cfg.get("linuxFlags", "").split(";");
+		for(String f : lflags)
+		{
+			f = f.trim();
+			if(f.isEmpty())
+				continue;
+			String[] arr = f.split("=");
+			this.linuxFlags.put(arr[0].trim(), arr[1].trim());
+		}
+		cfg.save();
+		this.cfgLoaded = true;
+	}
+	
+	/**
+	 * execute the command in the terminal UI TerminalApp configurations override
+	 */
+	public String getLinuxExe()
+	{
+		if(this.linuxFlags.containsKey(this.terminal))
+			return this.linuxFlags.get(this.terminal);
+		
+		return OSUtil.getLinuxExe(this.terminal);
 	}
 	
 	public static class Profile

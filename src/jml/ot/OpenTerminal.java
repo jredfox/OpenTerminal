@@ -6,9 +6,6 @@ import jml.ot.terminal.host.ConsoleHost;
 
 public class OpenTerminal {
 	
-	public static final String console_host = "";//"wt";
-	public static final String terminal = "gnome-terminal";//OSUtil.getTerminal();
-	
 	public static void open(TerminalApp app) throws IOException
 	{
 		//if open terminal has launched and failed printline and exit the application as it failed

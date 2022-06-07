@@ -59,7 +59,7 @@ public class LinuxBashExe extends TerminalExe{
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
 			this.app.terminal,
-			OSUtil.getLinuxNewWin(this.app.terminal),
+			this.app.getLinuxExe(),
 			"bash",
 			this.shell.getPath(),
 			this.app.getTitle(),

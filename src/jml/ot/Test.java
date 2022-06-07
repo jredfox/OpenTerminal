@@ -2,7 +2,6 @@ package jml.ot;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class Test {
 
@@ -36,6 +35,10 @@ public class Test {
 				return null;
 			}
 		};
+		if(OSUtil.isLinux() && app.terminal.isEmpty())
+		{
+			app.terminal = "gnome-terminal";
+		}
 //		app.pause = false;
 		OpenTerminal.open(app);
 		System.out.println("launch in:" + (System.currentTimeMillis() - ms) + "ms");

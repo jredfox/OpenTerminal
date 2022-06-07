@@ -9,6 +9,7 @@ public class RedSands {
 	
 	public static void main(String[] args) throws IOException, AWTException, InterruptedException
 	{
+//		OSUtil.findExe("gnome-terminal");
 		long ms = System.currentTimeMillis();
 		System.out.println(OSUtil.getTerminal() + " in:" + (System.currentTimeMillis() - ms) + "ms");
 //		for(String s : OSUtil.linux_terminals)

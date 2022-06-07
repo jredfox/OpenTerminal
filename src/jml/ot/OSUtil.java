@@ -98,7 +98,6 @@ public class OSUtil {
 			}
 		}
 		
-		//check all terminals to be cross platform
 		for(List<String> arr : OSUtil.getTerminals())
 		{
 			if(arr == terms)
@@ -118,13 +117,15 @@ public class OSUtil {
 	/**
 	 * test if your terminal string is actually your terminal
 	 */
-	public static boolean isTerminalValid(String term) 
+	public static boolean isExeValid(String term) 
 	{
 		return findExe(term) != null;
 	}
 	
 	public static String findExe(String name)
 	{
+		String ext = isWindows() ? ".exe" : isMac() ? ".app" : "";//TODO: test macOs and confirm functionality on windows
+		name = name.contains(".") ? name : name + ext;
 	    for (String dirname : System.getenv("PATH").split(File.pathSeparator)) 
 	    {
 	        File file = new File(dirname, name);
@@ -183,11 +184,6 @@ public class OSUtil {
 		return isLinux;
 	}
 	
-	public static boolean isUnsupported()
-	{
-		return !isWindows() && !isMac() && !isLinux();
-	}
-	
 	public static File getAppData()
 	{
 		if(isWindows())
@@ -198,7 +194,7 @@ public class OSUtil {
 	    return new File(path);
 	}
 
-	public static String getLinuxNewWin(String term)
+	public static String getLinuxExe(String term)
 	{
 		String e = "-e";
 		String x = "-x";

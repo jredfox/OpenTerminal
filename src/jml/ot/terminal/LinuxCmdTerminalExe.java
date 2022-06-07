@@ -2,7 +2,6 @@ package jml.ot.terminal;
 
 import java.io.IOException;
 
-import jml.ot.OSUtil;
 import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
 
@@ -24,7 +23,7 @@ public class LinuxCmdTerminalExe extends LinuxBashExe{
 		ProcessBuilder pb = new ProcessBuilder(new String[] 
 		{
 			this.app.terminal,
-			OSUtil.getLinuxNewWin(this.app.terminal),
+			this.app.getLinuxExe(),
 			"bash " + q + this.shell.getPath() + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir.getPath() 
 			+ q + " " + q + command + q + " " + q + this.app.pause + q
 		});
