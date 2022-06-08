@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jml.ot.TerminalUtil;
+import jredfox.common.utils.JavaUtil;
 import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
 
@@ -82,6 +83,17 @@ public class LinuxBashExe extends TerminalExe{
 		li.add(command);
 		li.add(String.valueOf(this.app.pause));
 		return li;
+	}
+	
+	/**
+	 * for console host terminals that require one line commands instead of pre-parsed params
+	 */
+	public List<String> getBootCmdOneLine()
+	{
+		String q = "'";
+		String command = (OTConstants.java_home + " " + OTConstants.args);
+		return JavaUtil.asArray(new String[] {"bash " + q + this.shell.getPath() + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir.getPath() 
+			+ q + " " + q + command + q + " " + q + this.app.pause + q});
 	}
 
 	@Override
