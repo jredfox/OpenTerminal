@@ -28,7 +28,6 @@ public class TerminalApp {
 	public boolean pause;
 	public String terminal = "";
 	public String conHost = "";
-	public boolean cfgLoaded = false;
 	public List<String> linuxCmdsExe = new ArrayList<>(0);//configurable list to use LinuxCmdExe instead of LinuxBash or another
 	public Map<String, String> linuxFlags = new HashMap<>(0);//override linux new window flags in case you have an updated or outdated version then is currently supported
 	
@@ -132,14 +131,12 @@ public class TerminalApp {
 	/**
 	 * load the configurations for this terminal app
 	 */
-	public void load() 
+	public void load()
 	{
-		if(this.cfgLoaded)
-			return;
 		MapConfig cfg = new MapConfig(new File(OTConstants.configs, this.id + ".cfg"));
 		cfg.load();
-		this.terminal = cfg.get("terminal", this.terminal);
-		this.conHost = cfg.get("conHost", this.conHost);
+		this.terminal = cfg.get("terminal", this.terminal).trim();
+		this.conHost = cfg.get("conHost", this.conHost).trim();
 		if(!TerminalUtil.isExeValid(this.terminal))
 		{
 			this.terminal = TerminalUtil.getTerminal();
@@ -169,7 +166,6 @@ public class TerminalApp {
 			this.linuxFlags.put(arr[0].trim(), arr[1].trim());
 		}
 		cfg.save();
-		this.cfgLoaded = true;
 	}
 	
 	/**
