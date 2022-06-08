@@ -20,6 +20,7 @@ public class OpenTerminal {
 		else if(System.getProperty("ot.bg") != null)
 			return;
 		
+		app.load();
 		ConsoleHost console = app.getConsoleHost();
 		if(console != null)
 			console.run();

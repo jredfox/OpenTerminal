@@ -72,8 +72,6 @@ public class TerminalApp {
 	 */
 	public ConsoleHost getConsoleHost()
 	{
-		if(!this.cfgLoaded)
-			this.load();
 		if(this.conHost != null)
 		{
 			switch(this.conHost)
@@ -91,8 +89,6 @@ public class TerminalApp {
 	
 	public TerminalExe getTerminalExe()
 	{
-		if(!this.cfgLoaded)
-			this.load();
 		switch(this.terminal)
 		{
 			case "cmd":
@@ -138,6 +134,8 @@ public class TerminalApp {
 	 */
 	public void load() 
 	{
+		if(this.cfgLoaded)
+			return;
 		MapConfig cfg = new MapConfig(new File(OTConstants.configs, this.id + ".cfg"));
 		cfg.load();
 		this.terminal = cfg.get("terminal", this.terminal);

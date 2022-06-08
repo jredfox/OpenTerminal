@@ -19,7 +19,7 @@ public class Test {
 					{
 						p.wtScheme = "Campbell Powershell";
 						p.wtTab = "42f5ec";
-						p.wtMaximized = true;
+//						p.wtMaximized = true;
 //						p.wtFullScreen = true;
 					}
 					return p;
@@ -38,7 +38,7 @@ public class Test {
 		{
 			app.terminal = "gnome-terminal";//set's the initial terminal the configuration overrides this from TerminalApp#getTerminalExe called by OpenTerminal#open
 		}
-		app.pause = true;
+//		app.pause = false;
 		OpenTerminal.open(app);
 		System.out.println("launch in:" + (System.currentTimeMillis() - ms) + "ms");
 	}
