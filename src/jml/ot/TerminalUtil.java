@@ -135,7 +135,7 @@ public class TerminalUtil {
 	{
 		String ext = isWindows() ? ".exe" : isMac() ? ".app" : "";
 		String fname = name.contains(".") ? name : name + ext;
-		boolean hasF = !ext.isEmpty();
+		boolean hasF = !ext.isEmpty() && !name.contains(".");
 		
 		//search the full path of the dir before searching env path
 		if(name.contains("/"))
@@ -161,7 +161,7 @@ public class TerminalUtil {
 	    			File[] files = file.getParentFile().listFiles();
 	    			if(FileUtil.containsFile(files, file) && !file.isDirectory())
 	    				return file.getPath();
-	    			else if(FileUtil.containsFile(files, ffile) && !file.isDirectory())
+	    			else if(hasF && FileUtil.containsFile(files, ffile) && !file.isDirectory())
 	    				return ffile.getPath();
 	    		}
 	    	}
