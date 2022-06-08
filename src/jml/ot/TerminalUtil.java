@@ -129,9 +129,11 @@ public class TerminalUtil {
 	};
 	
 	/**
-	 * find executable from path. support for WUP and macOs apps as well as standard with and without extensions paths
+	 * Supports WUP windows apps, macOs apps, windows executables and generic executables. if extension is included any executable type.
+	 * Also supports full path executables that makes sure the file exists with or without an extension
+	 * @return first executable from path found or null if not found
 	 */
-	public static String findExe(String name)
+	public static File findExe(String name)
 	{
 		String ext = isWindows() ? ".exe" : isMac() ? ".app" : "";
 		String fname = name.contains(".") ? name : name + ext;
@@ -143,9 +145,9 @@ public class TerminalUtil {
 			File path = new File(name);
 			File fpath = new File(fname);
 			if(path.canExecute())
-				return path.getPath();
+				return path;
 			else if(hasF && isExe(fpath))
-				return fpath.getPath();
+				return fpath;
 		}
 
 	    for (String dirname : System.getenv("PATH").split(File.pathSeparator)) 
@@ -160,15 +162,15 @@ public class TerminalUtil {
 	    		{
 	    			File[] files = file.getParentFile().listFiles();
 	    			if(FileUtil.containsFile(files, file) && !file.isDirectory())
-	    				return file.getPath();
+	    				return file;
 	    			else if(hasF && FileUtil.containsFile(files, ffile) && !ffile.isDirectory())
-	    				return ffile.getPath();
+	    				return ffile;
 	    		}
 	    	}
 	        if (isExe(file))
-	            return file.getPath();
+	            return file;
 	        else if(hasF && isExe(ffile))
-	        	return ffile.getPath();
+	        	return ffile;
 	    }
 	    
 	    //macOS start here
@@ -178,7 +180,7 @@ public class TerminalUtil {
 	    	{
 	    		File app = new File(root, fname);
 	    		if(isExe(app))
-	    			return app.getPath();
+	    			return app;
 	    	}
 	    }
 	    
