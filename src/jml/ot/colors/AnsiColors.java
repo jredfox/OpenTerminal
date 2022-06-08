@@ -100,4 +100,12 @@ public class AnsiColors {
 		String fg = text == null ? "" : ESC + "[38;2;" + text.getRed() + ";" + text.getGreen() + ";" + text.getBlue() + "m";
 		System.out.println(bg + fg + str + getReset());
 	}
+	
+	/**
+	 * format ANSI escape sequences that you don't see from above. this doesn't support escape codes with arguments such as colors
+	 */
+	public static String formatEsc(int code)
+	{
+		return ESC + "[" + code + "m";
+	}
 }
