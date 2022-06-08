@@ -32,7 +32,7 @@ public class OTMain {
 //			new ProcessBuilder("cmd", "/c", "").inheritIO().start().waitFor();
 			System.out.println("booted:" + OTConstants.userDir);
 			
-			//java pause for non shell terminals like weird linux distros of terminals
+			//java pause for non shell terminals. should be safe to do as OpenTerminal is a seperate process
 			if(System.getProperty("ot.p") != null)
 			{
 				System.out.println("Press ENTER to continue...");

@@ -22,7 +22,8 @@ public class Test {
 //						p.wtMaximized = true;
 //						p.wtFullScreen = true;
 					}
-					return p;
+//					return p;
+					return null;
 				}
 				else if(TerminalUtil.isMac())
 				{

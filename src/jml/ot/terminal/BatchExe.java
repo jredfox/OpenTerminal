@@ -42,12 +42,12 @@ public class BatchExe extends TerminalExe {
 		}
 		else
 		{
-			//more optimized version and contains the java icon on boot like it should always have
+			//more optimized version and contains the java icon on boot like it should always have but the downside is there is no real pause
 			pb = new ProcessBuilder(new String[]
 			{
 				"cmd",
 				OSUtil.getExeAndClose(),
-				"start " + q + this.app.getTitle() + q + " " + OTConstants.java_home + " " + OTConstants.args
+				"start " + q + this.app.getTitle() + q + " " + OTConstants.java_home + (this.app.pause ? " -Dot.p " : " ") + OTConstants.args
 			});
 		}
 		this.run(pb);
