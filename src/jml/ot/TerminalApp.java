@@ -91,7 +91,6 @@ public class TerminalApp {
 	{
 		if(!this.cfgLoaded)
 			this.load();
-		
 		switch(this.terminal)
 		{
 			case "cmd":

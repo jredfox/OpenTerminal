@@ -1,14 +1,13 @@
 package jml.ot;
 
-import java.awt.AWTException;
 import java.io.File;
 import java.io.IOException;
 
 public class RedSands {
 	
-	public static void main(String[] args) throws IOException, AWTException, InterruptedException
+	public static void main(String[] args) throws IOException, InterruptedException
 	{
-		System.out.println(TerminalUtil.findExe("Terminal.app"));
+		System.out.println(TerminalUtil.findExe("cmD"));
 //		while(true)
 //		{
 //			try 

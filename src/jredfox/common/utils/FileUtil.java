@@ -52,5 +52,11 @@ public class FileUtil {
 		return index != -1 && !file.isDirectory() ? name.substring(index + 1) : "";
 	}
 
-
+	public static boolean containsFile(File[] files, File file)
+	{
+		for(File f : files)
+			if(f.equals(file))
+				return true;
+		return false;
+	}
 }

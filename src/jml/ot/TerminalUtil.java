@@ -3,6 +3,8 @@ package jml.ot;
 import java.io.File;
 import java.util.List;
 
+import jredfox.common.os.OSUtil;
+import jredfox.common.utils.FileUtil;
 import jredfox.common.utils.JavaUtil;
 
 public class TerminalUtil {
@@ -126,11 +128,14 @@ public class TerminalUtil {
 		"/System/Library/CoreServices/Applications"
 	};
 	
+	/**
+	 * find executable from path. support for WUP and macOs apps as well as standard with and without extensions paths
+	 */
 	public static String findExe(String name)
 	{
-		String ext = isWindows() ? ".exe" : isMac() ? ".app" : "";//TODO: test macOs and confirm functionality on windows
+		String ext = isWindows() ? ".exe" : isMac() ? ".app" : "";
 		String fname = name.contains(".") ? name : name + ext;
-		boolean hasF = ext.isEmpty();
+		boolean hasF = !ext.isEmpty();
 		
 		//search the full path of the dir before searching env path
 		if(name.contains("/"))
@@ -142,11 +147,24 @@ public class TerminalUtil {
 			else if(hasF && isExe(fpath))
 				return fpath.getPath();
 		}
-		
+
 	    for (String dirname : System.getenv("PATH").split(File.pathSeparator)) 
 	    {
 	        File file = new File(dirname, name);
 	        File ffile = new File(dirname, fname);
+	        
+	    	//Windows 10 WUP support
+	    	if(OSUtil.isWindows())
+	    	{
+	    		if(dirname.contains("WindowsApps"))
+	    		{
+	    			File[] files = file.getParentFile().listFiles();
+	    			if(FileUtil.containsFile(files, file) && !file.isDirectory())
+	    				return file.getPath();
+	    			else if(FileUtil.containsFile(files, ffile) && !file.isDirectory())
+	    				return ffile.getPath();
+	    		}
+	    	}
 	        if (isExe(file))
 	            return file.getPath();
 	        else if(hasF && isExe(ffile))
@@ -154,11 +172,14 @@ public class TerminalUtil {
 	    }
 	    
 	    //macOS start here
-	    for(String root : macAppPaths)
+	    if(OSUtil.isMac())
 	    {
-	    	File app = new File(root, fname);
-	    	if(isExe(app))
-	    		return app.getPath();
+	    	for(String root : macAppPaths)
+	    	{
+	    		File app = new File(root, fname);
+	    		if(isExe(app))
+	    			return app.getPath();
+	    	}
 	    }
 	    
 	    return null;
