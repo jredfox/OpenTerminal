@@ -37,6 +37,7 @@ public class PowerShellExe extends TerminalExe {
 			OTConstants.java_home,
 			"-java_args",
 			q + OTConstants.args.replaceAll(q, "'") + q,
+			q + this.app.pause + q,
 		});
 		this.run(pb);
 	}
@@ -57,6 +58,7 @@ public class PowerShellExe extends TerminalExe {
 		cmd.add(OTConstants.java_home);
 		cmd.add("-java_args");
 		cmd.add(q + OTConstants.args.replaceAll(q, "'") + q);
+		cmd.add(q + this.app.pause + q);
 		return cmd;
 	}
 	

@@ -66,6 +66,7 @@ public class BatchExe extends TerminalExe {
 		cmd.add(profile != null && profile.bg != null ? q + (profile.bg + profile.fg) + q : "-1");//color
 		cmd.add(q + this.app.getTitle() + q);
 		cmd.add(q + (OTConstants.java_home + " " + OTConstants.args).replaceAll("\"", ",") + q);
+		cmd.add(q + this.app.pause + q);
 		return cmd;
 	}
 
@@ -87,7 +88,7 @@ public class BatchExe extends TerminalExe {
 			li.add("IF \"%~4%\" == \"true\" (");
 			li.add("set /p DUMMY=Press ENTER to continue...");
 			li.add(")");
-			li.add("exit ::Work around from a command prompt bug");
+			li.add("exit 0 ::Work around from a command prompt bug");
 			this.makeShell(li);
 		}
 	}

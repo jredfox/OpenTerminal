@@ -7,7 +7,7 @@ public class RedSands {
 	
 	public static void main(String[] args) throws IOException, InterruptedException
 	{
-		System.out.println(TerminalUtil.findExe("cmd.exe"));
+		System.out.println(TerminalUtil.findExe(".exe"));
 //		while(true)
 //		{
 //			try 

@@ -72,6 +72,8 @@ public class TerminalApp {
 	 */
 	public ConsoleHost getConsoleHost()
 	{
+		if(!this.cfgLoaded)
+			this.load();
 		if(this.conHost != null)
 		{
 			switch(this.conHost)
