@@ -161,7 +161,7 @@ public class TerminalUtil {
 	    			File[] files = file.getParentFile().listFiles();
 	    			if(FileUtil.containsFile(files, file) && !file.isDirectory())
 	    				return file.getPath();
-	    			else if(hasF && FileUtil.containsFile(files, ffile) && !file.isDirectory())
+	    			else if(hasF && FileUtil.containsFile(files, ffile) && !ffile.isDirectory())
 	    				return ffile.getPath();
 	    		}
 	    	}
