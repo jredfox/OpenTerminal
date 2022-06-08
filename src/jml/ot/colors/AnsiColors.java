@@ -18,6 +18,15 @@ public class AnsiColors {
 	public static final String HIDE = ESC + "[8m";
 	public static final String STRIKETHROUGH = ESC + "[9m";
 	public static final String UNDERLINE_DOUBLE = ESC + "[21m";
+	/**
+	 * not supported in windows
+	 */
+	public static final String FRAMED = ESC + "[51m";
+	/**
+	 * not supported in windows
+	 */
+	public static final String ENCIRCLED = ESC + "[52m";
+	public static final String OVERLINE = ESC + "[53m";
 	public static String colors = "";
 	private static String winTerm = TerminalUtil.isExeValid("cmd") ? "cmd" : "powershell";
 	

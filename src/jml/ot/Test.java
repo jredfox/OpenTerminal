@@ -52,7 +52,7 @@ public class Test {
 	{
 		AnsiColors.setReset(Color.GRAY, Color.CYAN, false);
 		AnsiColors.println(Color.WHITE, Color.YELLOW, "SUP YELLOW!");
-		AnsiColors.print(Color.BLACK, Color.GREEN, "Classic Green on Black");
+		AnsiColors.print(Color.BLACK, Color.GREEN, AnsiColors.OVERLINE + AnsiColors.UNDERLINE + AnsiColors.ITALIC + "Classic Green on Black");
 		System.out.print("a");
 		System.out.println("b");
 	}
