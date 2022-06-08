@@ -1,6 +1,9 @@
 package jml.ot;
 
+import java.awt.Color;
 import java.io.IOException;
+
+import jml.ot.colors.AnsiColors;
 
 public class Test {
 
@@ -41,6 +44,16 @@ public class Test {
 		}
 //		app.pause = false;
 		OpenTerminal.open(app);
-		System.out.println("launch in:" + (System.currentTimeMillis() - ms) + "ms");
+		printTest();
+//		System.out.println("launch in:" + (System.currentTimeMillis() - ms) + "ms");
+	}
+	
+	public static void printTest()
+	{
+		AnsiColors.setReset(Color.GRAY, Color.CYAN, true);
+		AnsiColors.print(Color.WHITE, Color.YELLOW, "SUP YELLOW!");
+		AnsiColors.print(Color.BLACK, Color.GREEN, "Classic Green on Black");
+		System.out.print("a");
+		System.out.println("b");
 	}
 }

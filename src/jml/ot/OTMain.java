@@ -38,6 +38,7 @@ public class OTMain {
 				System.out.println("Press ENTER to continue...");
 				new Scanner(System.in).nextLine();
 			}
+			Test.printTest();
 		}
 	}
 
