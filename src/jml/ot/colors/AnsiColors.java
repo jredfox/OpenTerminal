@@ -2,9 +2,11 @@ package jml.ot.colors;
 
 import java.awt.Color;
 
+import jml.ot.TerminalUtil;
+
 public class AnsiColors {
 	
-	public static final String ESC = "";
+	public static final String ESC = "\033";
 	private static final String RESET = ESC + "[0m";
 	public static final String BOLD = ESC + "[1m";
 	public static final String DIM = ESC + "[2m";
@@ -17,6 +19,7 @@ public class AnsiColors {
 	public static final String STRIKETHROUGH = ESC + "[9m";
 	public static final String UNDERLINE_DOUBLE = ESC + "[21m";
 	public static String colors = "";
+	private static String winTerm = TerminalUtil.isExeValid("cmd") ? "cmd" : "powershell";
 	
 	static
 	{
@@ -25,13 +28,16 @@ public class AnsiColors {
 	
 	public static void enableCmdColors()
 	{
-		try
+		if(TerminalUtil.isWindows())
 		{
-			new ProcessBuilder(new String[]{"cmd", "/c", "echo | set /p dummyName=[0m"}).inheritIO().start().waitFor();
-		} 
-		catch (Exception e)
-		{
-			e.printStackTrace();
+			try
+			{
+				if(winTerm.equals("cmd"))
+					new ProcessBuilder(new String[]{winTerm, "/c", "echo | set /p dummyName=" + RESET}).inheritIO().start().waitFor();
+				else
+					new ProcessBuilder(new String[]{winTerm, "/c", "Write-Host -NoNewLine " + RESET}).inheritIO().start().waitFor();
+			}
+			catch (Exception e){e.printStackTrace();}
 		}
 	}
 	
@@ -41,6 +47,14 @@ public class AnsiColors {
 	public static String getReset()
 	{
 		return RESET + colors;
+	}
+	
+	/**
+	 * this will return the default ansi escape reset sequence without the colors this will override the entire console app's settings if used
+	 */
+	public static String getNonColoredReset()
+	{
+		return RESET;
 	}
 	
 	public static void setReset(Color background, Color text, boolean cls)
@@ -54,11 +68,11 @@ public class AnsiColors {
 		String fg = ESC + "[38;2;" + text.getRed() + ";" + text.getGreen() + ";" + text.getBlue() + "m";
 		colors = bg + fg + ansiEsq;
 		System.out.print(getReset());
-		if(cls)
+		if(cls && TerminalUtil.isWindows())
 		{
 			try
 			{
-				new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+				new ProcessBuilder(winTerm, "/c", "cls").inheritIO().start().waitFor();
 			}
 			catch (Exception e) {e.printStackTrace();}
 		}

@@ -50,8 +50,8 @@ public class Test {
 	
 	public static void printTest()
 	{
-		AnsiColors.setReset(Color.GRAY, Color.CYAN, true);
-		AnsiColors.print(Color.WHITE, Color.YELLOW, "SUP YELLOW!");
+		AnsiColors.setReset(Color.GRAY, Color.CYAN, false);
+		AnsiColors.println(Color.WHITE, Color.YELLOW, "SUP YELLOW!");
 		AnsiColors.print(Color.BLACK, Color.GREEN, "Classic Green on Black");
 		System.out.print("a");
 		System.out.println("b");
