@@ -13,7 +13,6 @@ import jml.ot.terminal.LinuxCmdTerminalExe;
 import jml.ot.terminal.MacBashExe;
 import jml.ot.terminal.PowerShellExe;
 import jml.ot.terminal.TerminalExe;
-import jml.ot.terminal.TerminologyExe;
 import jml.ot.terminal.TildaTerminalExe;
 import jml.ot.terminal.host.ConsoleHost;
 import jml.ot.terminal.host.WTHost;
@@ -107,8 +106,6 @@ public class TerminalApp {
 			
 			switch(this.terminal)
 			{
-				case "terminology":
-					return new TerminologyExe(this);
 				case "guake":
 					return new GuakeTerminalExe(this);
 				case "tilda":
@@ -118,6 +115,8 @@ public class TerminalApp {
 				case "kgx":
 					return new LinuxCmdTerminalExe(this);
 				case "terminus":
+					return new LinuxCmdTerminalExe(this);
+				case "terminology":
 					return new LinuxCmdTerminalExe(this);
 			}
 			LinuxBashExe bash = new LinuxBashExe(this);
