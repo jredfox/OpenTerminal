@@ -38,6 +38,7 @@ public class Test {
 		{
 			app.terminal = "gnome-terminal";//set's the initial terminal the configuration overrides this from TerminalApp#getTerminalExe called by OpenTerminal#open
 		}
+		app.pause = true;
 		OpenTerminal.open(app);
 		System.out.println("launch in:" + (System.currentTimeMillis() - ms) + "ms");
 	}

@@ -37,6 +37,7 @@ public class PowerShellExe extends TerminalExe {
 			OTConstants.java_home,
 			"-java_args",
 			q + OTConstants.args.replaceAll(q, "'") + q,
+			"-pause",
 			q + this.app.pause + q,
 		});
 		this.run(pb);
@@ -58,6 +59,7 @@ public class PowerShellExe extends TerminalExe {
 		cmd.add(OTConstants.java_home);
 		cmd.add("-java_args");
 		cmd.add(q + OTConstants.args.replaceAll(q, "'") + q);
+		cmd.add("-pause");
 		cmd.add(q + this.app.pause + q);
 		return cmd;
 	}
@@ -71,11 +73,17 @@ public class PowerShellExe extends TerminalExe {
 			li.add("param(");
 			li.add("[Parameter(Mandatory = $true)] $title,");
 			li.add("[Parameter(Mandatory = $true)] $java_home,");
-			li.add("[Parameter(Mandatory = $true)] $java_args");
+			li.add("[Parameter(Mandatory = $true)] $java_args,");
+			li.add("[Parameter(Mandatory = $true)] $pause");
 			li.add(")");
 			li.add("$host.UI.RawUI.WindowTitle = \"$title\"");
 			li.add("$java_args = $java_args.Replace(\"'\", \"\"\"\")");
 			li.add("Start-Process -Wait -NoNewWindow $java_home -ArgumentList $java_args");
+			li.add("if($pause -eq \"true\")");
+			li.add("{");
+			li.add("    Write-Host -NoNewline \"Press ENTER to continue...\"");
+			li.add("    Read-Host");
+			li.add("}");
 			this.makeShell(li);
 		}
 	}
@@ -90,9 +98,10 @@ public class PowerShellExe extends TerminalExe {
 			list.add("[Parameter(Mandatory = $true)] $boot,");
 			list.add("[Parameter(Mandatory = $true)] $title,");
 			list.add("[Parameter(Mandatory = $true)] $java_home,");
-			list.add("[Parameter(Mandatory = $true)] $java_args");
+			list.add("[Parameter(Mandatory = $true)] $java_args,");
+			list.add("[Parameter(Mandatory = $true)] $pause");
 			list.add(")");
-			list.add("start-process powershell -ArgumentList '-ExecutionPolicy', 'Bypass', '-File', \"\"\"$boot\"\"\", '-title', \"\"\"$title\"\"\", '-java_home', \"\"\"$java_home\"\"\", '-java_args', \"\"\"$java_args\"\"\"");
+			list.add("start-process powershell -ArgumentList '-ExecutionPolicy', 'Bypass', '-File', \"\"\"$boot\"\"\", '-title', \"\"\"$title\"\"\", '-java_home', \"\"\"$java_home\"\"\", '-java_args', \"\"\"$java_args\"\"\", '-pause', \"\"\"$pause\"\"\"");
 			this.makeShell(list, start_ps);
 		}
 	}
