@@ -159,7 +159,6 @@ public class MacBashExe extends TerminalExe {
 		IOUtils.makeExe(scpt);
 	}
 
-	//TODO: test to see if not running osascript by itself without the terminal works on older macOs versions
 	@Override
 	public void run() 
 	{
@@ -182,8 +181,10 @@ public class MacBashExe extends TerminalExe {
 	{
 		String q = TerminalUtil.getQuote();
 		String command = (OTConstants.java_home + " " + OTConstants.args).replaceAll(q, "\\\\" + q);
-		String bash = "bash " + q + this.shell.getPath() + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + closeMeScpt.getPath() + q + " " + q + System.currentTimeMillis() + q;
+		String bash = q + this.shell.getPath() + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + closeMeScpt.getPath() + q + " " + q + System.currentTimeMillis() + q;
 		List<String> li = new ArrayList<>();
+		li.add("bash");
+		li.add("-c");
 		li.add(bash);
 		return li;
 	}
