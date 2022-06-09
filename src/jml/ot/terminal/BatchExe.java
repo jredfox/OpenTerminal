@@ -24,6 +24,7 @@ public class BatchExe extends TerminalExe {
 		String q = OSUtil.getQuote();
 		ProcessBuilder pb = null;
 		Profile profile = this.app.getProfile();
+		String colors = this.getColors(profile);
 		if(profile != null)
 		{
 			pb = new ProcessBuilder(new String[]
@@ -34,9 +35,9 @@ public class BatchExe extends TerminalExe {
 				"\"\"",//app name doesn't work with the batch boot shell for some reason
 				"call",
 				q + this.shell.getPath() + q,//path to the boot shell
-				profile != null && profile.bg != null ? q + (profile.bg + profile.fg) + q : "-1",//color
+				profile != null && profile.bg != null ? q + this.getColors(profile) + q : q + "" + q,//color
 				q + this.app.getTitle() + q,
-				q + (OTConstants.java_home + " " + OTConstants.args).replaceAll("\"", ",") + q,
+				q + (OTConstants.java_home + " -Dot.ansi.colors=" + q + colors + q + " " + OTConstants.args).replaceAll("\"", ",") + q,
 				q + this.app.pause + q
 			});
 		}
@@ -58,40 +59,42 @@ public class BatchExe extends TerminalExe {
 	{
 		String q = OSUtil.getQuote();
 		Profile profile = this.app.getProfile();
+		String colors = this.getColors(profile);
 		List<String> cmd = new ArrayList<>();
 		cmd.add("cmd");
 		cmd.add(OSUtil.getExeAndClose());
 		cmd.add("call");
 		cmd.add(q + this.shell.getPath() + q);//path to the boot shell
-		cmd.add(profile != null && profile.bg != null ? q + (profile.bg + profile.fg) + q : "-1");//color
+		cmd.add(profile != null && profile.bg != null ? q + this.getColors(profile).replace(";", "$") + q : "");
 		cmd.add(q + this.app.getTitle() + q);
-		cmd.add(q + (OTConstants.java_home + " " + OTConstants.args).replaceAll("\"", ",") + q);
+		cmd.add(q + (OTConstants.java_home + " -Dot.ansi.colors=" + q + colors.replace(";", "$") + q + " " + OTConstants.args).replaceAll("\"", ",") + q);
 		cmd.add(q + this.app.pause + q);
 		return cmd;
 	}
 
-	@Override
-	public void createShell() throws IOException 
-	{
-		if (!this.shell.exists()) 
-		{
-			List<String> li = new ArrayList<>();
-			li.add("@ECHO OFF");
-			li.add("cls ::hotfix for Windows Terminal");
-			li.add("IF NOT \"%~1%\" == \"-1\" (");
-			li.add("   color %~1%");
-			li.add(")");
-			li.add("title %~2%");
-			li.add("set boot=%~3");
-			li.add("set boot=%boot:,=^\"% ::RE-MAP the boot command to double quotes");
-			li.add("call %boot%");
-			li.add("IF \"%~4%\" == \"true\" (");
-			li.add("set /p DUMMY=Press ENTER to continue...");
-			li.add(")");
-			li.add("exit 0 ::Work around from a command prompt bug");
-			this.makeShell(li);
-		}
-	}
+    @Override
+    public void createShell() throws IOException 
+    {
+        if (!this.shell.exists()) 
+        {
+            List<String> li = new ArrayList<>();
+            li.add("@Echo off\n"
+                    + "set c=%~1%\n"
+                    + "IF NOT \"%c%\" == \"\" (\n"
+                    + "  echo=%c:$=;%\n"
+                    + ")\n"
+                    + "cls ::hotfix for Windows Terminal\n"
+                    + "title %~2%\n"
+                    + "set boot=%~3\n"
+                    + "set boot=%boot:,=^\"% ::RE-MAP the boot command to double quotes\n"
+                    + "call %boot%\n"
+                    + "IF \"%~4%\" == \"true\" (\n"
+                    + "set /p DUMMY=Press ENTER to continue...\n"
+                    + ")\n"
+                    + "exit 0 ::Work around from a command prompt bug");
+            this.makeShell(li);
+        }
+    }
 
 	@Override
 	public void genStart() throws IOException 

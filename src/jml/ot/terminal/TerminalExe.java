@@ -6,6 +6,8 @@ import java.util.List;
 
 import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
+import jml.ot.TerminalApp.Profile;
+import jml.ot.colors.AnsiColors;
 import jredfox.common.io.IOUtils;
 
 /**
@@ -49,7 +51,7 @@ public abstract class TerminalExe {
 			this.genStart();
 			this.createShell();
 			this.printPB(pb);
-			pb.directory(OTConstants.userDir).start();
+			pb.directory(OTConstants.userDir).inheritIO().start();
 		}
 		catch(Exception e)
 		{
@@ -62,6 +64,11 @@ public abstract class TerminalExe {
 	 * delete your shells and startup scripts here. this happens when the applications fails to boot
 	 */
 	public abstract void cleanup();
+	
+	public String getColors(Profile p)
+	{
+		return p != null ? AnsiColors.formatColor(p.bg, p.fg, p.ansiEsc) : null;
+	}
 	
 	public void makeShell(List<String> li) throws IOException 
 	{

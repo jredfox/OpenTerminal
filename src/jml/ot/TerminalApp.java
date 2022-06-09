@@ -1,5 +1,6 @@
 package jml.ot;
 
+import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -178,8 +179,9 @@ public class TerminalApp {
 	
 	public static class Profile
 	{
-		public String bg;
-		public String fg;
+		public Color bg;
+		public Color fg;
+		public String ansiEsc;
 		public String wtTab;//WT Tab color
 		public String wtScheme;//WT color scheme
 		public boolean wtFullScreen;
@@ -202,10 +204,10 @@ public class TerminalApp {
 			
 		}
 		
-		public Profile(String b, String f)
+		public Profile(Color b, Color t)
 		{
 			this.bg = b;
-			this.fg = f;
+			this.fg = t;
 		}
 		
 		/**

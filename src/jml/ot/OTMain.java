@@ -3,7 +3,14 @@ package jml.ot;
 import java.io.IOException;
 import java.util.Scanner;
 
+import jml.ot.colors.AnsiColors;
+
 public class OTMain {
+	
+	static
+	{
+		AnsiColors.colors.length();//enforce ansi colors are loaded before executing the main method
+	}
 	
 	/**
 	 * call this main method directly using "java -jar OpenTerminal.jar" or "path/To/JavaRuntime/bin/java -jar OpenTerminal.jar" for the same JRE enforced on use everytime
@@ -30,8 +37,8 @@ public class OTMain {
 		{
 //			new ProcessBuilder("cmd", "/c", "color 2f").inheritIO().start().waitFor();
 //			new ProcessBuilder("cmd", "/c", "").inheritIO().start().waitFor();
-//			System.out.println("booted:" + OTConstants.userDir);
-			Test.printTest();
+			System.out.println("booted:" + OTConstants.userDir);
+//			Test.printTest();
 			
 			//java pause for non shell terminals. should be safe to do as OpenTerminal is a seperate process
 			if(System.getProperty("ot.p") != null)

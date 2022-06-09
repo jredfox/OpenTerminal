@@ -17,7 +17,8 @@ public class Test {
 			{
 				if(TerminalUtil.isWindows())
 				{
-					Profile p = new Profile("3", "f");
+					Profile p = new Profile(Color.CYAN, Color.WHITE);
+					p.ansiEsc = AnsiColors.UNDERLINE;
 					if(this.terminal.equals("powershell"))
 					{
 						p.wtScheme = "Campbell Powershell";
@@ -25,8 +26,8 @@ public class Test {
 //						p.wtMaximized = true;
 //						p.wtFullScreen = true;
 					}
-//					return p;
-					return null;
+					return p;
+//					return null;
 				}
 				else if(TerminalUtil.isMac())
 				{
@@ -50,7 +51,7 @@ public class Test {
 	
 	public static void printTest()
 	{
-		AnsiColors.setReset(Color.GRAY, Color.CYAN, false);
+//		AnsiColors.setReset(Color.GRAY, Color.CYAN, true);
 		AnsiColors.println(Color.WHITE, Color.YELLOW, "SUP YELLOW!");
 		AnsiColors.print(Color.BLACK, Color.GREEN, AnsiColors.OVERLINE + AnsiColors.UNDERLINE + AnsiColors.ITALIC + "Classic Green on Black");
 		System.out.print("a");

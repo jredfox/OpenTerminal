@@ -27,24 +27,25 @@ public class AnsiColors {
 	 */
 	public static final String ENCIRCLED = ESC + "[52m";
 	public static final String OVERLINE = ESC + "[53m";
-	public static String colors = "";
+	public static String colors = System.getProperty("ot.ansi.colors");
 	private static String winTerm = TerminalUtil.isExeValid("cmd") ? "cmd" : "powershell";
 	
 	static
 	{
+		colors = colors == null ? "" : colors.replace("$", ";");
 		enableCmdColors();
 	}
 	
 	public static void enableCmdColors()
 	{
-		if(TerminalUtil.isWindows())
+		if(System.console() != null && TerminalUtil.isWindows())
 		{
 			try
 			{
 				if(winTerm.equals("cmd"))
-					new ProcessBuilder(new String[]{winTerm, "/c", "echo | set /p dummyName=" + RESET}).inheritIO().start().waitFor();
+					new ProcessBuilder(new String[]{winTerm, "/c", "echo | set /p dummyName=" + getReset() + " & cls"}).inheritIO().start().waitFor();
 				else
-					new ProcessBuilder(new String[]{winTerm, "/c", "Write-Host -NoNewLine " + RESET}).inheritIO().start().waitFor();
+					new ProcessBuilder(new String[]{winTerm, "/c", "Write-Host -NoNewLine " + getReset() + " & cls"}).inheritIO().start().waitFor();
 			}
 			catch (Exception e){e.printStackTrace();}
 		}
@@ -71,11 +72,9 @@ public class AnsiColors {
 		setReset(background, text, "", cls);
 	}
 	
-	public static void setReset(Color background, Color text, String ansiEsq, boolean cls)
+	public static void setReset(Color background, Color text, String ansiEsc, boolean cls)
 	{
-		String bg = ESC + "[48;2;" + background.getRed() + ";" + background.getGreen() + ";" + background.getBlue() + "m";
-		String fg = ESC + "[38;2;" + text.getRed() + ";" + text.getGreen() + ";" + text.getBlue() + "m";
-		colors = bg + fg + ansiEsq;
+		colors = formatColor(background, text, ansiEsc);
 		System.out.print(getReset());
 		if(cls && TerminalUtil.isWindows())
 		{
@@ -89,16 +88,20 @@ public class AnsiColors {
 	
 	public static void print(Color background, Color text, String str)
 	{
-		String bg = background == null ? "" : ESC + "[48;2;" + background.getRed() + ";" + background.getGreen() + ";" + background.getBlue() + "m";
-		String fg = text == null ? "" : ESC + "[38;2;" + text.getRed() + ";" + text.getGreen() + ";" + text.getBlue() + "m";
-		System.out.print(bg + fg + str + getReset());
+		System.out.print(formatColor(background, text, "") + str + getReset());
 	}
 	
 	public static void println(Color background, Color text, String str)
 	{
-		String bg = background == null ? "" : ESC + "[48;2;" + background.getRed() + ";" + background.getGreen() + ";" + background.getBlue() + "m";
-		String fg = text == null ? "" : ESC + "[38;2;" + text.getRed() + ";" + text.getGreen() + ";" + text.getBlue() + "m";
-		System.out.println(bg + fg + str + getReset());
+		System.out.println(formatColor(background, text, str) + getReset());
+	}
+	
+	public static String formatColor(Color bg, Color text, String ansiEsq)
+	{
+		String b = bg == null ? "" : ESC + "[48;2;" + bg.getRed() + ";" + bg.getGreen() + ";" + bg.getBlue() + "m";
+		String f = text == null ? "" : ESC + "[38;2;" + text.getRed() + ";" + text.getGreen() + ";" + text.getBlue() + "m";
+		String a = ansiEsq == null ? "" : ansiEsq;
+		return b + f + a;
 	}
 	
 	/**
