@@ -40,14 +40,16 @@ public class AnsiColors {
 	{
 		if(System.console() != null && TerminalUtil.isWindows())
 		{
+			String cls = " & cls";
 			try
 			{
 				if(winTerm.equals("cmd"))
-					new ProcessBuilder(new String[]{winTerm, "/c", "echo | set /p dummyName=" + getReset() + " & cls"}).inheritIO().start().waitFor();
+					new ProcessBuilder(new String[]{winTerm, "/c", "echo | set /p dummyName=" + getReset() + cls}).inheritIO().start().waitFor();
 				else
-					new ProcessBuilder(new String[]{winTerm, "/c", "Write-Host -NoNewLine " + getReset() + " & cls"}).inheritIO().start().waitFor();
+					new ProcessBuilder(new String[]{winTerm, "/c", "Write-Host -NoNewLine " + getReset() + cls}).inheritIO().start().waitFor();
 			}
 			catch (Exception e){e.printStackTrace();}
+			System.out.println(colors.replace(ESC, "ESC"));
 		}
 	}
 	

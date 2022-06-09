@@ -9,7 +9,7 @@ public class OTMain {
 	
 	static
 	{
-		AnsiColors.colors.length();//enforce ansi colors are loaded before executing the main method
+		AnsiColors.enableCmdColors();
 	}
 	
 	/**
@@ -38,7 +38,7 @@ public class OTMain {
 //			new ProcessBuilder("cmd", "/c", "color 2f").inheritIO().start().waitFor();
 //			new ProcessBuilder("cmd", "/c", "").inheritIO().start().waitFor();
 			System.out.println("booted:" + OTConstants.userDir);
-//			Test.printTest();
+			Test.printTest();
 			
 			//java pause for non shell terminals. should be safe to do as OpenTerminal is a seperate process
 			if(System.getProperty("ot.p") != null)

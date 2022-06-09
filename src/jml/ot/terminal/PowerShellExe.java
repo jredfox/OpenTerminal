@@ -22,6 +22,7 @@ public class PowerShellExe extends TerminalExe {
 	public void run() 
 	{
 		String q = TerminalUtil.getQuote();
+		String colors = this.getColors(this.app.getProfile());
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
 			"powershell",
@@ -31,12 +32,14 @@ public class PowerShellExe extends TerminalExe {
 			q + start_ps + q,
 			"-boot",
 			q + this.shell + q,
+			"-colors",
+			q + colors + q,
 			"-title",
 			q + this.app.getTitle() + q,
 			"-java_home",
 			OTConstants.java_home,
 			"-java_args",
-			q + OTConstants.args.replaceAll(q, "'") + q,
+			q + "-Dot.ansi.colors=" + q + colors + q + " " + OTConstants.args.replaceAll(q, "'") + q,
 			"-pause",
 			q + this.app.pause + q,
 		});
@@ -47,64 +50,73 @@ public class PowerShellExe extends TerminalExe {
 	public List<String> getBootCmd() 
 	{
 		String q = TerminalUtil.getQuote();
+		String q2 = "'";
+		String colors = this.getColors(this.app.getProfile()).replace(";", "$");
 		List<String> cmd = new ArrayList<>();
 		cmd.add("powershell");
 		cmd.add("-ExecutionPolicy");
 		cmd.add("Bypass");
 		cmd.add("-File");
 		cmd.add(q + this.shell + q);
+		cmd.add("-colors");
+		cmd.add(q + colors + q);
 		cmd.add("-title");
 		cmd.add(q + this.app.getTitle() + q);
 		cmd.add("-java_home");
 		cmd.add(OTConstants.java_home);
 		cmd.add("-java_args");
-		cmd.add(q + OTConstants.args.replaceAll(q, "'") + q);
+		cmd.add(q + "-Dot.ansi.colors=" + q2 + colors + q2 + " " + OTConstants.args.replaceAll(q, q2) + q);
 		cmd.add("-pause");
 		cmd.add(q + this.app.pause + q);
 		return cmd;
 	}
 	
-	@Override
-	public void createShell() throws IOException
-	{
-		if(!this.shell.exists())
-		{
-			List<String> li = new ArrayList<>();
-			li.add("param(");
-			li.add("[Parameter(Mandatory = $true)] $title,");
-			li.add("[Parameter(Mandatory = $true)] $java_home,");
-			li.add("[Parameter(Mandatory = $true)] $java_args,");
-			li.add("[Parameter(Mandatory = $true)] $pause");
-			li.add(")");
-			li.add("$host.UI.RawUI.WindowTitle = \"$title\"");
-			li.add("$java_args = $java_args.Replace(\"'\", \"\"\"\")");
-			li.add("Start-Process -Wait -NoNewWindow $java_home -ArgumentList $java_args");
-			li.add("if($pause -eq \"true\")");
-			li.add("{");
-			li.add("    Write-Host -NoNewline \"Press ENTER to continue...\"");
-			li.add("    Read-Host");
-			li.add("}");
-			this.makeShell(li);
-		}
-	}
+    @Override
+    public void createShell() throws IOException
+    {
+        if(!this.shell.exists())
+        {
+            List<String> li = new ArrayList<>();
+            li.add("param(\n"
+                    + "[Parameter(Mandatory = $true)] $colors,\n"
+                    + "[Parameter(Mandatory = $true)] $title,\n"
+                    + "[Parameter(Mandatory = $true)] $java_home,\n"
+                    + "[Parameter(Mandatory = $true)] $java_args,\n"
+                    + "[Parameter(Mandatory = $true)] $pause\n"
+                    + ")\n"
+                    + "$colors = $colors.Replace(\"$\", \";\")\n"
+                    + "Write-Host -NoNewLine \"$colors\"\n"
+                    + "cls\n"
+                    + "$host.UI.RawUI.WindowTitle = \"$title\"\n"
+                    + "$java_args = $java_args.Replace(\"'\", \"\"\"\")\n"
+                    + "Start-Process -Wait -NoNewWindow $java_home -ArgumentList $java_args\n"
+                    + "if($pause -eq \"true\")\n"
+                    + "{\n"
+                    + "    Write-Host -NoNewline (\"$colors\" + \"Press ENTER to continue...\")\n"
+                    + "    Read-Host\n"
+                    + "}");
+            this.makeShell(li);
+        }
+    }
 
-	@Override
-	public void genStart() throws IOException 
-	{
-		if (!start_ps.exists())
-		{
-			List<String> list = new ArrayList<>();
-			list.add("param(");
-			list.add("[Parameter(Mandatory = $true)] $boot,");
-			list.add("[Parameter(Mandatory = $true)] $title,");
-			list.add("[Parameter(Mandatory = $true)] $java_home,");
-			list.add("[Parameter(Mandatory = $true)] $java_args,");
-			list.add("[Parameter(Mandatory = $true)] $pause");
-			list.add(")");
-			list.add("start-process powershell -ArgumentList '-ExecutionPolicy', 'Bypass', '-File', \"\"\"$boot\"\"\", '-title', \"\"\"$title\"\"\", '-java_home', \"\"\"$java_home\"\"\", '-java_args', \"\"\"$java_args\"\"\", '-pause', \"\"\"$pause\"\"\"");
-			this.makeShell(list, start_ps);
-		}
-	}
+    @Override
+    public void genStart() throws IOException 
+    {
+        if (!start_ps.exists())
+        {
+            List<String> list = new ArrayList<>();
+            list.add("param(\n"
+                    + "[Parameter(Mandatory = $true)] $boot,\n"
+                    + "[Parameter(Mandatory = $true)] $colors,\n"
+                    + "[Parameter(Mandatory = $true)] $title,\n"
+                    + "[Parameter(Mandatory = $true)] $java_home,\n"
+                    + "[Parameter(Mandatory = $true)] $java_args,\n"
+                    + "[Parameter(Mandatory = $true)] $pause\n"
+                    + ")\n"
+                    + "start-process powershell -ArgumentList '-ExecutionPolicy', 'Bypass', '-File', \"\"\"$boot\"\"\", '-colors', \"\"\"$colors\"\"\", '-title', \"\"\"$title\"\"\", '-java_home', \"\"\"$java_home\"\"\", '-java_args', \"\"\"$java_args\"\"\", '-pause', \"\"\"$pause\"\"\"");
+            this.makeShell(list, start_ps);
+        }
+    }
 
 	@Override
 	public void cleanup()

@@ -67,7 +67,7 @@ public abstract class TerminalExe {
 	
 	public String getColors(Profile p)
 	{
-		return p != null ? AnsiColors.formatColor(p.bg, p.fg, p.ansiEsc) : null;
+		return p != null ? AnsiColors.formatColor(p.bg, p.fg, p.ansiEsc) : "";
 	}
 	
 	public void makeShell(List<String> li) throws IOException 
