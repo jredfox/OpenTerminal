@@ -9,7 +9,7 @@ public class OTMain {
 	
 	static
 	{
-		AnsiColors.enableCmdColors();
+		AnsiColors.colors.length();
 	}
 	
 	/**
