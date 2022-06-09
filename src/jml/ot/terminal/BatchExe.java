@@ -35,7 +35,7 @@ public class BatchExe extends TerminalExe {
 				"\"\"",//app name doesn't work with the batch boot shell for some reason
 				"call",
 				q + this.shell.getPath() + q,//path to the boot shell
-				profile != null && profile.bg != null ? q + this.getColors(profile) + q : q + "" + q,//color
+				profile != null && profile.bg != null ? q + colors + q : q + "" + q,//color
 				q + this.app.getTitle() + q,
 				q + (OTConstants.java_home + " -Dot.ansi.colors=" + q + colors + q + " " + OTConstants.args).replaceAll("\"", ",") + q,
 				q + this.app.pause + q
@@ -59,15 +59,15 @@ public class BatchExe extends TerminalExe {
 	{
 		String q = OSUtil.getQuote();
 		Profile profile = this.app.getProfile();
-		String colors = this.getColors(profile);
+		String colors = this.getColors(profile).replace(";", "$");
 		List<String> cmd = new ArrayList<>();
 		cmd.add("cmd");
 		cmd.add(OSUtil.getExeAndClose());
 		cmd.add("call");
 		cmd.add(q + this.shell.getPath() + q);//path to the boot shell
-		cmd.add(profile != null && profile.bg != null ? q + this.getColors(profile).replace(";", "$") + q : "");
+		cmd.add(profile != null && profile.bg != null ? q + colors + q : "");
 		cmd.add(q + this.app.getTitle() + q);
-		cmd.add(q + (OTConstants.java_home + " -Dot.ansi.colors=" + q + colors.replace(";", "$") + q + " " + OTConstants.args).replaceAll("\"", ",") + q);
+		cmd.add(q + (OTConstants.java_home + " -Dot.ansi.colors=" + q + colors + q + " " + OTConstants.args).replaceAll("\"", ",") + q);
 		cmd.add(q + this.app.pause + q);
 		return cmd;
 	}
