@@ -235,6 +235,10 @@ public class AnsiColors {
 			setColorMode(TermColors.ANSI4BIT);
 			return;
 		}
+		if(TerminalUtil.windows_terminals.contains(terminal))
+		{
+			setColorMode(TermColors.TRUE_COLOR);//All windows terminals since they supported color support true color
+		}
 		//TODO: ICP to get the $TERMCOLOR and $TERM in case $TERMCOLOR is empty
 	}
 }
