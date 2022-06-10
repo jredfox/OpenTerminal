@@ -1,22 +1,24 @@
-parsible properties OOP proper
-openterminal.programArgs
-openterminal.jvmArgs
-instantiation proper of TerminalApp on reboot
-reboot
-wrapper for hard pause fix
+Boot:
+Fix bash boot
+Import profile dynamically macos
+Vala terminal not working
+print boot colors and add the java argument for the default color(macOs, linux)
+Tell host using icp the updated colorterm
+Tell terminal to update color via packets
+Tell terminal to update color mode via packets just in case someone has support for a buggy terminal
+Support iterm
 
-all TODO:
-wrap
-custom jvm args pre-determined from file
-finish all todo flags
-macOs
+Get it working:
+re-direct out err and in using network java ICP
+- get shutdown to cleanly work if the host or java app shuts down (PID lib JNI required)
+- get wrapped arguments before executing jar for wrapped version
 
-Different app support:
-javaw = no support turns into java command as javaw is the same app command without the console
-support javaws java web start re-launching that with the console window open
-support java applets with an applet viewer #appletviewer is the command instead of java
+Coloring & custom shells:
+- colors for 4bit 8bit and rgb as well as custom ansi formatting as default formats
+- wt profiles
 
-Lib Loader:
-have wrapper to ship java.class.path in it
-have jar in jar extractor add to java.class.path
-update openterminal to have an embedded version of this
+Shutdown:
+- on signal close per pos{win, linux, mac} has proper shutdown hooks and handling. for signals like sigterm and kill it will require a custom shutdown thread
+
+Optional:
+- java console (jframe) complete control can add all the features I want and no need for seperate processes

@@ -8,7 +8,6 @@ todo OpenTerminal 1.0.0:
 - fix macOs
 - test linux
 - fix jarInJarLoader issue
-- fix scrolling issue
 - close hooks (piped)
 - prevent control + c from shutting down the terminal on windows it's a stupid function users will try and copy something and it shuts down instead
 - singleton apps
