@@ -30,9 +30,15 @@ public class AnsiColors {
 	public static String colors = System.getProperty("ot.ansi.colors");
 	private static String winTerm = TerminalUtil.isExeValid("cmd") ? "cmd" : "powershell";
 	
+	//XTERM COLORS STARTS HERE
+	public static final TermColors BITS = TermColors.XTERM_16;
+	public static final boolean hasRGB = BITS == TermColors.TRUE_COLOR;
+	public static final Palette picker = new Palette();
+	
 	static
 	{
 		colors = colors == null ? "" : colors.replace("$", ";");
+		parsePalette();
 		enableCmdColors();
 	}
 	
@@ -53,6 +59,18 @@ public class AnsiColors {
 		}
 	}
 	
+	public static void parsePalette() 
+	{
+		try
+		{
+			picker.parse(AnsiColors.class.getClassLoader().getResourceAsStream(BITS == TermColors.XTERM_16 ? "resources/jml/ot/colors/xterm-16.csv" : "resources/jml/ot/colors/xterm-256.csv"));
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * get the reset ansi esq for the whole program. doing esq[0m hard coded will cause the entire app to be reset back to default formating no additional styling
 	 */
@@ -98,19 +116,62 @@ public class AnsiColors {
 		System.out.println(formatColor(background, text, str) + getReset());
 	}
 	
+	/**
+	 * supports WIP: xterm-16, xterm-256 and true colors
+	 */
 	public static String formatColor(Color bg, Color text, String ansiEsq)
 	{
-		String b = bg == null ? "" : ESC + "[48;2;" + bg.getRed() + ";" + bg.getGreen() + ";" + bg.getBlue() + "m";
-		String f = text == null ? "" : ESC + "[38;2;" + text.getRed() + ";" + text.getGreen() + ";" + text.getBlue() + "m";
-		String a = ansiEsq == null ? "" : ansiEsq;
-		return b + f + a;
+		switch(BITS)
+		{
+			case TRUE_COLOR:
+			{
+				String b = bg == null ? "" : ESC + "[48;2;" + bg.getRed() + ";" + bg.getGreen() + ";" + bg.getBlue() + "m";
+				String f = text == null ? "" : ESC + "[38;2;" + text.getRed() + ";" + text.getGreen() + ";" + text.getBlue() + "m";
+				String a = ansiEsq == null ? "" : ansiEsq;
+				return b + f + a;
+			}
+			case XTERM_256:
+			{
+				String b = bg == null ? "" : ESC + "[48;5;" + picker.pickColor(bg).code + "m";
+				String f = text == null ? "" : ESC + "[38;5;" + picker.pickColor(text).code + "m";
+				String a = ansiEsq == null ? "" : ansiEsq;
+				return b + f + a;
+			}
+			case XTERM_16:
+			{
+				String b = bg == null ? "" : ESC + "[" + getANSI4BitColor((byte)picker.pickColor(bg).code, true) + "m";
+				String f = text == null ? "" : ESC + "[" + getANSI4BitColor((byte)picker.pickColor(text).code, false) + "m";
+				String a = ansiEsq == null ? "" : ansiEsq;
+				return b + f + a;
+			}
+			default:
+				return null;
+		}
 	}
 	
+	/**
+	 * @param code 0-15
+	 * @param background(boolean)
+	 * @return the actual ANSI ESC code you need to use for that specific 4 bit color
+	 */
+	public static int getANSI4BitColor(byte code, boolean bg) 
+	{
+		int bgAdd = bg ? 10 : 0;//the variable to add to the some of the color code background is +10
+		return code + (code < 8 ? 30 : 82) + bgAdd;//+30 as the offset ansi index. starting at the 8th code it has to switch to the next start of ANSI colors
+	}
+
 	/**
 	 * format ANSI escape sequences that you don't see from above. this doesn't support escape codes with arguments such as colors
 	 */
 	public static String formatEsc(int code)
 	{
 		return ESC + "[" + code + "m";
+	}
+	
+	public static enum TermColors
+	{
+		XTERM_16(),//16 different colors for lazy coders/ scripters not knowing RGB
+		XTERM_256(),//one byte colors (0-255) legacy
+		TRUE_COLOR()//RGB 24 bit standard colors with each color having 8 bits(0-255)
 	}
 }

@@ -8,8 +8,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
-import jredfox.common.os.OSUtil;
-import jredfox.common.thread.ShutdownThread;
+import jml.ot.OpenTerminal;
+import jml.ot.TerminalUtil;
 
 public class JREUtil {
 	
@@ -20,7 +20,7 @@ public class JREUtil {
 		System.setProperty("runnables.jar", getFileFromClass(getMainClass()).getPath());
 		if(System.getProperty("user.appdata") == null)
 		{
-			System.setProperty("user.appdata", OSUtil.getAppData().getPath());
+			System.setProperty("user.appdata", TerminalUtil.getAppData().getPath());
 		}
 		JREUtil.patchDir();//patch os's screwing up initial directory untested, patch macOs java launcher returning junk //TODO: test make sure it works
 	}
@@ -42,7 +42,7 @@ public class JREUtil {
 		String dir = System.getProperty("user.dir");
 		String tmp = System.getProperty("java.io.tmpdir");
 		if(dir.contains(tmp) && !dir.startsWith(tmp))
-			setUserDir(OSUtil.isLinux() ? new File(System.getProperty("user.home")) : new File(System.getProperty("runnables.jar")).getParentFile());
+			setUserDir(TerminalUtil.isLinux() ? new File(System.getProperty("user.home")) : new File(System.getProperty("runnables.jar")).getParentFile());
 	}
 
 	/**
@@ -158,15 +158,6 @@ public class JREUtil {
 			t.printStackTrace();
 		}
 		return null;
-	}
-	
-	/**
-	 * NOTE: this isn't a shutdown event to prevent shutdown only a hook into the shutdown events. 
-	 * That would be app specific this is jvm program (non app) specific which works for both
-	 */
-	public static void addShutdownThread(ShutdownThread sht)
-	{
-		throw new RuntimeException("Unsupported Check back in a future version!");
 	}
 	
 	/**

@@ -357,4 +357,9 @@ public class JavaUtil {
 		return builder.toString();
 	}
 
+	public static String toWhiteSpaced(String s)
+	{
+		return s.replaceAll("\\s+", "");
+	}
+
 }

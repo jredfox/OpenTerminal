@@ -3,7 +3,6 @@ package jml.ot;
 import java.io.File;
 import java.util.List;
 
-import jredfox.common.os.OSUtil;
 import jredfox.common.utils.FileUtil;
 import jredfox.common.utils.JavaUtil;
 
@@ -156,7 +155,7 @@ public class TerminalUtil {
 	        File ffile = new File(dirname, fname);
 	        
 	    	//Windows 10 WUP support
-	    	if(OSUtil.isWindows())
+	    	if(TerminalUtil.isWindows())
 	    	{
 	    		if(dirname.contains("WindowsApps"))
 	    		{
@@ -174,7 +173,7 @@ public class TerminalUtil {
 	    }
 	    
 	    //macOS start here
-	    if(OSUtil.isMac())
+	    if(TerminalUtil.isMac())
 	    {
 	    	for(String root : macAppPaths)
 	    	{

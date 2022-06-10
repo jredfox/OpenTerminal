@@ -9,7 +9,6 @@ import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
 import jml.ot.TerminalApp.Profile;
 import jml.ot.TerminalUtil;
-import jredfox.common.os.OSUtil;
 
 public class BatchExe extends TerminalExe {
 
@@ -21,7 +20,7 @@ public class BatchExe extends TerminalExe {
 	@Override
 	public void run()
 	{
-		String q = OSUtil.getQuote();
+		String q = TerminalUtil.getQuote();
 		ProcessBuilder pb = null;
 		Profile profile = this.app.getProfile();
 		String colors = this.getColors(profile);
@@ -47,7 +46,7 @@ public class BatchExe extends TerminalExe {
 			pb = new ProcessBuilder(new String[]
 			{
 				"cmd",
-				OSUtil.getExeAndClose(),
+				TerminalUtil.getExeAndClose(),
 				"start " + q + this.app.getTitle() + q + " " + OTConstants.java_home + (this.app.pause ? " -Dot.p " : " ") + OTConstants.args
 			});
 		}
@@ -57,12 +56,12 @@ public class BatchExe extends TerminalExe {
 	@Override
 	public List<String> getBootCmd()
 	{
-		String q = OSUtil.getQuote();
+		String q = TerminalUtil.getQuote();
 		Profile profile = this.app.getProfile();
 		String colors = this.getColors(profile).replace(";", "$");
 		List<String> cmd = new ArrayList<>();
 		cmd.add("cmd");
-		cmd.add(OSUtil.getExeAndClose());
+		cmd.add(TerminalUtil.getExeAndClose());
 		cmd.add("call");
 		cmd.add(q + this.shell.getPath() + q);//path to the boot shell
 		cmd.add(profile != null && profile.bg != null ? q + colors + q : "");
