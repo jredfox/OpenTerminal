@@ -31,7 +31,7 @@ public class AnsiColors {
 	private static String winTerm = TerminalUtil.isExeValid("cmd") ? "cmd" : "powershell";
 	
 	//XTERM COLORS STARTS HERE
-	public static final TermColors BITS = TermColors.XTERM_16;
+	public static final TermColors BITS = TermColors.XTERM_256;
 	public static final boolean hasRGB = BITS == TermColors.TRUE_COLOR;
 	public static final Palette picker = new Palette();
 	
@@ -117,7 +117,7 @@ public class AnsiColors {
 	}
 	
 	/**
-	 * supports WIP: xterm-16, xterm-256 and true colors
+	 * supports xterm-16, xterm-256 and true colors
 	 */
 	public static String formatColor(Color bg, Color text, String ansiEsq)
 	{
@@ -150,11 +150,11 @@ public class AnsiColors {
 	}
 	
 	/**
-	 * @param code 0-15
+	 * @param code 0-15 4bit color
 	 * @param background(boolean)
 	 * @return the actual ANSI ESC code you need to use for that specific 4 bit color
 	 */
-	public static int getANSI4BitColor(byte code, boolean bg) 
+	public static int getANSI4BitColor(byte code, boolean bg)
 	{
 		int bgAdd = bg ? 10 : 0;//the variable to add to the some of the color code background is +10
 		return code + (code < 8 ? 30 : 82) + bgAdd;//+30 as the offset ansi index. starting at the 8th code it has to switch to the next start of ANSI colors

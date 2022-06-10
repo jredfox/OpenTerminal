@@ -17,7 +17,7 @@ public class Palette {
 	}
 	
 	/**
-	 * return the Palette's clostes color from RGB and then give you the Entry(code, name, rgb)
+	 * return the Palette's closest color from RGB and then give you the Entry(code, name, rgb)
 	 */
 	public Entry pickColor(Color c)
 	{
