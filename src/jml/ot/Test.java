@@ -45,7 +45,7 @@ public class Test {
 		}
 //		app.pause = false;
 		OpenTerminal.open(app);
-		printTest();
+//		printTest();
 //		System.out.println("launch in:" + (System.currentTimeMillis() - ms) + "ms");
 	}
 	

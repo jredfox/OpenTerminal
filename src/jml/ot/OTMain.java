@@ -9,7 +9,7 @@ public class OTMain {
 	
 	static
 	{
-		AnsiColors.colors.length();
+		AnsiColors.colors.length();//ensure ANSI colors are enabled by loading the class
 	}
 	
 	/**
