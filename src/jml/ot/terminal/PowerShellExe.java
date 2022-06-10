@@ -39,9 +39,9 @@ public class PowerShellExe extends TerminalExe {
 			"-java_home",
 			OTConstants.java_home,
 			"-java_args",
-			q + "-Dot.ansi.colors=" + q + colors + q + " " + OTConstants.args.replaceAll(q, "'") + q,
+			q + (this.app.pause ? "-Dot.p " : "") + "-Dot.ansi.colors=" + q + colors + q + " " + OTConstants.args.replaceAll(q, "'") + q,
 			"-pause",
-			q + this.app.pause + q,
+			q + false + q,
 		});
 		this.run(pb);
 	}
@@ -65,9 +65,9 @@ public class PowerShellExe extends TerminalExe {
 		cmd.add("-java_home");
 		cmd.add(OTConstants.java_home);
 		cmd.add("-java_args");
-		cmd.add(q + "-Dot.ansi.colors=" + q2 + colors + q2 + " " + OTConstants.args.replaceAll(q, q2).replace(";", "$") + q);
+		cmd.add(q + (this.app.pause ? "-Dot.p " : "") + "-Dot.ansi.colors=" + q2 + colors + q2 + " " + OTConstants.args.replaceAll(q, q2).replace(";", "$") + q);
 		cmd.add("-pause");
-		cmd.add(q + this.app.pause + q);
+		cmd.add(q + false + q);//do not use write-host clears the coloring and there is no way to work around it for true color or custom ansi formatting
 		return cmd;
 	}
 	

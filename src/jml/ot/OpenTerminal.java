@@ -1,6 +1,5 @@
 package jml.ot;
 
-import jml.ot.colors.AnsiColors;
 import jml.ot.terminal.host.ConsoleHost;
 
 public class OpenTerminal {
@@ -27,7 +26,7 @@ public class OpenTerminal {
 			console.run();
 		else
 			app.getTerminalExe().run();
-		System.out.println(AnsiColors.colorMode);
+		System.out.println(app.colors.colorMode);
 	}
 
 }

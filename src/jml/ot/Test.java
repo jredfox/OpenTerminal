@@ -45,15 +45,15 @@ public class Test {
 		}
 //		app.pause = false;
 		OpenTerminal.open(app);
-//		printTest();
+		printTest(app.colors);
 //		System.out.println("launch in:" + (System.currentTimeMillis() - ms) + "ms");
 	}
 	
-	public static void printTest()
+	public static void printTest(AnsiColors colors)
 	{
-//		AnsiColors.setReset(Color.white, Color.CYAN, true);
-		AnsiColors.println(Color.WHITE, Color.YELLOW, "SUP YELLOW!");
-		AnsiColors.print(Color.BLACK, Color.GREEN, AnsiColors.OVERLINE + AnsiColors.UNDERLINE + AnsiColors.ITALIC + "Classic Green on Black");
+//		colors.setReset(Color.white, Color.CYAN, true);
+		colors.println(Color.WHITE, Color.YELLOW, "SUP YELLOW!");
+		colors.print(Color.BLACK, Color.GREEN, AnsiColors.OVERLINE + AnsiColors.UNDERLINE + AnsiColors.ITALIC + "Classic Green on Black");
 		System.out.print("a");
 		System.out.println("b");
 	}

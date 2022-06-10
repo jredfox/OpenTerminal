@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jml.ot.colors.AnsiColors;
 import jml.ot.terminal.BatchExe;
 import jml.ot.terminal.GuakeTerminalExe;
 import jml.ot.terminal.LinuxBashExe;
@@ -34,6 +35,7 @@ public class TerminalApp {
 	 * changing this to true will make you use 4 bit ANSI colors instead of xterm256 or true colors
 	 */
 	public boolean ANSI4BIT;
+	public AnsiColors colors = new AnsiColors();
 	
 	public TerminalApp(String id, String name, String version)
 	{

@@ -79,8 +79,8 @@ public abstract class TerminalExe {
 			String truecolor = AnsiColors.formatColor(TermColors.TRUE_COLOR, p.bg, p.fg, p.ansiEsc);
 			
 			//TODO: ICP change based on terminal's $COLORTERM
-			AnsiColors.setColorMode(this.app.ANSI4BIT ? TermColors.ANSI4BIT : TerminalUtil.windows_terminals.contains(this.app.terminal) ? TermColors.TRUE_COLOR : TermColors.XTERM_256);
-			AnsiColors.setReset(AnsiColors.colorMode == TermColors.ANSI4BIT ? ansi4bit : AnsiColors.colorMode == TermColors.XTERM_256 ? xterm256 : AnsiColors.colorMode == TermColors.TRUE_COLOR ? truecolor : null); 
+			this.app.colors.setColorMode(this.app.ANSI4BIT ? TermColors.ANSI4BIT : TerminalUtil.windows_terminals.contains(this.app.terminal) ? TermColors.TRUE_COLOR : TermColors.XTERM_256);
+			this.app.colors.setReset(this.app.colors.colorMode == TermColors.ANSI4BIT ? ansi4bit : this.app.colors.colorMode == TermColors.XTERM_256 ? xterm256 : this.app.colors.colorMode == TermColors.TRUE_COLOR ? truecolor : null); 
 			return ansi4bit + xterm256 + truecolor;
 		}
 		return "";

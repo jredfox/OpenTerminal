@@ -9,7 +9,7 @@ public class OTMain {
 	
 	static
 	{
-		AnsiColors.colors.length();//ensure ANSI colors are enabled by loading the class
+		
 	}
 	
 	/**
@@ -28,6 +28,7 @@ public class OTMain {
 	 */
 	public static void main(String[] args) throws IOException, InterruptedException
 	{
+		AnsiColors.enableCmdColors();//ensure ANSI colors are enabled by loading the class
 		if(System.console() == null)
 		{
 			TerminalApp app = args.length != 0 ? new TerminalApp(args[0], args[1], args[2], Boolean.parseBoolean(args[3]), Boolean.parseBoolean(args[4])) : new TerminalApp("ot", "Open Terminal", OTConstants.OTVERSION);
@@ -38,12 +39,12 @@ public class OTMain {
 //			new ProcessBuilder("cmd", "/c", "color 2f").inheritIO().start().waitFor();
 //			new ProcessBuilder("cmd", "/c", "").inheritIO().start().waitFor();
 			System.out.println("booted:" + OTConstants.userDir);
-			Test.printTest();
+			Test.printTest(AnsiColors.INSTANCE);
 			
 			//java pause for non shell terminals. should be safe to do as OpenTerminal is a seperate process
 			if(System.getProperty("ot.p") != null)
 			{
-				System.out.println("Press ENTER to continue...");
+				System.out.print("Press ENTER to continue...");
 				new Scanner(System.in).nextLine();
 			}
 		}

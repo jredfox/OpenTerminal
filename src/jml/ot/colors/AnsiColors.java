@@ -29,27 +29,38 @@ public class AnsiColors {
 	public static final String ENCIRCLED = ESC + "[52m";
 	public static final String OVERLINE = ESC + "[53m";
 	private static final String winTerm = TerminalUtil.isWindows() ? (TerminalUtil.isExeValid("cmd") ? "cmd" : "powershell") : "";
+	/**
+	 * the AnsiColor instance used to be a static utility if your un-interested in using multiple instances
+	 * NOTE: this doesn't sync with terminals you create if your wanting custom {@link #colors} formats or using the right {@link #colorMode} you have to sync it manually
+	 */
+	public static final AnsiColors INSTANCE = new AnsiColors();
 	
 	/**
 	 * the default color format of AnsiColors. change with {@link #setReset(Color, Color, boolean)}
 	 */
-	public static String colors = TerminalUtil.getPropertySafely("ot.ansi.colors").replace("$", ";");
+	public String colors = TerminalUtil.getPropertySafely("ot.ansi.colors").replace("$", ";");
 	
 	/**
 	 * XTERM COLOR MODE. Change it with {@link #setColorMode(TermColors)}. The terminal once spawned should tell you what color mode it supports
 	 */
-	public static TermColors colorMode = setColorMode(TerminalUtil.getPropertySafely("ot.ansi.colors"));
+	public TermColors colorMode = setColorMode(TerminalUtil.getPropertySafely("ot.ansi.colors"));
 	public static Palette picker;
 	
-	static
+	public AnsiColors()
 	{
-		enableCmdColors();
+		
+	}
+	
+	public AnsiColors(Color background, Color text, String ansiEsc, TermColors mode)
+	{
+		this.setReset(background, text, ansiEsc, false);
+		this.setColorMode(mode);
 	}
 
 	/**
 	 * get the reset ansi esq for the whole program. doing esq[0m hard coded will cause the entire app to be reset back to default formating no additional styling
 	 */
-	public static String getReset()
+	public String getReset()
 	{
 		return RESET + colors;
 	}
@@ -57,17 +68,17 @@ public class AnsiColors {
 	/**
 	 * this will return the default ansi escape reset sequence without the colors this will override the entire console app's settings if used
 	 */
-	public static String getNonColoredReset()
+	public String getNonColoredReset()
 	{
 		return RESET;
 	}
 	
-	public static void setReset(Color background, Color text, boolean cls)
+	public void setReset(Color background, Color text, boolean cls)
 	{
 		setReset(background, text, "", cls);
 	}
 	
-	public static void setReset(Color background, Color text, String ansiEsc, boolean cls)
+	public void setReset(Color background, Color text, String ansiEsc, boolean cls)
 	{
 		colors = formatColor(background, text, ansiEsc);
 		System.out.print(getReset());
@@ -78,17 +89,17 @@ public class AnsiColors {
 	/**
 	 * set reset direct
 	 */
-	public static void setReset(String ansiEsc)
+	public void setReset(String ansiEsc)
 	{
 		colors = ansiEsc;
 	}
 
-	public static void print(Color background, Color text, String str)
+	public void print(Color background, Color text, String str)
 	{
 		System.out.print(formatColor(background, text, "") + str + getReset());
 	}
 	
-	public static void println(Color background, Color text, String str)
+	public void println(Color background, Color text, String str)
 	{
 		System.out.println(formatColor(background, text, str) + getReset());
 	}
@@ -96,17 +107,58 @@ public class AnsiColors {
 	/**
 	 * supports xterm-16, xterm-256 and true colors
 	 */
-	public static String formatColor(Color bg, Color text, String ansiEsc)
+	public String formatColor(Color bg, Color text, String ansiEsc)
 	{
 		return formatColor(colorMode, bg, text, ansiEsc);
 	}
+	
+	public void parsePalette() 
+	{
+		try
+		{
+			picker.parse(AnsiColors.class.getClassLoader().getResourceAsStream(colorMode == TermColors.ANSI4BIT ? "resources/jml/ot/colors/xterm-16.csv" : "resources/jml/ot/colors/xterm-256.csv"));
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * switch the ANSI terminal mode from one mode to another
+	 */
+	public TermColors setColorMode(String mode)
+	{
+		mode = mode.toLowerCase();
+		TermColors colorMode = mode.equals("ansi4bit") ? TermColors.ANSI4BIT : mode.contains("true") && mode.contains("color") ? TermColors.TRUE_COLOR : TermColors.XTERM_256;
+		setColorMode(colorMode);
+		return colorMode;
+	}
+	
+	/**
+	 * switch the ANSI terminal mode from one mode to another
+	 */
+	public void setColorMode(TermColors mode)
+	{
+		if(mode == null) 
+			return;
+		
+		colorMode = mode;
+		if(mode != TermColors.TRUE_COLOR)
+		{
+			picker = new Palette();
+			parsePalette();
+		}
+	}
+	
+	//START STATIC UTILITIES
 	
 	/**
 	 * supports xterm-16, xterm-256 and true colors
 	 */
 	public static String formatColor(TermColors mode, Color bg, Color text, String ansiEsc)
 	{
-		if(colorMode == null)
+		if(mode == null)
 		{
 			System.err.println("colorMode isn't set yet! You have to wait to fetch it from the terminal or set it manually and try again!");
 			return null;
@@ -179,9 +231,12 @@ public class AnsiColors {
 	{
 		String ANSI_CLS = AnsiColors.ESC + "[2J";
 	    String ANSI_HOME = AnsiColors.ESC + "[H";
-	    return AnsiColors.ESC + "[3J" + ANSI_CLS + ANSI_HOME;
+	    return ANSI_CLS + ANSI_HOME;
 	}
 	
+	/**
+	 * hack windows 10 conhost.exe to enable colors straight from java
+	 */
 	public static void enableCmdColors()
 	{
 		if(OTConstants.LAUNCHED && TerminalUtil.isWindows())
@@ -190,48 +245,11 @@ public class AnsiColors {
 			try
 			{
 				if(winTerm.equals("cmd"))
-					new ProcessBuilder(new String[]{winTerm, "/c", "echo | set /p dummyName=" + getReset() + cls}).inheritIO().start().waitFor();
+					new ProcessBuilder(new String[]{winTerm, "/c", "echo | set /p dummyName=" + INSTANCE.getReset() + cls}).inheritIO().start().waitFor();
 				else
-					new ProcessBuilder(new String[]{winTerm, "/c", "Write-Host -NoNewLine " + getReset() + cls}).inheritIO().start().waitFor();
+					new ProcessBuilder(new String[]{winTerm, "/c", "Write-Host -NoNewLine " + INSTANCE.getReset() + cls}).inheritIO().start().waitFor();
 			}
 			catch (Exception e){e.printStackTrace();}
-			System.out.println(colors.replace(ESC, "ESC"));
-		}
-	}
-	
-	public static void parsePalette() 
-	{
-		try
-		{
-			picker.parse(AnsiColors.class.getClassLoader().getResourceAsStream(colorMode == TermColors.ANSI4BIT ? "resources/jml/ot/colors/xterm-16.csv" : "resources/jml/ot/colors/xterm-256.csv"));
-		}
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * switch the ANSI terminal mode from one mode to another
-	 */
-	public static TermColors setColorMode(String mode)
-	{
-		mode = mode.toLowerCase();
-		TermColors colorMode = mode.equals("ansi4bit") ? TermColors.ANSI4BIT : mode.contains("true") && mode.contains("color") ? TermColors.TRUE_COLOR : TermColors.XTERM_256;
-		setColorMode(colorMode);
-		return colorMode;
-	}
-	
-	/**
-	 * switch the ANSI terminal mode from one mode to another
-	 */
-	public static void setColorMode(TermColors mode)
-	{
-		colorMode = mode;
-		if(mode != TermColors.TRUE_COLOR)
-		{
-			picker = new Palette();
-			parsePalette();
 		}
 	}
 }
