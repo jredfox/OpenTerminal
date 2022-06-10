@@ -5,8 +5,6 @@ todo OpenTerminal 1.0.0:
 - log per app
 - custom JVM args
 - wrap
-- fix macOs
-- test linux
 - fix jarInJarLoader issue
 - close hooks (piped)
 - prevent control + c from shutting down the terminal on windows it's a stupid function users will try and copy something and it shuts down instead

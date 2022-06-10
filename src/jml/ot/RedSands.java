@@ -15,7 +15,7 @@ public class RedSands {
 //		Color d = Color.YELLOW;
 		Color c = Color.GREEN;
 		System.out.println(c);
-		System.out.println(AnsiColors.picker.pickColor(c));
+		System.out.println(AnsiColors.pickerXterm256.pickColor(c));
 //		System.out.println(AnsiColors.to8Bit(new Color(255, 255, 255)));
 //		while(true)
 //		{

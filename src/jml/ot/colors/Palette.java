@@ -1,6 +1,7 @@
 package jml.ot.colors;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashSet;
 
@@ -10,10 +11,17 @@ import jredfox.common.config.csv.CSVE;
 public class Palette {
 	
 	public LinkedHashSet<Entry> entries = new LinkedHashSet<Entry>();
+	public volatile boolean hasParsed;
+	public String resource;
 	
 	public Palette()
 	{
 		
+	}
+	
+	public Palette(String resource)
+	{
+		this.resource = resource;
 	}
 	
 	/**
@@ -21,6 +29,7 @@ public class Palette {
 	 */
 	public Entry pickColor(Color c)
 	{
+		this.check();
 		int d = 0;
 		Palette.Entry picked = null;
 		for(Palette.Entry e : this.entries)
@@ -37,14 +46,34 @@ public class Palette {
 		}
 		return picked;
 	}
+
+	public void parse(String strIn) throws IOException
+	{
+		this.parse(Palette.class.getClassLoader().getResourceAsStream(strIn));
+	}
 	
-	public Palette parse(InputStream in) throws Exception
+	public void parse(InputStream in) throws IOException
 	{
 		CSVE ce = new CSVE();
 		ce.parse(in);
 		for(CSV c : ce.list)
 			this.add(Integer.parseInt(c.list.get(0)), c.list.get(1), new Color(Integer.parseInt(c.list.get(2)), Integer.parseInt(c.list.get(3)), Integer.parseInt(c.list.get(4))));
-		return this;
+		this.hasParsed = true;
+	}
+	
+	public void check() 
+	{
+		if(!this.hasParsed)
+		{
+			try
+			{
+				this.parse(this.resource);
+			}
+			catch (IOException e1) 
+			{
+				e1.printStackTrace();
+			}
+		}
 	}
 	
 	public void add(int code, String name, Color rgb)

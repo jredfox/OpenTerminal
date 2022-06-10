@@ -3,6 +3,7 @@ package jredfox.common.config.csv;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public class CSVE {
 		return getValue(getCSV(path),index);
 	}
 	
-	public void parse(InputStream in) throws Exception
+	public void parse(InputStream in) throws IOException
 	{
 		List<String> init = IOUtils.getFileLines(new BufferedReader(new InputStreamReader(in)));
 		boolean header = false;

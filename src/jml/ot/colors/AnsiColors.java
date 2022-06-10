@@ -44,7 +44,8 @@ public class AnsiColors {
 	 * XTERM COLOR MODE. Change it with {@link #setColorMode(TermColors)}. The terminal once spawned should tell you what color mode it supports
 	 */
 	public TermColors colorMode = setColorMode(TerminalUtil.getPropertySafely("ot.ansi.colors"));
-	public static Palette picker;
+	public static final Palette pickerXterm256 = new Palette();
+	public static final Palette pickerAnsi4Bit = new Palette();
 	
 	public AnsiColors()
 	{
@@ -112,18 +113,6 @@ public class AnsiColors {
 		return formatColor(colorMode, bg, text, ansiEsc);
 	}
 	
-	public void parsePalette() 
-	{
-		try
-		{
-			picker.parse(AnsiColors.class.getClassLoader().getResourceAsStream(colorMode == TermColors.ANSI4BIT ? "resources/jml/ot/colors/xterm-16.csv" : "resources/jml/ot/colors/xterm-256.csv"));
-		}
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-		}
-	}
-	
 	/**
 	 * switch the ANSI terminal mode from one mode to another
 	 */
@@ -144,11 +133,6 @@ public class AnsiColors {
 			return;
 		
 		colorMode = mode;
-		if(mode != TermColors.TRUE_COLOR)
-		{
-			picker = new Palette();
-			parsePalette();
-		}
 	}
 	
 	//START STATIC UTILITIES
@@ -175,15 +159,15 @@ public class AnsiColors {
 			}
 			case XTERM_256:
 			{
-				String b = bg == null ? "" : ESC + "[48;5;" + picker.pickColor(bg).code + "m";
-				String f = text == null ? "" : ESC + "[38;5;" + picker.pickColor(text).code + "m";
+				String b = bg == null ? "" : ESC + "[48;5;" + pickerXterm256.pickColor(bg).code + "m";
+				String f = text == null ? "" : ESC + "[38;5;" + pickerXterm256.pickColor(text).code + "m";
 				String a = ansiEsc == null ? "" : ansiEsc;
 				return b + f + a;
 			}
 			case ANSI4BIT:
 			{
-				String b = bg == null ? "" : ESC + "[" + getANSI4BitColor((byte)picker.pickColor(bg).code, true) + "m";
-				String f = text == null ? "" : ESC + "[" + getANSI4BitColor((byte)picker.pickColor(text).code, false) + "m";
+				String b = bg == null ? "" : ESC + "[" + getANSI4BitColor((byte)pickerAnsi4Bit.pickColor(bg).code, true) + "m";
+				String f = text == null ? "" : ESC + "[" + getANSI4BitColor((byte)pickerAnsi4Bit.pickColor(text).code, false) + "m";
 				String a = ansiEsc == null ? "" : ansiEsc;
 				return b + f + a;
 			}
