@@ -30,6 +30,10 @@ public class TerminalApp {
 	public String conHost = "";
 	public List<String> linuxCmdsExe = new ArrayList<>(0);//configurable list to use LinuxCmdExe instead of LinuxBash or another
 	public Map<String, String> linuxFlags = new HashMap<>(0);//override linux new window flags in case you have an updated or outdated version then is currently supported
+	/**
+	 * changing this to true will make you use 4 bit ANSI colors instead of xterm256 or true colors
+	 */
+	public boolean ANSI4BIT;
 	
 	public TerminalApp(String id, String name, String version)
 	{
@@ -147,6 +151,7 @@ public class TerminalApp {
 			this.conHost = "";
 			cfg.set("conHost", this.conHost);
 		}
+		this.ANSI4BIT = cfg.get("ANSI-4bit-Colors", this.ANSI4BIT);
 		
 		String[] lcmds = cfg.get("linuxCmdExe", "").split(";");
 		for(String c : lcmds)

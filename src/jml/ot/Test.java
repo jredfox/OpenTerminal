@@ -51,7 +51,8 @@ public class Test {
 	
 	public static void printTest()
 	{
-//		AnsiColors.setReset(Color.GRAY, Color.CYAN, true);
+//		AnsiColors.setReset(Color.white, Color.CYAN, true);
+//		System.out.println("\033[H\033[2J");
 		AnsiColors.println(Color.WHITE, Color.YELLOW, "SUP YELLOW!");
 		AnsiColors.print(Color.BLACK, Color.GREEN, AnsiColors.OVERLINE + AnsiColors.UNDERLINE + AnsiColors.ITALIC + "Classic Green on Black");
 		System.out.print("a");

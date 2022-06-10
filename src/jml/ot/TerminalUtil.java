@@ -279,4 +279,10 @@ public class TerminalUtil {
 		return e;
 	}
 
+	public static String getPropertySafely(String prop) 
+	{
+		String s = System.getProperty(prop);
+		return s == null ? "" : s;
+	}
+
 }
