@@ -22,12 +22,12 @@ public class OpenTerminal {
 			return;
 		
 		app.load();
+		AnsiColors.presetTerminal(app.terminal, app.ANSI4BIT);
 		ConsoleHost console = app.getConsoleHost();
 		if(console != null)
 			console.run();
 		else
 			app.getTerminalExe().run();
-		AnsiColors.setTermColor(app.terminal, app.ANSI4BIT);
 		System.out.println(AnsiColors.colorMode);
 	}
 

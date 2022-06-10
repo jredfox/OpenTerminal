@@ -228,7 +228,7 @@ public class AnsiColors {
 	/**
 	 * sets the colorMode equal to the terminals unless it's configured to use ANSI4bit
 	 */
-	public static void setTermColor(String terminal, boolean ANSI4bit) 
+	public static void presetTerminal(String terminal, boolean ANSI4bit) 
 	{
 		if(ANSI4bit || TerminalUtil.getPropertySafely("ot.ansi.colors").toLowerCase().equals("ansi4bit"))
 		{
