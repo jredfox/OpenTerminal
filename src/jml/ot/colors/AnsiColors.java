@@ -2,6 +2,7 @@ package jml.ot.colors;
 
 import java.awt.Color;
 
+import jml.ot.OTConstants;
 import jml.ot.TerminalUtil;
 
 public class AnsiColors {
@@ -183,7 +184,7 @@ public class AnsiColors {
 	
 	public static void enableCmdColors()
 	{
-		if(System.console() != null && TerminalUtil.isWindows())
+		if(!OTConstants.LAUNCHED && TerminalUtil.isWindows())
 		{
 			String cls = " & cls";
 			try
@@ -232,22 +233,5 @@ public class AnsiColors {
 			picker = new Palette();
 			parsePalette();
 		}
-	}
-
-	/**
-	 * sets the colorMode equal to the terminals unless it's configured to use ANSI4bit
-	 */
-	public static void presetTerminal(String terminal, boolean ANSI4bit) 
-	{
-		if(ANSI4bit || TerminalUtil.getPropertySafely("ot.ansi.colors").toLowerCase().equals("ansi4bit"))
-		{
-			setColorMode(TermColors.ANSI4BIT);
-			return;
-		}
-		if(TerminalUtil.windows_terminals.contains(terminal))
-		{
-			setColorMode(TermColors.TRUE_COLOR);//All windows terminals since they supported color support true color
-		}
-		//TODO: ICP to get the $TERMCOLOR and $TERM in case $TERMCOLOR is empty
 	}
 }

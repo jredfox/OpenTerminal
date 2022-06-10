@@ -17,5 +17,6 @@ public class OTConstants {
 	public static final File userDir = JREUtil.getProgramDir().getAbsoluteFile();
 	public static final String java_home = "\"" + System.getProperty("java.home") + "/bin/java\"";
 	public static final String args = "-Dot.l -cp \"" + System.getProperty("java.class.path") + "\" jml.ot.OTMain";
+	public static final boolean LAUNCHED = System.getProperty("ot.l") != null;
 
 }

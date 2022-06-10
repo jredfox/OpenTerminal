@@ -8,7 +8,7 @@ public class OpenTerminal {
 	public static void open(TerminalApp app)
 	{
 		//if open terminal has launched and failed printline and exit the application as it failed
-		if(System.console() == null && System.getProperty("ot.l") != null)
+		if(System.console() == null && OTConstants.LAUNCHED)
 		{
 			System.err.println("System console boot failed report to https://github.com/jredfox/OpenTerminal/issues");
 			System.exit(-1);

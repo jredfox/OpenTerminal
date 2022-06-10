@@ -65,7 +65,7 @@ public class PowerShellExe extends TerminalExe {
 		cmd.add("-java_home");
 		cmd.add(OTConstants.java_home);
 		cmd.add("-java_args");
-		cmd.add(q + "-Dot.ansi.colors=" + q2 + colors + q2 + " " + OTConstants.args.replaceAll(q, q2) + q);
+		cmd.add(q + "-Dot.ansi.colors=" + q2 + colors + q2 + " " + OTConstants.args.replaceAll(q, q2).replace(";", "$") + q);
 		cmd.add("-pause");
 		cmd.add(q + this.app.pause + q);
 		return cmd;
@@ -88,7 +88,7 @@ public class PowerShellExe extends TerminalExe {
                     + "Write-Host -NoNewLine \"$colors\"\n"
                     + "cls\n"
                     + "$host.UI.RawUI.WindowTitle = \"$title\"\n"
-                    + "$java_args = $java_args.Replace(\"'\", \"\"\"\")\n"
+                    + "$java_args = $java_args.Replace(\"'\", \"\"\"\").Replace(\"$\", \";\")\n"
                     + "Start-Process -Wait -NoNewWindow $java_home -ArgumentList $java_args\n"
                     + "if($pause -eq \"true\")\n"
                     + "{\n"

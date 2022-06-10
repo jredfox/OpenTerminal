@@ -66,7 +66,7 @@ public class BatchExe extends TerminalExe {
 		cmd.add(q + this.shell.getPath() + q);//path to the boot shell
 		cmd.add(profile != null && profile.bg != null ? q + colors + q : "");
 		cmd.add(q + this.app.getTitle() + q);
-		cmd.add(q + (OTConstants.java_home + " -Dot.ansi.colors=" + q + colors + q + " " + OTConstants.args).replaceAll("\"", ",") + q);
+		cmd.add(q + (OTConstants.java_home + " -Dot.ansi.colors=" + q + colors + q + " " + OTConstants.args).replaceAll("\"", ",").replace(";", "$") + q);
 		cmd.add(q + this.app.pause + q);
 		return cmd;
 	}
@@ -86,6 +86,7 @@ public class BatchExe extends TerminalExe {
                     + "title %~2%\n"
                     + "set boot=%~3\n"
                     + "set boot=%boot:,=^\"% ::RE-MAP the boot command to double quotes\n"
+                    + "set boot=%boot:$=;\"% ::Work around for WT\n"
                     + "call %boot%\n"
                     + "IF \"%~4%\" == \"true\" (\n"
                     + "set /p DUMMY=Press ENTER to continue...\n"
