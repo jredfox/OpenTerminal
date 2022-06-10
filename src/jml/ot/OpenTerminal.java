@@ -22,7 +22,6 @@ public class OpenTerminal {
 			return;
 		
 		app.load();
-		AnsiColors.presetTerminal(app.terminal, app.ANSI4BIT);
 		ConsoleHost console = app.getConsoleHost();
 		if(console != null)
 			console.run();

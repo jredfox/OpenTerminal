@@ -7,7 +7,9 @@ import java.util.List;
 import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
 import jml.ot.TerminalApp.Profile;
+import jml.ot.TerminalUtil;
 import jml.ot.colors.AnsiColors;
+import jml.ot.colors.AnsiColors.TermColors;
 import jredfox.common.io.IOUtils;
 
 /**
@@ -65,9 +67,23 @@ public abstract class TerminalExe {
 	 */
 	public abstract void cleanup();
 	
+	/**
+	 * return a concated version of all color modes ending with the highest supported
+	 */
 	public String getColors(Profile p)
 	{
-		return p != null ? AnsiColors.formatColor(p.bg, p.fg, p.ansiEsc) : "";
+		if(p != null)
+		{
+			String ansi4bit = AnsiColors.formatColor(TermColors.ANSI4BIT, p.bg, p.fg, p.ansiEsc);
+			String xterm256 = AnsiColors.formatColor(TermColors.XTERM_256, p.bg, p.fg, p.ansiEsc);
+			String truecolor = AnsiColors.formatColor(TermColors.TRUE_COLOR, p.bg, p.fg, p.ansiEsc);
+			
+			//TODO: ICP change based on terminal's $COLORTERM
+			AnsiColors.setColorMode(this.app.ANSI4BIT ? TermColors.ANSI4BIT : TerminalUtil.windows_terminals.contains(this.app.terminal) ? TermColors.TRUE_COLOR : TermColors.XTERM_256);
+			AnsiColors.setReset(AnsiColors.colorMode == TermColors.ANSI4BIT ? ansi4bit : AnsiColors.colorMode == TermColors.XTERM_256 ? xterm256 : AnsiColors.colorMode == TermColors.TRUE_COLOR ? truecolor : null); 
+			return ansi4bit + xterm256 + truecolor;
+		}
+		return "";
 	}
 	
 	public void makeShell(List<String> li) throws IOException 

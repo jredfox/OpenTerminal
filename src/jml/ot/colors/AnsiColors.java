@@ -71,19 +71,15 @@ public class AnsiColors {
 		colors = formatColor(background, text, ansiEsc);
 		System.out.print(getReset());
 		if(cls)
-		{
-			if(TerminalUtil.isWindows())
-			{
-				try{
-					new ProcessBuilder(winTerm, "/c", "cls").inheritIO().start().waitFor();
-				}
-				catch (Exception e) {e.printStackTrace();}
-			}
-			else
-			{
-				cls();
-			}
-		}
+			cls();
+	}
+	
+	/**
+	 * set reset direct
+	 */
+	public static void setReset(String ansiEsc)
+	{
+		colors = ansiEsc;
 	}
 
 	public static void print(Color background, Color text, String str)
@@ -99,7 +95,15 @@ public class AnsiColors {
 	/**
 	 * supports xterm-16, xterm-256 and true colors
 	 */
-	public static String formatColor(Color bg, Color text, String ansiEsq)
+	public static String formatColor(Color bg, Color text, String ansiEsc)
+	{
+		return formatColor(colorMode, bg, text, ansiEsc);
+	}
+	
+	/**
+	 * supports xterm-16, xterm-256 and true colors
+	 */
+	public static String formatColor(TermColors mode, Color bg, Color text, String ansiEsc)
 	{
 		if(colorMode == null)
 		{
@@ -107,27 +111,27 @@ public class AnsiColors {
 			return null;
 		}
 		
-		switch(colorMode)
+		switch(mode)
 		{
 			case TRUE_COLOR:
 			{
 				String b = bg == null ? "" : ESC + "[48;2;" + bg.getRed() + ";" + bg.getGreen() + ";" + bg.getBlue() + "m";
 				String f = text == null ? "" : ESC + "[38;2;" + text.getRed() + ";" + text.getGreen() + ";" + text.getBlue() + "m";
-				String a = ansiEsq == null ? "" : ansiEsq;
+				String a = ansiEsc == null ? "" : ansiEsc;
 				return b + f + a;
 			}
 			case XTERM_256:
 			{
 				String b = bg == null ? "" : ESC + "[48;5;" + picker.pickColor(bg).code + "m";
 				String f = text == null ? "" : ESC + "[38;5;" + picker.pickColor(text).code + "m";
-				String a = ansiEsq == null ? "" : ansiEsq;
+				String a = ansiEsc == null ? "" : ansiEsc;
 				return b + f + a;
 			}
 			case ANSI4BIT:
 			{
 				String b = bg == null ? "" : ESC + "[" + getANSI4BitColor((byte)picker.pickColor(bg).code, true) + "m";
 				String f = text == null ? "" : ESC + "[" + getANSI4BitColor((byte)picker.pickColor(text).code, false) + "m";
-				String a = ansiEsq == null ? "" : ansiEsq;
+				String a = ansiEsc == null ? "" : ansiEsc;
 				return b + f + a;
 			}
 			default: 
@@ -166,10 +170,15 @@ public class AnsiColors {
 	 */
 	public static void cls() 
 	{
+	    System.out.print(getCls());
+	    System.out.flush();
+	}
+	
+	public static String getCls()
+	{
 		String ANSI_CLS = AnsiColors.ESC + "[2J";
 	    String ANSI_HOME = AnsiColors.ESC + "[H";
-	    System.out.print(ANSI_CLS + ANSI_HOME);
-	    System.out.flush();
+	    return AnsiColors.ESC + "[3J" + ANSI_CLS + ANSI_HOME;
 	}
 	
 	public static void enableCmdColors()
