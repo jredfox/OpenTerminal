@@ -184,7 +184,7 @@ public class AnsiColors {
 	
 	public static void enableCmdColors()
 	{
-		if(!OTConstants.LAUNCHED && TerminalUtil.isWindows())
+		if(OTConstants.LAUNCHED && TerminalUtil.isWindows())
 		{
 			String cls = " & cls";
 			try
