@@ -44,8 +44,8 @@ public class AnsiColors {
 	 * XTERM COLOR MODE. Change it with {@link #setColorMode(TermColors)}. The terminal once spawned should tell you what color mode it supports
 	 */
 	public TermColors colorMode = setColorMode(TerminalUtil.getPropertySafely("ot.ansi.colors"));
-	public static final Palette pickerXterm256 = new Palette();
-	public static final Palette pickerAnsi4Bit = new Palette();
+	public static final Palette pickerXterm256 = new Palette("resources/jml/ot/colors/xterm-256.csv");
+	public static final Palette pickerAnsi4Bit = new Palette("resources/jml/ot/colors/xterm-16.csv");
 	
 	public AnsiColors()
 	{
