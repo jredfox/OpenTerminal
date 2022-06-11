@@ -30,7 +30,7 @@ public class LinuxBashExe extends TerminalExe{
 			List<String> li = new ArrayList<>();
 			li.add("#!/bin/bash\n"
 					+ "set +v #echo off\n"
-					+ "clear && printf '\\e[3J' #clears screen\n"
+					+ "clear && printf \"\\033[3J\" #clears screen\n"
 					+ "if ! [ -z \"$1\" ]\n"
 					+ "then\n"
 					+ "     echo -n -e \"\\033]0;\"$1\"\\007\" #changes the title if and only if the variable exists\n"

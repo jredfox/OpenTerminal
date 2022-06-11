@@ -43,7 +43,7 @@ public class MacBashExe extends TerminalExe {
 			List<String> li = new ArrayList<>();
 			li.add("#!/bin/bash\n"
 					+ "set +v #echo off\n"
-					+ "clear && printf '\\e[3J' #clears screen\n"
+					+ "clear && printf \"\\033[3J\" #clears screen\n"
 					+ "if ! [ -z \"$1\" ]\n"
 					+ "then\n"
 					+ "     echo -n -e \"\\033]0;\"$1\"\\007\" #changes the title if and only if the variable exists\n"
@@ -53,7 +53,7 @@ public class MacBashExe extends TerminalExe {
 					+ "if [ \"$4\" = true ]; then\n"
 					+ "    read -p \"Press ENTER to continue...\"\n"
 					+ "fi\n"
-					+ "c=\"closeMe_ ${6}\"\n"
+					+ "c=\"closeMe_ $6\"\n"
 					+ "echo -n -e \"\\033]0;\"$c\"\\007\"\n"
 					+ "osascript \"$5\" \"$c\" & exit");
 			this.makeShell(li);
