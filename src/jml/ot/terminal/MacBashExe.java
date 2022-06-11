@@ -125,6 +125,19 @@ public class MacBashExe extends TerminalExe {
 					+ "		set newTab to do script scpt\n"
 					+ "		try\n"
 					+ "			if p is not equal to \"\" then set current settings of newTab to settings set p\n"
+					+ "		on error --import the profile when it's not currently imported\n"
+					+ "			set custom title of newTab to \"\" -- make sure it won't close from closeMe\n"
+					+ "			set otHome to third item in argv\n"
+					+ "			set pscpt to otHome & \"/profiles/mac/\" & p & \".terminal\"\n"
+					+ "			set cscpt to otHome & \"/scripts/start/mac/closeMe.scpt\"\n"
+					+ "			log pscpt\n"
+					+ "			log cscpt\n"
+					+ "			do shell script \"open -a Terminal \\\"\" & pscpt & \"\\\"\"\n"
+					+ "			do shell script \"osascript \\\"\" & cscpt & \"\\\"\" & \" oti.\" & p & \".profile\"\n"
+					+ "			try\n"
+					+ "				--try to set the profile after importing it\n"
+					+ "				if p is not equal to \"\" then set current settings of newTab to settings set p\n"
+					+ "			end try\n"
 					+ "		end try\n"
 					+ "		activate\n"
 					+ "	end tell\n"
@@ -171,7 +184,8 @@ public class MacBashExe extends TerminalExe {
 			"osascript",
 			start2Scpt.getPath(),
 			bash,
-			profile
+			profile,
+			OTConstants.home.getPath()
 		});
 		this.run(pb);
 	}
@@ -197,24 +211,12 @@ public class MacBashExe extends TerminalExe {
 			File pf = new File(profileMac, p.mac_profileId + ".terminal");
 			if(!pf.exists())
 			{
-				System.out.println("importing Terminal.app profile " + p.mac_profileId);
+				System.out.println("extracting Terminal.app profile " + p.mac_profileId);
 				
 				//copy the profile.terminal to the disk
 				InputStream in = ClassLoader.getSystemClassLoader().getResourceAsStream(p.mac_profilePath);
 				IOUtils.makeParentDirs(pf);
 				IOUtils.copy(in, new BufferedOutputStream(new FileOutputStream(pf)));
-				
-				//import the profile.terminal
-				ProcessBuilder pb = new ProcessBuilder(new String[] 
-				{
-					"osascript",
-					importScpt.getPath(),
-					q + pf.getPath() + q,
-					q + p.mac_profileId + q,
-					q + closeMeScpt.getPath() + q
-				}).directory(OTConstants.userDir).inheritIO();
-				Process process = pb.start();
-				while(process.isAlive());
 			}
 		}
 	}
