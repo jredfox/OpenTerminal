@@ -16,6 +16,7 @@ import jml.ot.terminal.MacBashExe;
 import jml.ot.terminal.PowerShellExe;
 import jml.ot.terminal.TerminalExe;
 import jml.ot.terminal.TildaTerminalExe;
+import jml.ot.terminal.ValaTerminalExe;
 import jml.ot.terminal.host.ConsoleHost;
 import jml.ot.terminal.host.WTHost;
 import jredfox.common.config.MapConfig;
@@ -125,6 +126,8 @@ public class TerminalApp {
 					return new LinuxCmdTerminalExe(this);
 				case "terminology":
 					return new LinuxCmdTerminalExe(this);
+				case "vala-terminal":
+					return new ValaTerminalExe(this);
 			}
 			LinuxBashExe bash = new LinuxBashExe(this);
 			if(this.terminal.equals("terminalpp"))
