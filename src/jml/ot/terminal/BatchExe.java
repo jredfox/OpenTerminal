@@ -36,7 +36,7 @@ public class BatchExe extends TerminalExe {
 				q + this.shell.getPath() + q,//path to the boot shell
 				profile != null && profile.bg != null ? q + colors + q : q + "" + q,//color
 				q + this.app.getTitle() + q,
-				q + (OTConstants.java_home + " -Dot.ansi.colors=" + q + colors + q + " " + OTConstants.args).replaceAll("\"", ",") + q,
+				q + (OTConstants.java_home + " -Dot.w=true " + OTConstants.args).replaceAll("\"", ",") + q,
 				q + this.app.pause + q
 			});
 		}
@@ -47,7 +47,7 @@ public class BatchExe extends TerminalExe {
 			{
 				"cmd",
 				TerminalUtil.getExeAndClose(),
-				"start " + q + this.app.getTitle() + q + " " + OTConstants.java_home + (this.app.pause ? " -Dot.p " : " ") + OTConstants.args
+				"start " + q + this.app.getTitle() + q + " " + OTConstants.java_home + (this.app.pause ? " -Dot.p " : " ") + "-Dot.w=true " + OTConstants.args
 			});
 		}
 		this.run(pb);
@@ -66,7 +66,7 @@ public class BatchExe extends TerminalExe {
 		cmd.add(q + this.shell.getPath() + q);//path to the boot shell
 		cmd.add(profile != null && profile.bg != null ? q + colors + q : "");
 		cmd.add(q + this.app.getTitle() + q);
-		cmd.add(q + (OTConstants.java_home + " -Dot.ansi.colors=" + q + colors + q + " " + OTConstants.args).replaceAll("\"", ",").replace(";", "$") + q);
+		cmd.add(q + (OTConstants.java_home + " -Dot.w=true " + OTConstants.args).replaceAll("\"", ",").replace(";", "$") + q);
 		cmd.add(q + this.app.pause + q);
 		return cmd;
 	}

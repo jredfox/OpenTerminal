@@ -7,11 +7,6 @@ import jml.ot.colors.AnsiColors;
 
 public class OTMain {
 	
-	static
-	{
-		
-	}
-	
 	/**
 	 * call this main method directly using "java -jar OpenTerminal.jar" or "path/To/JavaRuntime/bin/java -jar OpenTerminal.jar" for the same JRE enforced on use everytime
 	 * @param appId

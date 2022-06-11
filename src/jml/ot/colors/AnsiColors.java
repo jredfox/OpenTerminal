@@ -28,12 +28,13 @@ public class AnsiColors {
 	 */
 	public static final String ENCIRCLED = ESC + "[52m";
 	public static final String OVERLINE = ESC + "[53m";
-	private static final String winTerm = TerminalUtil.isWindows() ? (TerminalUtil.isExeValid("cmd") ? "cmd" : "powershell") : "";
 	/**
 	 * the AnsiColor instance used to be a static utility if your un-interested in using multiple instances
 	 * NOTE: this doesn't sync with terminals you create if your wanting custom {@link #colors} formats or using the right {@link #colorMode} you have to sync it manually
 	 */
 	public static final AnsiColors INSTANCE = new AnsiColors();
+	public static final Palette pickerXterm256 = new Palette("resources/jml/ot/colors/xterm-256.csv");
+	public static final Palette pickerAnsi4Bit = new Palette("resources/jml/ot/colors/xterm-16.csv");
 	
 	/**
 	 * the default color format of AnsiColors. change with {@link #setReset(Color, Color, boolean)}
@@ -44,8 +45,6 @@ public class AnsiColors {
 	 * XTERM COLOR MODE. Change it with {@link #setColorMode(TermColors)}. The terminal once spawned should tell you what color mode it supports
 	 */
 	public TermColors colorMode = setColorMode(TerminalUtil.getPropertySafely("ot.ansi.colors"));
-	public static final Palette pickerXterm256 = new Palette("resources/jml/ot/colors/xterm-256.csv");
-	public static final Palette pickerAnsi4Bit = new Palette("resources/jml/ot/colors/xterm-16.csv");
 	
 	public AnsiColors()
 	{
@@ -223,15 +222,16 @@ public class AnsiColors {
 	 */
 	public static void enableCmdColors()
 	{
-		if(OTConstants.LAUNCHED && TerminalUtil.isWindows())
+		String prop = System.getProperty("ot.w");
+		if(OTConstants.LAUNCHED && prop != null)
 		{
-			String cls = " & cls";
+			boolean cmd = prop.equals("true");
 			try
 			{
-				if(winTerm.equals("cmd"))
-					new ProcessBuilder(new String[]{winTerm, "/c", "echo | set /p dummyName=" + INSTANCE.getReset() + cls}).inheritIO().start().waitFor();
+				if(cmd)
+					new ProcessBuilder(new String[]{"cmd", "/c", "echo | set /p dummyName=\"\""}).inheritIO().start().waitFor();
 				else
-					new ProcessBuilder(new String[]{winTerm, "/c", "Write-Host -NoNewLine " + INSTANCE.getReset() + cls}).inheritIO().start().waitFor();
+					new ProcessBuilder(new String[]{"powershell", "/c", "Write-Output \"$null\""}).inheritIO().start().waitFor();
 			}
 			catch (Exception e){e.printStackTrace();}
 		}
