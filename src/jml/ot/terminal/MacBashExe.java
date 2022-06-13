@@ -214,8 +214,11 @@ public class MacBashExe extends TerminalExe {
 	public List<String> getBootCmd() 
 	{
 		String q = TerminalUtil.getQuote();
+		Profile p = this.getAppProfile();
 		String command = (OTConstants.java_home + " " + OTConstants.args).replaceAll(q, "\\\\" + q);
-		String bash = q + this.shell.getPath() + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + closeMeScpt.getPath() + q + " " + q + System.currentTimeMillis() + q;
+		String trueColor = app.getBootTrueColor(p).replace(AnsiColors.ESC, "\\033");
+		String platteColor = app.getBootPaletteColor(p).replace(AnsiColors.ESC, "\\033");
+		String bash = "bash " + q + this.shell.getPath() + q + " " + q + trueColor + q + " " + q + platteColor + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + System.currentTimeMillis() + q + " " + q + closeMeScpt.getPath() + q;
 		List<String> li = new ArrayList<>();
 		li.add("bash");
 		li.add("-c");
@@ -225,7 +228,6 @@ public class MacBashExe extends TerminalExe {
 	
 	public static void importProfile(Profile p) throws IOException
 	{
-		String q = TerminalUtil.getQuote();
 		if(p != null && p.mac_profileId != null)
 		{
 			File pf = new File(profileMac, p.mac_profileId + ".terminal");

@@ -212,12 +212,8 @@ public class AnsiColors {
 	    System.out.flush();
 	}
 	
-	/**
-	 * updated based on new stackoverflow readings... seems to work more consistently then ansi home + ansi clear 2J
-	 */
 	public static String getCls()
 	{
-//	    return "\33c" + ESC + "[3J";
 		return "\033[H\033[2J";
 	}
 	
