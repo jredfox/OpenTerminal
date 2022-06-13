@@ -39,12 +39,12 @@ public class AnsiColors {
 	/**
 	 * the default color format of AnsiColors. change with {@link #setReset(Color, Color, boolean)}
 	 */
-	public String colors = TerminalUtil.getPropertySafely("ot.ansi.colors").replace("$", ";");
+	public String colors = TerminalUtil.getPropertySafely("ot.color.format").replace("$", ";");
 	
 	/**
 	 * XTERM COLOR MODE. Change it with {@link #setColorMode(TermColors)}. The terminal once spawned should tell you what color mode it supports
 	 */
-	public TermColors colorMode = setColorMode(TerminalUtil.getPropertySafely("ot.ansi.colors"));
+	public TermColors colorMode = setColorMode(TerminalUtil.getPropertySafely("ot.color.mode"));
 	
 	public AnsiColors()
 	{
@@ -82,9 +82,9 @@ public class AnsiColors {
 	{
 		colors = formatColor(background, text, ansiEsc);
 		System.out.print(getReset());
-		System.out.flush();
+		System.out.flush(); //ensure the color is set to the terminal before clearing the screen
 		if(cls)
-		  cls();
+		  cls();//clear the screen to update the background colors. it's to avoid a bug of the background not updating every time it changes till the end of the line. it's an issue with every ANSI terminal out there
 	}
 	
 	/**
@@ -203,7 +203,7 @@ public class AnsiColors {
 	}
 	
 	/**
-	 * clear screen using ANSI escape codes. Won't always work with conhost.exe(windows)
+	 * clear screen using ANSI escape codes
 	 */
 	public static void cls() 
 	{
@@ -213,7 +213,7 @@ public class AnsiColors {
 	
 	public static String getCls()
 	{
-		return "\033[H\033[2J\033[3J";
+		return "\033[H\033[2J\033[3J"; //TODO: after IPC is done test if the launch Esc[3J is necessary
 	}
 	
 	/**
