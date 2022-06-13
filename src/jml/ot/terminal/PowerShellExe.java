@@ -5,9 +5,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jml.ot.TerminalUtil;
 import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
+import jml.ot.TerminalApp.Profile;
+import jml.ot.TerminalUtil;
 
 public class PowerShellExe extends TerminalExe {
 
@@ -22,7 +23,7 @@ public class PowerShellExe extends TerminalExe {
 	public void run() 
 	{
 		String q = TerminalUtil.getQuote();
-		String colors = this.getColors(this.app.getProfile());
+		String colors = this.app.getBootTrueColor(this.app.getProfile());
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
 			"powershell",
@@ -51,7 +52,8 @@ public class PowerShellExe extends TerminalExe {
 	{
 		String q = TerminalUtil.getQuote();
 		String q2 = "'";
-		String colors = this.getColors(this.app.getProfile()).replace(";", "$");
+		Profile p = this.app.getProfile();
+		String colors = this.app.getBootTrueColor(p).replace(";", "$");
 		List<String> cmd = new ArrayList<>();
 		cmd.add("powershell");
 		cmd.add("-ExecutionPolicy");

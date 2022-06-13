@@ -67,25 +67,6 @@ public abstract class TerminalExe {
 	 */
 	public abstract void cleanup();
 	
-	/**
-	 * return a concated version of all color modes ending with the highest supported
-	 */
-	public String getColors(Profile p)
-	{
-		if(p != null)
-		{
-			String ansi4bit = AnsiColors.formatColor(TermColors.ANSI4BIT, p.bg, p.fg, p.ansiFormat);
-			String xterm256 = AnsiColors.formatColor(TermColors.XTERM_256, p.bg, p.fg, p.ansiFormat);
-			String truecolor = AnsiColors.formatColor(TermColors.TRUE_COLOR, p.bg, p.fg, p.ansiFormat);
-			
-			//TODO: ICP change based on terminal's $COLORTERM
-			this.app.colors.setColorMode(this.app.ANSI4BIT ? TermColors.ANSI4BIT : TerminalUtil.windows_terminals.contains(this.app.terminal) ? TermColors.TRUE_COLOR : TermColors.XTERM_256);
-			this.app.colors.setReset(this.app.colors.colorMode == TermColors.ANSI4BIT ? ansi4bit : this.app.colors.colorMode == TermColors.XTERM_256 ? xterm256 : this.app.colors.colorMode == TermColors.TRUE_COLOR ? truecolor : null); 
-			return ansi4bit + xterm256 + truecolor;
-		}
-		return "";
-	}
-	
 	public void makeShell(List<String> li) throws IOException 
 	{
 		this.makeShell(li, this.shell);

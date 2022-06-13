@@ -23,7 +23,7 @@ public class BatchExe extends TerminalExe {
 		String q = TerminalUtil.getQuote();
 		ProcessBuilder pb = null;
 		Profile profile = this.app.getProfile();
-		String colors = this.getColors(profile);
+		String colors = this.app.getBootTrueColor(profile);
 		if(profile != null)
 		{
 			pb = new ProcessBuilder(new String[]
@@ -58,7 +58,7 @@ public class BatchExe extends TerminalExe {
 	{
 		String q = TerminalUtil.getQuote();
 		Profile profile = this.app.getProfile();
-		String colors = this.getColors(profile).replace(";", "$");
+		String colors = this.app.getBootTrueColor(profile).replace(";", "$");
 		List<String> cmd = new ArrayList<>();
 		cmd.add("cmd");
 		cmd.add(TerminalUtil.getExeAndClose());

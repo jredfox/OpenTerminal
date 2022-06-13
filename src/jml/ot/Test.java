@@ -39,6 +39,10 @@ public class Test {
 					p.fg = Color.GREEN;
 					return p;
 				}
+				else if(TerminalUtil.isLinux())
+				{
+					return new Profile(Color.CYAN, Color.WHITE);
+				}
 				return null;
 			}
 		};
@@ -55,8 +59,8 @@ public class Test {
 	public static void printTest(AnsiColors colors)
 	{
 		System.out.println("clear me");
-		colors.setReset(Color.white, Color.CYAN, true);
-		colors.setReset(Color.BLUE, Color.BLACK, true);
+//		colors.setReset(Color.white, Color.CYAN, true);
+//		colors.setReset(Color.BLUE, Color.BLACK, true);
 		colors.println(Color.WHITE, Color.YELLOW, "SUP YELLOW!");
 		colors.print(Color.BLACK, Color.GREEN, AnsiColors.OVERLINE + AnsiColors.UNDERLINE + AnsiColors.ITALIC + "Classic Green on Black");
 		System.out.print("a");
