@@ -1,6 +1,7 @@
 package jml.ot.colors;
 
 import java.awt.Color;
+import java.io.IOException;
 
 import jml.ot.OTConstants;
 import jml.ot.TerminalUtil;
@@ -82,8 +83,9 @@ public class AnsiColors {
 	{
 		colors = formatColor(background, text, ansiEsc);
 		System.out.print(getReset());
+		System.out.flush();
 		if(cls)
-			cls();
+		  cls();
 	}
 	
 	/**
