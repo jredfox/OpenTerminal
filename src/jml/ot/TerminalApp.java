@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import jml.ot.colors.AnsiColors;
+import jml.ot.colors.AnsiColors.TermColors;
 import jml.ot.terminal.BatchExe;
 import jml.ot.terminal.GuakeTerminalExe;
 import jml.ot.terminal.LinuxBashExe;
@@ -191,7 +192,7 @@ public class TerminalApp {
 	{
 		public Color bg;
 		public Color fg;
-		public String ansiEsc;
+		public String ansiFormat;
 		public String wtTab;//WT Tab color
 		public String wtScheme;//WT color scheme
 		public boolean wtFullScreen;
@@ -199,15 +200,15 @@ public class TerminalApp {
 		/**
 		 * the profile name will be equal to the id for custom profiles due to importing is always the file name of the import
 		 */
-		public String mac_profileName;
+		public String mac_profileName = "";
 		/**
 		 * make sure you set this unique to your application so it doesn't conflict with another custom terminal profile
 		 */
-		public String mac_profileId;
+		public String mac_profileId = "";
 		/**
 		 * the terminal profile path within your jar from the root directory
 		 */
-		public String mac_profilePath;
+		public String mac_profilePath = "";
 		
 		public Profile()
 		{
@@ -241,6 +242,22 @@ public class TerminalApp {
 			p.mac_profilePath = pp;
 			return p;
 		}
+	}
+
+	/**
+	 * @return true color or if in ansi 4 bit mode it will return ansi 4 bit colors
+	 */
+	public String getBootTrueColor(Profile p)
+	{
+		return AnsiColors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.TRUE_COLOR, p.bg, p.fg, p.ansiFormat);
+	}
+	
+	/**
+	 * get the lower resolution color that's non rgb. either ANSI 4bit or xterm-256
+	 */
+	public String getBootPaletteColor(Profile p)
+	{
+		return AnsiColors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.XTERM_256, p.bg, p.fg, p.ansiFormat);
 	}
 
 }

@@ -8,10 +8,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import jml.ot.TerminalUtil;
 import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
 import jml.ot.TerminalApp.Profile;
+import jml.ot.TerminalUtil;
+import jml.ot.colors.AnsiColors;
 import jredfox.common.io.IOUtils;
 
 public class MacBashExe extends TerminalExe {
@@ -44,18 +45,26 @@ public class MacBashExe extends TerminalExe {
 			li.add("#!/bin/bash\n"
 					+ "set +v #echo off\n"
 					+ "clear && printf \"\\033[3J\" #clears screen\n"
-					+ "if ! [ -z \"$1\" ]\n"
-					+ "then\n"
-					+ "     echo -n -e \"\\033]0;\"$1\"\\007\" #changes the title if and only if the variable exists\n"
+					+ "t=\"$TERM$COLORTERM\" #set the color format in bash to update the UI as it's faster then waiting for IPC connection should prevent less flickering\n"
+					+ "if [[ $t == *\"true\"* && $t == *\"color\"* ]] || [[ $t == *\"24\"* && $t == *\"bit\"* ]]; then\n"
+					+ "  printf \"$1\"\n"
+					+ "  clear && printf \"\\033[3J\" #clears screen\n"
+					+ "else\n"
+					+ "  printf \"$2\"\n"
+					+ "  clear && printf \"\\033[3J\" #clears screen\n"
 					+ "fi\n"
-					+ "cd \"$2\"\n"
-					+ "eval \"$3\"\n"
-					+ "if [ \"$4\" = true ]; then\n"
+					+ "if ! [ -z \"$3\" ]\n"
+					+ "then\n"
+					+ "     echo -n -e \"\\033]0;\"$3\"\\007\" #changes the title if and only if the variable exists\n"
+					+ "fi\n"
+					+ "cd \"$4\"\n"
+					+ "eval \"$5\"\n"
+					+ "if [ \"$6\" = true ]; then\n"
 					+ "    read -p \"Press ENTER to continue...\"\n"
 					+ "fi\n"
-					+ "c=\"closeMe_ $6\"\n"
+					+ "c=\"closeMe_ $7\"\n"
 					+ "echo -n -e \"\\033]0;\"$c\"\\007\"\n"
-					+ "osascript \"$5\" \"$c\" & exit");
+					+ "osascript \"$8\" \"$c\" & exit");
 			this.makeShell(li);
 		}
 	}
@@ -175,18 +184,30 @@ public class MacBashExe extends TerminalExe {
 	public void run() 
 	{
 		String q = TerminalUtil.getQuote();
-		String profile = this.app.getProfile() != null && this.app.getProfile().mac_profileName != null ? this.app.getProfile().mac_profileName : "";
+		Profile p = this.getAppProfile();
+		String profileId = p.mac_profileName;
 		String command = (OTConstants.java_home + " " + OTConstants.args).replaceAll(q, "\\\\" + q);
-		String bash = "bash " + q + this.shell.getPath() + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + closeMeScpt.getPath() + q + " " + q + System.currentTimeMillis() + q;
+		String trueColor = app.getBootTrueColor(p).replace(AnsiColors.ESC, "\\033");
+		String platteColor = app.getBootPaletteColor(p).replace(AnsiColors.ESC, "\\033");
+		String bash = "bash " + q + this.shell.getPath() + q + " " + q + trueColor + q + " " + q + platteColor + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + System.currentTimeMillis() + q + " " + q + closeMeScpt.getPath() + q;
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
 			"osascript",
 			start2Scpt.getPath(),
 			bash,
-			profile,
+			profileId,
 			OTConstants.home.getPath()
 		});
 		this.run(pb);
+	}
+
+	/**
+	 * @return nonnull profile
+	 */
+	public Profile getAppProfile() 
+	{
+		Profile p = this.app.getProfile();
+		return p != null ? p : new Profile();
 	}
 
 	@Override

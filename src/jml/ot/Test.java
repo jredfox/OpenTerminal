@@ -18,7 +18,7 @@ public class Test {
 				if(TerminalUtil.isWindows())
 				{
 					Profile p = new Profile(Color.CYAN, Color.WHITE);
-					p.ansiEsc = AnsiColors.UNDERLINE;
+					p.ansiFormat = AnsiColors.UNDERLINE;
 					if(this.terminal.equals("powershell"))
 					{
 						p.wtScheme = "Campbell Powershell";
@@ -34,6 +34,9 @@ public class Test {
 //					Profile p = Profile.newMac("jredfox.openterminal.blackglass", "resources/jml/ot/mac/BlGlass.terminal");
 					Profile p = Profile.newMac("jredfox.openterminal.purpleCollege", "resources/jml/ot/mac/college.terminal");
 //					Profile p = Profile.newMac("Red Sands");
+//					Profile p  = new Profile();
+					p.bg = Color.GRAY;
+					p.fg = Color.GREEN;
 					return p;
 				}
 				return null;

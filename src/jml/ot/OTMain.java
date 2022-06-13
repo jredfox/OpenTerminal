@@ -37,7 +37,7 @@ public class OTMain {
 			Test.printTest(AnsiColors.INSTANCE);
 			
 			//java pause for non shell terminals. should be safe to do as OpenTerminal is a seperate process
-			if(System.getProperty("ot.p") != null)
+			if(System.getProperty("ot.p") != null || true)
 			{
 				System.out.print("Press ENTER to continue...");
 				new Scanner(System.in).nextLine();
