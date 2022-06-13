@@ -86,6 +86,10 @@ public class AnsiColors {
 		System.out.flush();
 		if(cls)
 		  cls();
+		
+		//fix for macOs
+		System.out.print("\033[3J");
+		System.out.flush();
 	}
 	
 	/**
