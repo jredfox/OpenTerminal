@@ -249,7 +249,7 @@ public class TerminalApp {
 	 */
 	public String getBootTrueColor(Profile p)
 	{
-		return AnsiColors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.TRUE_COLOR, p.bg, p.fg, p.ansiFormat);
+		return p == null ? "" : AnsiColors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.TRUE_COLOR, p.bg, p.fg, p.ansiFormat);
 	}
 	
 	/**
@@ -257,7 +257,7 @@ public class TerminalApp {
 	 */
 	public String getBootPaletteColor(Profile p)
 	{
-		return AnsiColors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.XTERM_256, p.bg, p.fg, p.ansiFormat);
+		return p == null ? "" : AnsiColors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.XTERM_256, p.bg, p.fg, p.ansiFormat);
 	}
 
 }

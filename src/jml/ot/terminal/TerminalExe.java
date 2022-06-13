@@ -6,10 +6,6 @@ import java.util.List;
 
 import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
-import jml.ot.TerminalApp.Profile;
-import jml.ot.TerminalUtil;
-import jml.ot.colors.AnsiColors;
-import jml.ot.colors.AnsiColors.TermColors;
 import jredfox.common.io.IOUtils;
 
 /**

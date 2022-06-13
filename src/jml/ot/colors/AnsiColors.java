@@ -1,7 +1,6 @@
 package jml.ot.colors;
 
 import java.awt.Color;
-import java.io.IOException;
 
 import jml.ot.OTConstants;
 import jml.ot.TerminalUtil;
@@ -86,10 +85,6 @@ public class AnsiColors {
 		System.out.flush();
 		if(cls)
 		  cls();
-		
-		//fix for macOs
-		System.out.print("\033[3J");
-		System.out.flush();
 	}
 	
 	/**
@@ -218,7 +213,7 @@ public class AnsiColors {
 	
 	public static String getCls()
 	{
-		return "\033[H\033[2J";
+		return "\033[H\033[2J\033[3J";
 	}
 	
 	/**
