@@ -1,24 +1,26 @@
 Boot:
-Fix bash boot
-Import profile dynamically macos
-Vala terminal not working
-print boot colors and add the java argument for the default color(macOs, linux)
 Tell host using icp the updated colorterm
-Tell terminal to update color via packets
-Tell terminal to update color mode via packets just in case someone has support for a buggy terminal
-Support iterm
+Tell terminal to update color format, color modes via packets
+Tell terminal to handle in, out, err
+Tell terminal to terminate itself
+re-test getBoot getBootOneLine, colors, profiling on all linux terminals and macOs
 
 Get it working:
-re-direct out err and in using network java ICP
+re-direct out err and in using network java IPC
 - get shutdown to cleanly work if the host or java app shuts down (PID lib JNI required)
 - get wrapped arguments before executing jar for wrapped version
 
-Coloring & custom shells:
-- colors for 4bit 8bit and rgb as well as custom ansi formatting as default formats
+Coloring:
+- ERR color format printing from the error stream sets to default color after or ERR color when nonnull
+- optional custom ERR colorizing support. This Involves overriding the print streams to have 0m + STD / ERR reset pre-pended
+
+profiling:
 - wt profiles
 
 Shutdown:
+ SIGINT, SIGTERM, SIGHUP, and SIGQUIT, SIGBREAK
 - on signal close per pos{win, linux, mac} has proper shutdown hooks and handling. for signals like sigterm and kill it will require a custom shutdown thread
 
-Optional:
-- java console (jframe) complete control can add all the features I want and no need for seperate processes
+Feature updates:
+- terminal properties get overriden from command line
+- customizable pause at the end of the program message with color support. NOTE: it's a java pause if the message is custom this is to prevent colorizing out of sync issues as the boot shell doesn't know what java set the current colors to
