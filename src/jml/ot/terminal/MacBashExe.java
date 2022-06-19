@@ -103,11 +103,12 @@ public class MacBashExe extends TerminalExe {
 		{
 			List<String> li = new ArrayList<>();
 			li.add("on run argv\n"
-					+ "	set importScript to first item of argv\n"
-					+ "	set profileId to second item of argv\n"
+					+ "	set pfile to first item of argv --profile file\n"
+					+ "	set profileId to second item of argv --the profile id which is also it's name\n"
 					+ "	set closeScript to third item of argv\n"
-					+ "	do shell script \"open -a Terminal \" & importScript\n"
-					+ "	do shell script \"osascript \" & closeScript & \" oti.\" & profileId & \".profile\"\n"
+					+ "	do shell script \"open -a Terminal \\\"\" & pfile & \"\\\"\"\n"
+					+ "	do shell script \"osascript \\\"\" & closeScript & \"\\\"\" & \" oti.\" & profileId & \".profile\"\n"
+					+ "	tell application \"Terminal\" to set custom title of settings set profileId to \"\" --after importing it change profile's title window to blank\n"
 					+ "end run");
 			this.makeAs(li, importAs, importScpt);
 		}
