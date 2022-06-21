@@ -34,7 +34,7 @@ public class AnsiColors {
 	 */
 	public static final AnsiColors INSTANCE = new AnsiColors();
 	public static final Palette pickerXterm256 = new Palette("resources/jml/ot/colors/xterm-256.csv");
-	public static final Palette pickerAnsi4Bit = new Palette("resources/jml/ot/colors/xterm-16.csv");
+	public static final Palette pickerAnsi4Bit = new Palette("resources/jml/ot/colors/ansi4bit.csv");
 	
 	/**
 	 * the default color format of AnsiColors. change with {@link #setReset(Color, Color, boolean)}
@@ -97,12 +97,12 @@ public class AnsiColors {
 
 	public void print(Color background, Color text, String str)
 	{
-		System.out.print(formatColor(background, text, "") + str + getReset());
+		System.out.print(formatColor(background, text, "") + str);
 	}
 	
 	public void println(Color background, Color text, String str)
 	{
-		System.out.println(formatColor(background, text, str) + getReset());
+		System.out.println(formatColor(background, text, str));
 	}
 	
 	/**
@@ -110,7 +110,7 @@ public class AnsiColors {
 	 */
 	public String formatColor(Color bg, Color text, String ansiEsc)
 	{
-		return formatColor(colorMode, bg, text, ansiEsc);
+		return formatColor(colorMode, bg, text, ansiEsc, true);
 	}
 	
 	/**
@@ -135,18 +135,18 @@ public class AnsiColors {
 		colorMode = mode;
 	}
 	
-	//START STATIC UTILITIES
-	
 	/**
 	 * supports xterm-16, xterm-256 and true colors
 	 */
-	public static String formatColor(TermColors mode, Color bg, Color text, String ansiEsc)
+	public String formatColor(TermColors mode, Color bg, Color text, String ansiEsc, boolean reset)
 	{
 		if(mode == null)
 		{
 			System.err.println("colorMode isn't set yet! You have to wait to fetch it from the terminal or set it manually and try again!");
 			return null;
 		}
+		
+		String r = reset ? this.getReset() : "";
 		
 		switch(mode)
 		{
@@ -155,27 +155,34 @@ public class AnsiColors {
 				String b = bg == null ? "" : ESC + "[48;2;" + bg.getRed() + ";" + bg.getGreen() + ";" + bg.getBlue() + "m";
 				String f = text == null ? "" : ESC + "[38;2;" + text.getRed() + ";" + text.getGreen() + ";" + text.getBlue() + "m";
 				String a = ansiEsc == null ? "" : ansiEsc;
-				return b + f + a;
+				return b + f + a + r;
 			}
 			case XTERM_256:
 			{
 				String b = bg == null ? "" : ESC + "[48;5;" + pickerXterm256.pickColor(bg).code + "m";
 				String f = text == null ? "" : ESC + "[38;5;" + pickerXterm256.pickColor(text).code + "m";
 				String a = ansiEsc == null ? "" : ansiEsc;
-				return b + f + a;
+				return b + f + a + r;
 			}
 			case ANSI4BIT:
 			{
 				String b = bg == null ? "" : ESC + "[" + getANSI4BitColor((byte)pickerAnsi4Bit.pickColor(bg).code, true) + "m";
 				String f = text == null ? "" : ESC + "[" + getANSI4BitColor((byte)pickerAnsi4Bit.pickColor(text).code, false) + "m";
 				String a = ansiEsc == null ? "" : ansiEsc;
-				return b + f + a;
+				return b + f + a + r;
 			}
-			default: 
+			case TRUE_COLOR_RGBA:
+			{
+				String b = bg == null ? "" : ESC + "[48;0;" + bg.getRed() + ";" + bg.getGreen() + ";" + bg.getBlue() + ";" + bg.getAlpha() + "m";
+				String f = text == null ? "" : ESC + "[38;0;" + text.getRGB() + "m";
+				String a = ansiEsc == null ? "" : ansiEsc;
+				return b + f + a + r;
+			}
+			default:
 				return null;
 		}
 	}
-	
+
 	/**
 	 * @param code 0-15 4bit color
 	 * @param background(boolean)
@@ -199,7 +206,8 @@ public class AnsiColors {
 	{
 		ANSI4BIT(),//16 different colors for lazy coders/ scripters not knowing RGB
 		XTERM_256(),//one byte colors (0-255) legacy
-		TRUE_COLOR()//RGB 24 bit standard colors with each color having 8 bits(0-255)
+		TRUE_COLOR(),//RGB 24 bit standard colors with each color having 8 bits(0-255)
+		TRUE_COLOR_RGBA()//true color with transparency added currently no terminal supports this
 	}
 	
 	/**

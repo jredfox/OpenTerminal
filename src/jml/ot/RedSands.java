@@ -1,22 +1,15 @@
 package jml.ot;
 
-import java.awt.Color;
 import java.io.File;
-
-import jml.ot.colors.AnsiColors;
 
 public class RedSands {
 	
 	public static void main(String[] args) throws Exception
 	{
-//		Palette p = new Palette();
-//		p.parse(RedSands.class.getClassLoader().getResourceAsStream("resources/jml/ot/colors/xterm-256.csv"));
-//		Color c = new Color(80, 255, 255);
-//		Color d = Color.YELLOW;
-		Color c = Color.GREEN;
-		System.out.println(c);
-		System.out.println(AnsiColors.pickerXterm256.pickColor(c));
-//		System.out.println(AnsiColors.to8Bit(new Color(255, 255, 255)));
+		System.out.print("{STD}");
+		System.err.print("{ERR}\n");
+		System.out.println("{STD}");
+		System.err.println("{ERR}");
 //		while(true)
 //		{
 //			try 

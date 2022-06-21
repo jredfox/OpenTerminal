@@ -1,7 +1,5 @@
 package jml.ot;
 
-import jml.ot.colors.AnsiColors;
-import jml.ot.terminal.LinuxBashExe;
 import jml.ot.terminal.host.ConsoleHost;
 
 public class OpenTerminal {

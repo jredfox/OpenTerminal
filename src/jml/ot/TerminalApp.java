@@ -158,6 +158,8 @@ public class TerminalApp {
 			cfg.set("conHost", this.conHost);
 		}
 		this.ANSI4BIT = cfg.get("ANSI-4bit-Colors", this.ANSI4BIT);
+		if(this.ANSI4BIT)
+			this.colors.setColorMode(TermColors.ANSI4BIT);
 		
 		String[] lcmds = cfg.get("linuxCmdExe", "").split(";");
 		for(String c : lcmds)
@@ -249,7 +251,7 @@ public class TerminalApp {
 	 */
 	public String getBootTrueColor(Profile p)
 	{
-		return p == null ? "" : AnsiColors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.TRUE_COLOR, p.bg, p.fg, p.ansiFormat);
+		return p == null ? "" : this.colors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.TRUE_COLOR, p.bg, p.fg, p.ansiFormat, false);
 	}
 	
 	/**
@@ -257,7 +259,7 @@ public class TerminalApp {
 	 */
 	public String getBootPaletteColor(Profile p)
 	{
-		return p == null ? "" : AnsiColors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.XTERM_256, p.bg, p.fg, p.ansiFormat);
+		return p == null ? "" : this.colors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.XTERM_256, p.bg, p.fg, p.ansiFormat, false);
 	}
 
 }
