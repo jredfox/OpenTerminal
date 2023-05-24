@@ -30,28 +30,48 @@ public abstract class PipeClient extends Pipe implements Closeable {
 		super(id, u);
 	}
 	
-	public BufferedReader getReader() throws IOException
+	public BufferedReader getReader()
 	{
-		if(this.in == null)
-		{
-			FileUtils.create(this.file);//ensure it exists on client as server may lag
-			this.in = this.url.openConnection().getInputStream();
-			this.reader = IOUtils.getReader(this.in);
-		}
+		if(this.reader == null)
+			this.reader = IOUtils.getReader(this.createIn());
 		return this.reader;
 	}
 	
+	public InputStream getIn()
+	{
+		if(this.in == null)
+			this.in = this.createIn();
+		return this.in;
+	}
+	
+	public InputStream createIn()
+	{
+		try 
+		{
+			return this.url.openConnection().getInputStream();
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	@Override
 	public void replaceSYSO(boolean std)
 	{
 		//TODO: create a wrapper to not conflict
-		System.setIn(this.in);
+		System.setIn(this.getIn());
 	}
 
+	/**
+	 * WARNING: could close system.in if you called replacedSyso
+	 */
 	@Override
 	public void close() throws IOException
 	{
-		this.in.close();
+		IOUtils.closeQuietly(this.in);
+		IOUtils.closeQuietly(this.reader);
 	}
 
 }

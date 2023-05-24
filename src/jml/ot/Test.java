@@ -2,6 +2,7 @@ package jml.ot;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.util.Scanner;
 
 import jml.ot.TerminalApp.Profile;
 import jml.ot.colors.AnsiColors;
@@ -54,6 +55,18 @@ public class Test {
 //		app.pause = false;
 		Profile p = app.getProfile();
 		OpenTerminal.open(app);
+//		try
+//		{
+//			Thread.sleep(1000);
+//			Scanner scanner = new Scanner(System.in);
+//			System.out.println("host input is:" + scanner.nextLine());
+////			System.out.println("host input is:" + scanner.nextLine());
+//		}
+//		catch(Throwable t)
+//		{
+//			t.printStackTrace();
+//		}
+		System.err.println("server err test");
 		//TODO: auto sync colormode from client
 		app.colors.colorMode = AnsiColors.TermColors.TRUE_COLOR;
 		app.colors.colors = app.colors.formatColor(p.bg, p.fg, "", false);
@@ -61,6 +74,7 @@ public class Test {
 		System.out.println(app.colors.formatColor(Color.RED, Color.WHITE, "server to client test...", true));
 //		printTest(app.colors);
 //		System.out.println("launch in:" + (System.currentTimeMillis() - ms) + "ms");
+		System.exit(0);//TODO: remove once PID auto detection has been reached
 	}
 	
 //	public static void printTest(AnsiColors colors)

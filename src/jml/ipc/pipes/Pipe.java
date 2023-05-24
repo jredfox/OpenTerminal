@@ -27,6 +27,7 @@ public abstract class Pipe {
 		this(id, FileUtils.toURL(f));
 		this.file = f;
 		this.type = Pipe.Type.FILE;
+		FileUtils.create(this.file);//ensure it exists
 	}
 	
 	public Pipe(String id, URL u)

@@ -5,8 +5,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 import jml.ot.OTConstants;
+import jml.ot.colors.AnsiColors;
 import jredfox.common.io.IOUtils;
 
 /**
@@ -20,11 +22,6 @@ public class PipeManager {
 	public Map<String, Pipe> pipes = new HashMap<>();
 	public Thread ticker;
 	public volatile boolean isRunning;
-	
-	/**
-	 * Print this field from server to client to get input {@link Pipe#getServer()} from the client (CLI)
-	 */
-	public static final String INPUT_REQUEST = "@#<IR>";
 	
 	public PipeManager()
 	{
@@ -130,6 +127,7 @@ public class PipeManager {
 				@Override
 				public void tick() throws IOException 
 				{
+					//make sure that the reader won't block before writing the input to the server's inputstream
 					if(this.getReader().ready())
 					{
 						String line = this.reader.readLine();
@@ -148,8 +146,8 @@ public class PipeManager {
 					return this.reader;
 				}
 			};
-			server_in.getOut().println(System.getProperty("ot.color.mode"));
-			this.register(client_out, client_err, server_in);
+			this.register(client_err, client_out, server_in);
+			server_in.getOut().println(AnsiColors.TermColors.TRUE_COLOR);//TODO: FIX IN FUTURE System.getProperty("ot.color.mode")
 		}
 		//server side
 		else
@@ -182,7 +180,7 @@ public class PipeManager {
 			server_out.replaceSYSO(true);
 			server_err.replaceSYSO(false);
 			client_in.replaceSYSO(false);
-			this.register(server_out, server_err, client_in);
+			this.register(server_err, server_out, client_in);
 		}
 	}
 

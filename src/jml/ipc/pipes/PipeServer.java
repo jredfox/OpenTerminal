@@ -40,7 +40,6 @@ public abstract class PipeServer extends Pipe implements Closeable {
 			{
 				case FILE:
 				{
-					FileUtils.create(this.file);//ensure it exists
 					this.out = new PrintStream(new FileOutputStream(this.file), true);//https://bugs.openjdk.org/browse/JDK-4814217
 					break;
 				}
