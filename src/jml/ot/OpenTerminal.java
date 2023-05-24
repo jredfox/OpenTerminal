@@ -17,7 +17,7 @@ public class OpenTerminal {
 			System.out.println("console is nonnull while forcing a new window isn't enabled!");
 			return;
 		}
-		else if(System.getProperty("ot.bg") != null)
+		else if(System.getProperty("ot.bg") != null || System.getProperty("ot.background") != null)
 			return;
 		
 		app.load();
@@ -26,7 +26,6 @@ public class OpenTerminal {
 			console.run();
 		else
 			app.getTerminalExe().run();
-		System.out.println(app.colors.colorMode);
 	}
 
 }

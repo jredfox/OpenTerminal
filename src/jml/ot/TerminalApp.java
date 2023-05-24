@@ -247,7 +247,7 @@ public class TerminalApp {
 	}
 
 	/**
-	 * @return true color or if in ansi 4 bit mode it will return ansi 4 bit colors
+	 * @return shell true color or if in ansi 4 bit mode it will return ansi 4 bit colors
 	 */
 	public String getBootTrueColor(Profile p)
 	{
@@ -255,7 +255,7 @@ public class TerminalApp {
 	}
 	
 	/**
-	 * get the lower resolution color that's non rgb. either ANSI 4bit or xterm-256
+	 * get the lower resolution color that's non rgb. either ANSI 4bit or xterm-256 for the shell
 	 */
 	public String getBootPaletteColor(Profile p)
 	{

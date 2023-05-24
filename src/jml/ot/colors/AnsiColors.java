@@ -39,16 +39,17 @@ public class AnsiColors {
 	/**
 	 * the default color format of AnsiColors. change with {@link #setReset(Color, Color, boolean)}
 	 */
-	public String colors = TerminalUtil.getPropertySafely("ot.color.format").replace("$", ";");
+	public String colors;
 	
 	/**
 	 * XTERM COLOR MODE. Change it with {@link #setColorMode(TermColors)}. The terminal once spawned should tell you what color mode it supports
 	 */
-	public TermColors colorMode = setColorMode(TerminalUtil.getPropertySafely("ot.color.mode"));
+	public TermColors colorMode;
 	
 	public AnsiColors()
 	{
-		
+		this.colors = TerminalUtil.getPropertySafely("ot.color.format").replace("$", ";");
+		this.colorMode = setColorMode(TerminalUtil.getPropertySafely("ot.color.mode"));
 	}
 	
 	public AnsiColors(Color background, Color text, String ansiEsc, TermColors mode)
@@ -80,37 +81,29 @@ public class AnsiColors {
 	
 	public void setReset(Color background, Color text, String ansiEsc, boolean cls)
 	{
-		colors = formatColor(background, text, ansiEsc);
+		colors = formatColor(background, text, ansiEsc, false);
 		System.out.print(getReset());
 		System.out.flush(); //ensure the color is set to the terminal before clearing the screen
 		if(cls)
 		  cls();//clear the screen to update the background colors. it's to avoid a bug of the background not updating every time it changes till the end of the line. it's an issue with every ANSI terminal out there
 	}
-	
-	/**
-	 * set reset direct
-	 */
-	public void setReset(String ansiEsc)
-	{
-		colors = ansiEsc;
-	}
 
 	public void print(Color background, Color text, String str)
 	{
-		System.out.print(formatColor(background, text, "") + str);
+		System.out.print(formatColor(background, text, "", true) + str);
 	}
 	
 	public void println(Color background, Color text, String str)
 	{
-		System.out.println(formatColor(background, text, str));
+		System.out.println(formatColor(background, text, str, true));
 	}
 	
 	/**
 	 * supports xterm-16, xterm-256 and true colors
 	 */
-	public String formatColor(Color bg, Color text, String ansiEsc)
+	public String formatColor(Color bg, Color text, String ansiEsc, boolean reset)
 	{
-		return formatColor(colorMode, bg, text, ansiEsc, true);
+		return formatColor(colorMode, bg, text, ansiEsc, reset);
 	}
 	
 	/**

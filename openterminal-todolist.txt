@@ -1,0 +1,27 @@
+fix ansi colors on server from getting the color mode (setup IPC via files)
+PID checker on both server and client to see if they close
+redo color formatting to accept formatting without rebuilding esc[<code>m every time
+
+create SocketPipes(pipes over the network from a socket)
+create SharedPipes (localhost pipes)
+update IPC to SharedPipes(fastest)
+suggest to server to close when CLI no longer exists PID
+fix macOs terminal script close
+wt profiles
+error coloring support in ansi colors
+
+allow per program id via config whether or not the ot overrides are allowed through jvm args
+ot.color.format
+ot.color.mode
+ot.c.ac = ansi color class object to reconstruct
+ot.c.app = terminal app class object to reconstruct
+ot.name
+ot.version
+ot.force
+ot.pause
+ot.terminal
+ot.conhost
+
+done:
+ot.l=launch
+ot.w=flag to use windows console host hack to enable colors from within java

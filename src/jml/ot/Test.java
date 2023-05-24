@@ -64,5 +64,6 @@ public class Test {
 		colors.print(Color.BLACK, Color.GREEN, AnsiColors.OVERLINE + AnsiColors.UNDERLINE + AnsiColors.ITALIC + "Classic Green on Black");
 		System.out.print("a");
 		System.out.println("b");
+		System.out.println("colorMode:" + colors.colorMode + " colorFormat:" + colors.colors);
 	}
 }
