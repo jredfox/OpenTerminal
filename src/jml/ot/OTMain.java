@@ -44,13 +44,14 @@ public class OTMain {
 //				//TODO:PID keep alive check here
 //			}
 			
+			OpenTerminal.manager.isRunning = false;//shutdown the thread
+			
 			//java pause for non shell terminals. should be safe to do as OpenTerminal is a separate process
 			if(System.getProperty("ot.p") != null)
 			{
 				System.out.print("Press ENTER to continue...");
 				new Scanner(System.in).nextLine();
 			}
-			OpenTerminal.manager.isRunning = false;//shutdown the thread
 		}
 	}
 

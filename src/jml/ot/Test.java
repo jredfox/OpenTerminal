@@ -2,7 +2,6 @@ package jml.ot;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.util.Scanner;
 
 import jml.ot.TerminalApp.Profile;
 import jml.ot.colors.AnsiColors;
@@ -75,7 +74,7 @@ public class Test {
 		System.out.println(app.colors.formatColor(Color.RED, Color.WHITE, "server to client test...", true));
 //		printTest(app.colors);
 //		System.out.println("launch in:" + (System.currentTimeMillis() - ms) + "ms");
-		System.exit(0);//TODO: remove once PID auto detection has been reached
+		OpenTerminal.manager.isRunning = false;//TODO: remove once PID auto detection has been reached
 	}
 	
 //	public static void printTest(AnsiColors colors)
