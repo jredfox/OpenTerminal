@@ -67,6 +67,7 @@ public class Test {
 //			t.printStackTrace();
 //		}
 		System.err.println("server err test");
+		System.err.println("server err test");
 		//TODO: auto sync colormode from client
 		app.colors.colorMode = AnsiColors.TermColors.TRUE_COLOR;
 		app.colors.colors = app.colors.formatColor(p.bg, p.fg, "", false);

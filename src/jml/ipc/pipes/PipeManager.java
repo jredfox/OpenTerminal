@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 import jml.ot.OTConstants;
 import jml.ot.colors.AnsiColors;
@@ -102,22 +101,6 @@ public class PipeManager {
 					}
 				}
 			};
-			Pipe client_err = new PipeClient("ot.err", new File(dirPipes, "ot-err.txt"))
-			{
-				@Override
-				public void tick() throws IOException 
-				{
-					if(this.getReader().ready())
-					{
-						String line = this.reader.readLine();
-						while(line != null)
-						{
-							System.err.println(line);
-							line = this.reader.readLine();
-						}
-					}
-				}
-			};
 			
 			//write all data from System#in to the the server
 			PipeServer server_in = new PipeServer("ot.in", new File(dirPipes, "ot-in.txt"))
@@ -146,21 +129,13 @@ public class PipeManager {
 					return this.reader;
 				}
 			};
-			this.register(client_err, client_out, server_in);
+			this.register(client_out, server_in);
 			server_in.getOut().println(AnsiColors.TermColors.TRUE_COLOR);//TODO: FIX IN FUTURE System.getProperty("ot.color.mode")
 		}
 		//server side
 		else
 		{
 			PipeServer server_out = new PipeServer("ot.out", new File(dirPipes, "ot-out.txt"))
-			{
-				@Override
-				public void tick() 
-				{
-					
-				}
-			};
-			PipeServer server_err = new PipeServer("ot.err", new File(dirPipes, "ot-err.txt"))
 			{
 				@Override
 				public void tick() 
@@ -178,9 +153,9 @@ public class PipeManager {
 				}
 			};
 			server_out.replaceSYSO(true);
-			server_err.replaceSYSO(false);
+			server_out.replaceSYSO(false);
 			client_in.replaceSYSO(false);
-			this.register(server_err, server_out, client_in);
+			this.register(server_out, client_in);
 		}
 	}
 
