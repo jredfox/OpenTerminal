@@ -45,6 +45,7 @@ public class PipeManager {
 				System.err.println("error while ticking pipe:" + p.id + ("\nisHost:" + OTConstants.LAUNCHED) + "\nisPipeServer:" + (p instanceof PipeServer));
 				t.printStackTrace();
 			}
+			//TODO: check PID's is alive here based on if is host or CLI and then stop this thread
 		}
 	}
 	

@@ -1,2 +1,4 @@
+fix InputStreams reaching EOF's for actual file IPC's causeing end of stream to happen and exceptions
+if(!ready() && read()) --> signal to client that input needs to happen
 finish the input pipe with giving the server the xterm-256 color mode
 create wrappers for replacing syso
