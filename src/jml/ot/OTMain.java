@@ -18,7 +18,7 @@ public class OTMain {
 	 * @param consoleHost default is null
 	 * @param Profile use {@link TerminalApp#getProfile#toString()} or null
 	 * @param PID of the host
-	 * @category NOTE: this doesn't support custom terminal app classes nor can it due to the fact it's an external jar with no deps. use {@link OpenTerminal#open(TerminalApp)} for custom terminal apps
+	 * @NOTE: USE java -cp INSTEAD OF java -jar for custom TerminalApp classes as you will get a NoClassFoundException otherwise
 	 * @author jredfox
 	 */
 	public static void main(String[] args) throws IOException, InterruptedException
@@ -26,22 +26,25 @@ public class OTMain {
 		AnsiColors.enableCmdColors();//ensure ANSI colors are enabled by loading the class
 		if(System.console() == null)
 		{
+			//TODO: custom TerminalApp
 			TerminalApp app = args.length != 0 ? new TerminalApp(args[0], args[1], args[2], Boolean.parseBoolean(args[3]), Boolean.parseBoolean(args[4])) : new TerminalApp("ot", "Open Terminal", OTConstants.OTVERSION);
 			OpenTerminal.open(app);
 		}
 		else
 		{
+			OpenTerminal.startPipes();
 //			new ProcessBuilder("cmd", "/c", "color 2f").inheritIO().start().waitFor();
 //			new ProcessBuilder("cmd", "/c", "").inheritIO().start().waitFor();
-			System.out.println("booted:" + OTConstants.userDir);
-			Test.printTest(AnsiColors.INSTANCE);
+//			System.out.println("booted:" + OTConstants.userDir);
+//			Test.printTest(AnsiColors.INSTANCE);
 			
-			//java pause for non shell terminals. should be safe to do as OpenTerminal is a seperate process
+			//java pause for non shell terminals. should be safe to do as OpenTerminal is a separate process
 			if(System.getProperty("ot.p") != null)
 			{
 				System.out.print("Press ENTER to continue...");
 				new Scanner(System.in).nextLine();
 			}
+			OpenTerminal.manager.isRunning = false;//shutdown the thread
 		}
 	}
 

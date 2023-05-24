@@ -1,8 +1,26 @@
 package jredfox.common.file;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class FileUtils {
+	
+	public static void create(File f)
+	{
+		try
+		{
+			if(!f.exists())
+			{
+				f.getParentFile().mkdirs();
+				f.createNewFile();
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 	
 	public static String getTrueName(File file)
 	{
@@ -35,6 +53,19 @@ public class FileUtils {
 		String name = file.getName();
 		int index = name.lastIndexOf('.');
 		return index != -1 && !file.isDirectory() ? name.substring(index + 1) : "";
+	}
+
+	public static URL toURL(File f)
+	{
+		try 
+		{
+			return f.toURI().toURL();
+		} 
+		catch (MalformedURLException e) 
+		{
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

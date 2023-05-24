@@ -30,7 +30,7 @@ public class IOUtils {
 	public static void copy(InputStream in, OutputStream out, boolean close) throws IOException
 	{
 		int length;
-   	 	while ((length = in.read(buffer)) > 0)
+   	 	while ((length = in.read(buffer)) >= 0)
 		{
 			out.write(buffer, 0, length);
 		}
@@ -176,6 +176,11 @@ public class IOUtils {
 		 {
 			 return null;
 		 }
+	}
+	
+	public static BufferedReader getReader(InputStream in)
+	{
+		return new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 	}
 	
 	public static BufferedReader getReader(String input)

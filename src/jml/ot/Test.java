@@ -52,18 +52,19 @@ public class Test {
 		}
 //		app.pause = false;
 		OpenTerminal.open(app);
-		printTest(app.colors);
+		System.out.println("server to client test...");
+//		printTest(app.colors);
 //		System.out.println("launch in:" + (System.currentTimeMillis() - ms) + "ms");
 	}
 	
-	public static void printTest(AnsiColors colors)
-	{
-//		colors.setReset(Color.white, Color.CYAN, true);
-//		colors.setReset(Color.BLUE, Color.BLACK, true);
-		colors.println(Color.WHITE, Color.YELLOW, "SUP YELLOW!");
-		colors.print(Color.BLACK, Color.GREEN, AnsiColors.OVERLINE + AnsiColors.UNDERLINE + AnsiColors.ITALIC + "Classic Green on Black");
-		System.out.print("a");
-		System.out.println("b");
-		System.out.println("colorMode:" + colors.colorMode + " colorFormat:" + colors.colors);
-	}
+//	public static void printTest(AnsiColors colors)
+//	{
+////		colors.setReset(Color.white, Color.CYAN, true);
+////		colors.setReset(Color.BLUE, Color.BLACK, true);
+//		colors.println(Color.WHITE, Color.YELLOW, "SUP YELLOW!");
+//		colors.print(Color.BLACK, Color.GREEN, AnsiColors.OVERLINE + AnsiColors.UNDERLINE + AnsiColors.ITALIC + "Classic Green on Black");
+//		System.out.print("a");
+//		System.out.println("b");
+//		System.out.println("colorMode:" + colors.colorMode + " colorFormat:" + colors.colors);
+//	}
 }

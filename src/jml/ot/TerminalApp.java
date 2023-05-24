@@ -6,7 +6,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import jml.ipc.pipes.Pipe;
+import jml.ipc.pipes.PipeClient;
+import jml.ipc.pipes.PipeServer;
 import jml.ot.colors.AnsiColors;
 import jml.ot.colors.AnsiColors.TermColors;
 import jml.ot.terminal.BatchExe;
@@ -143,6 +147,11 @@ public class TerminalApp {
 	 */
 	public void load()
 	{
+		this.loadConfig();
+	}
+
+	public void loadConfig() 
+	{
 		MapConfig cfg = new MapConfig(new File(OTConstants.configs, this.id + ".cfg"));
 		cfg.load();
 		this.terminal = cfg.get("terminal", this.terminal).trim();
@@ -180,7 +189,7 @@ public class TerminalApp {
 		}
 		cfg.save();
 	}
-	
+
 	/**
 	 * execute the command in the terminal UI TerminalApp configurations override
 	 */

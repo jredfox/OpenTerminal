@@ -1,5 +1,6 @@
 package jml.ot;
 
+import jml.ipc.pipes.PipeManager;
 import jml.ot.terminal.host.ConsoleHost;
 
 public class OpenTerminal {
@@ -14,18 +15,27 @@ public class OpenTerminal {
 		}
 		else if(System.console() != null && !app.force)
 		{
-			System.out.println("console is nonnull while forcing a new window isn't enabled!");
+			System.out.println("Console is non-null while forcing a new window isn't enabled!");
 			return;
 		}
 		else if(System.getProperty("ot.bg") != null || System.getProperty("ot.background") != null)
 			return;
 		
 		app.load();
+		startPipes();
 		ConsoleHost console = app.getConsoleHost();
 		if(console != null)
 			console.run();
 		else
 			app.getTerminalExe().run();
+	}
+
+	public static PipeManager manager;
+	public static void startPipes()
+	{
+		manager = new PipeManager();//setup IPC pipes
+		manager.loadPipes();
+		manager.start();
 	}
 
 }

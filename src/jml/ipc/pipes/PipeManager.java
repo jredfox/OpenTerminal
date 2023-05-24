@@ -1,82 +1,163 @@
 package jml.ipc.pipes;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.HashMap;
+import java.util.Map;
+
+import jml.ot.OTConstants;
 
 public class PipeManager {
-
-	/**
-	 * client's pipes
-	 */
-	public List<Pipe> cpipes = new ArrayList<>();
-	public Pipe inputPipe;
-	public Scanner scanner = new Scanner(System.in);
+	
+	public Map<String, Pipe> pipes = new HashMap<>();
+	public Thread ticker;
+	public volatile boolean isRunning;
+	
 	/**
 	 * Print this field from server to client to get input {@link Pipe#getServer()} from the client (CLI)
 	 */
-	public static final String INPUT_REQUEST = "/@<OT.IR>";
-
-	public void start() throws IOException, InterruptedException
+	public static final String INPUT_REQUEST = "@#<IR>";
+	
+	public PipeManager()
 	{
-		while(true)
+		
+	}
+	
+	public void register(Pipe p)
+	{
+		this.pipes.put(p.id, p);
+	}
+	
+	public void tick()
+	{
+		for(Pipe p : this.pipes.values())
 		{
-			this.init();
-			this.tickClients();
+			p.tick();
 		}
 	}
 	
-	public void init() 
+	public void start()
 	{
-		try 
+		this.ticker = new Thread()
 		{
-			this.inputPipe = new Pipe(new File("input.txt").getAbsoluteFile());
-		} 
-		catch (Throwable e) 
+			@Override
+			public void start()
+			{
+				PipeManager.this.isRunning = true;
+				super.start();
+			}
+			
+			@Override
+			public void run()
+			{
+				do
+				{
+					PipeManager.this.tick();
+				}
+				while(PipeManager.this.isRunning);
+			}
+		};
+		this.ticker.start();
+	}
+	
+	public void loadPipes()
+	{
+		//TODO:on client side make this sync instead of generate new pipes
+		//create dir pipes session and make sure it's one that doesn't exist yet
+//		File dirPipes = new File(OTConstants.home, "pipes/" + UUID.randomUUID());
+//		while(dirPipes.exists())
+//			dirPipes = new File(OTConstants.home, "pipes/" + UUID.randomUUID());
+		
+		File dirPipes = new File(OTConstants.home, "pipes");
+		
+		//client side
+		if(OTConstants.LAUNCHED)
 		{
-			e.printStackTrace();
+			Pipe client_out = new PipeClient("ot.out", new File(dirPipes, "ot-out.txt"))
+			{
+				@Override
+				public void tick() 
+				{
+					try
+					{
+						if(this.getIn().ready())
+						{
+							String line = this.reader.readLine();
+							while(line != null)
+							{
+								System.out.println(line);
+								line = this.reader.readLine();
+							}
+						}
+					}
+					catch(Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			};
+			Pipe client_err = new PipeClient("ot.err", new File(dirPipes, "ot-err.txt"))
+			{
+				@Override
+				public void tick() 
+				{
+					try
+					{
+						if(this.getIn().ready())
+						{
+							String line = this.reader.readLine();
+							while(line != null)
+							{
+								System.err.println(line);
+								line = this.reader.readLine();
+							}
+						}
+					}
+					catch(Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			};
+			this.register(client_out, client_err);
+		}
+		//server side
+		else
+		{
+			PipeServer server_out = new PipeServer("ot.out", new File(dirPipes, "ot-out.txt"))
+			{
+				@Override
+				public void tick() 
+				{
+					
+				}
+			};
+			PipeServer server_err = new PipeServer("ot.err", new File(dirPipes, "ot-err.txt"))
+			{
+				@Override
+				public void tick() 
+				{
+					
+				}
+			};
+			//fetch input from the CLI
+			PipeClient client_in = new PipeClient("ot.in", new File(dirPipes, "ot-in.txt"))
+			{
+				@Override
+				public void tick() 
+				{
+					
+				}
+			};
+			server_out.replaceSYSO(true);
+			server_err.replaceSYSO(false);
+			this.register(server_out, server_err, client_in);
 		}
 	}
 
-	//TODO: finish input
-	public void tickClients() 
+	public void register(Pipe... ps) 
 	{
-		for (Pipe pipe : this.cpipes)
-		{
-			try
-			{
-			String q = "\"";
-			BufferedReader r = pipe.getClient();
-			PrintStream out = pipe.std ? System.out : System.err;
-			String line = r.readLine();
-			int i=0;
-			while (line != null) 
-			{
-				if(line.contains(INPUT_REQUEST))
-				{
-					line = line.replace(INPUT_REQUEST, "");//remove the request from view
-					if(!line.isEmpty())
-						out.print("Line:" + (i++) + " " + q + line + q);
-					String inLine = scanner.nextLine();
-					this.inputPipe.getServer().write(inLine);
-				}
-				else
-				{
-					out.println("Line:" + (i++) + " " + q + line + q);
-				}
-				line = r.readLine();
-			}
-			}
-			catch(Throwable t)
-			{
-				System.err.println("Error while ticking pipe:" + pipe.getId());
-				t.printStackTrace();
-			}
-		}
+		for(Pipe p : ps)
+			this.pipes.put(p.id, p);
 	}
 
 }
