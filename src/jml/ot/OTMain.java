@@ -38,6 +38,12 @@ public class OTMain {
 //			System.out.println("booted:" + OTConstants.userDir);
 //			Test.printTest(AnsiColors.INSTANCE);
 			
+//			boolean hostIsAlive = true;
+//			while(hostIsAlive)
+//			{
+//				//TODO:PID keep alive check here
+//			}
+			
 			//java pause for non shell terminals. should be safe to do as OpenTerminal is a separate process
 			if(System.getProperty("ot.p") != null)
 			{

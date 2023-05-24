@@ -30,7 +30,7 @@ public abstract class PipeClient extends Pipe implements Closeable {
 		super(id, u);
 	}
 	
-	public BufferedReader getIn() throws IOException
+	public BufferedReader getReader() throws IOException
 	{
 		if(this.in == null)
 		{

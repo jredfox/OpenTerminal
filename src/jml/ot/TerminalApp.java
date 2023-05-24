@@ -45,7 +45,7 @@ public class TerminalApp {
 	
 	public TerminalApp(String id, String name, String version)
 	{
-		this(id, name, version, true);
+		this(id, name, version, false);
 	}
 	
 	public TerminalApp(String id, String n, String v, boolean force)

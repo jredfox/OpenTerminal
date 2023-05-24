@@ -37,7 +37,7 @@ public abstract class Pipe {
 	}
 	
 	/**
-	 * replaces the STD, ERR or IN. this is so the programmer doesn't have to manually call {@link PipeServer#getOut()} or {@link PipeClient#getIn() every time they want to print or read something}
+	 * replaces the STD, ERR or IN. this is so the programmer doesn't have to manually call {@link PipeServer#getOut()} or {@link PipeClient#getReader() every time they want to print or read something}
 	 * @throws IOException 
 	 * @throws URISyntaxException 
 	 */

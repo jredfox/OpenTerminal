@@ -6,6 +6,12 @@ import java.util.Map;
 
 import jml.ot.OTConstants;
 
+/**
+ * A standard PipeManager used to configure STD, ERR, and IN from server to client. The STD & ERR will only display the output and the IN will only gather input.
+ * if you need more then this simply override the load pipes method
+ * @author jredfox
+ *
+ */
 public class PipeManager {
 	
 	public Map<String, Pipe> pipes = new HashMap<>();
@@ -79,7 +85,7 @@ public class PipeManager {
 				{
 					try
 					{
-						if(this.getIn().ready())
+						if(this.getReader().ready())
 						{
 							String line = this.reader.readLine();
 							while(line != null)
@@ -102,7 +108,7 @@ public class PipeManager {
 				{
 					try
 					{
-						if(this.getIn().ready())
+						if(this.getReader().ready())
 						{
 							String line = this.reader.readLine();
 							while(line != null)

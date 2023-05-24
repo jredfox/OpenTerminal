@@ -52,7 +52,7 @@ public class Test {
 		}
 //		app.pause = false;
 		OpenTerminal.open(app);
-		System.out.println("server to client test...");
+		System.err.println("server to client test...");
 //		printTest(app.colors);
 //		System.out.println("launch in:" + (System.currentTimeMillis() - ms) + "ms");
 	}
