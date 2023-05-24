@@ -24,7 +24,8 @@ public abstract class Pipe {
 	
 	public Pipe(String id, File f)
 	{
-		this(id, FileUtils.toURL(f));
+		this(id);
+		this.url = FileUtils.toURL(f);
 		this.file = f;
 		this.type = Pipe.Type.FILE;
 		FileUtils.create(this.file);//ensure it exists
@@ -33,6 +34,8 @@ public abstract class Pipe {
 	public Pipe(String id, URL u)
 	{
 		this(id);
+		if(u.getProtocol().equalsIgnoreCase("file"))
+			throw new IllegalArgumentException("Pipe IPC Type File Cannot Be Constructed with the URL Constructor!");
 		this.url = u;
 		this.type = Pipe.Type.URL;
 	}

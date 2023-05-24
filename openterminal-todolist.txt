@@ -4,7 +4,6 @@ redo color formatting to accept formatting without rebuilding esc[<code>m every 
 
 create SocketPipes(pipes over the network from a socket)
 create SharedPipes (localhost pipes)
-suggest to server to close when CLI no longer exists PID
 fix macOs terminal script close
 
 ot.c.app = terminal app class object to reconstruct
