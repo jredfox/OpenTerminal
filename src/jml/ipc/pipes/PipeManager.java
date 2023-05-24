@@ -22,6 +22,7 @@ public class PipeManager {
 	public Thread ticker;
 	public volatile boolean isRunning;
 	public volatile boolean isTicking = true;
+	public long maxPipeTimeout = 10000;
 	
 	public PipeManager()
 	{

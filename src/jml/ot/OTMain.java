@@ -45,8 +45,14 @@ public class OTMain {
 //				//TODO:PID keep alive check here
 //			}
 			
+			//ensure final printlines happen before shutting down the client
 			OpenTerminal.manager.isRunning = false;//TODO: shutdown the thread
-			while(OpenTerminal.manager.isTicking);//ensure final printlines happen before shutting down the client
+			long time = System.currentTimeMillis();
+			while(OpenTerminal.manager.isTicking)
+			{
+				if((System.currentTimeMillis() - time) > OpenTerminal.manager.maxPipeTimeout)
+					break;//ensure it breaks
+			}
 			
 			//java pause for non shell terminals. should be safe to do as OpenTerminal is a separate process
 			if(System.getProperty("ot.p") != null)
