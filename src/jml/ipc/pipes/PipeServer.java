@@ -65,7 +65,7 @@ public abstract class PipeServer extends Pipe implements Closeable {
 	}
 	
 	/**
-	 * replace the System.out / Sytem.err to ensure user friendlyness
+	 * replace the System.out / Sytem.err to ensure user friendliness
 	 * @throws IOException 
 	 * @throws URISyntaxException 
 	 */
@@ -84,7 +84,7 @@ public abstract class PipeServer extends Pipe implements Closeable {
 	 * user must implement this on their own behalf
 	 */
 	@Override
-	public abstract void tick();
+	public abstract void tick() throws Throwable;
 	
 	@Override
 	public void close()

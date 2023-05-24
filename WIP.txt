@@ -1,3 +1,2 @@
-figure out why the ansi colors are not working currently
 finish the input pipe with giving the server the xterm-256 color mode
 create wrappers for replacing syso

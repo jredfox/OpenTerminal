@@ -1,10 +1,13 @@
 package jml.ipc.pipes;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import jml.ot.OTConstants;
+import jredfox.common.io.IOUtils;
 
 /**
  * A standard PipeManager used to configure STD, ERR, and IN from server to client. The STD & ERR will only display the output and the IN will only gather input.
@@ -37,7 +40,15 @@ public class PipeManager {
 	{
 		for(Pipe p : this.pipes.values())
 		{
-			p.tick();
+			try
+			{
+				p.tick();
+			}
+			catch(Throwable t)
+			{
+				System.err.println("error while ticking pipe:" + p.id + ("\nisHost:" + OTConstants.LAUNCHED) + "\nisPipeServer:" + (p instanceof PipeServer));
+				t.printStackTrace();
+			}
 		}
 	}
 	
@@ -81,50 +92,64 @@ public class PipeManager {
 			Pipe client_out = new PipeClient("ot.out", new File(dirPipes, "ot-out.txt"))
 			{
 				@Override
-				public void tick() 
+				public void tick() throws IOException 
 				{
-					try
+					if(this.getReader().ready())
 					{
-						if(this.getReader().ready())
+						String line = this.reader.readLine();
+						while(line != null)
 						{
-							String line = this.reader.readLine();
-							while(line != null)
-							{
-								System.out.println(line);
-								line = this.reader.readLine();
-							}
+							System.out.println(line);
+							line = this.reader.readLine();
 						}
-					}
-					catch(Exception e)
-					{
-						e.printStackTrace();
 					}
 				}
 			};
 			Pipe client_err = new PipeClient("ot.err", new File(dirPipes, "ot-err.txt"))
 			{
 				@Override
-				public void tick() 
+				public void tick() throws IOException 
 				{
-					try
+					if(this.getReader().ready())
 					{
-						if(this.getReader().ready())
+						String line = this.reader.readLine();
+						while(line != null)
 						{
-							String line = this.reader.readLine();
-							while(line != null)
-							{
-								System.err.println(line);
-								line = this.reader.readLine();
-							}
+							System.err.println(line);
+							line = this.reader.readLine();
 						}
-					}
-					catch(Exception e)
-					{
-						e.printStackTrace();
 					}
 				}
 			};
-			this.register(client_out, client_err);
+			
+			//write all data from System#in to the the server
+			PipeServer server_in = new PipeServer("ot.in", new File(dirPipes, "ot-in.txt"))
+			{
+				public BufferedReader reader;
+				
+				@Override
+				public void tick() throws IOException 
+				{
+					if(this.getReader().ready())
+					{
+						String line = this.reader.readLine();
+						while(line != null)
+						{
+							this.out.println(line);
+							line = this.reader.readLine();
+						}
+					}
+				}
+
+				public BufferedReader getReader()
+				{
+					if(this.reader == null)
+						this.reader = IOUtils.getReader(System.in);
+					return this.reader;
+				}
+			};
+			server_in.getOut().println(System.getProperty("ot.color.mode"));
+			this.register(client_out, client_err, server_in);
 		}
 		//server side
 		else
@@ -149,18 +174,19 @@ public class PipeManager {
 			PipeClient client_in = new PipeClient("ot.in", new File(dirPipes, "ot-in.txt"))
 			{
 				@Override
-				public void tick() 
+				public void tick()
 				{
 					
 				}
 			};
 			server_out.replaceSYSO(true);
 			server_err.replaceSYSO(false);
+			client_in.replaceSYSO(false);
 			this.register(server_out, server_err, client_in);
 		}
 	}
 
-	public void register(Pipe... ps) 
+	public void register(Pipe... ps)
 	{
 		for(Pipe p : ps)
 			this.pipes.put(p.id, p);

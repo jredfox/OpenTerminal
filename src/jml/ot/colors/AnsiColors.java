@@ -90,7 +90,7 @@ public class AnsiColors {
 
 	public void print(Color background, Color text, String str)
 	{
-		System.out.print(formatColor(background, text, "", true) + str);
+		System.out.print(formatColor(background, text, str, true));
 	}
 	
 	public void println(Color background, Color text, String str)
@@ -103,7 +103,7 @@ public class AnsiColors {
 	 */
 	public String formatColor(Color bg, Color text, String ansiEsc, boolean reset)
 	{
-		return formatColor(colorMode, bg, text, ansiEsc, reset);
+		return formatColor(this.colorMode, bg, text, ansiEsc, reset);
 	}
 	
 	/**

@@ -3,6 +3,7 @@ package jml.ot;
 import java.awt.Color;
 import java.io.IOException;
 
+import jml.ot.TerminalApp.Profile;
 import jml.ot.colors.AnsiColors;
 
 public class Test {
@@ -51,8 +52,13 @@ public class Test {
 			app.terminal = "gnome-terminal";//set's the initial terminal the configuration overrides this from TerminalApp#getTerminalExe called by OpenTerminal#open
 		}
 //		app.pause = false;
+		Profile p = app.getProfile();
 		OpenTerminal.open(app);
-		System.err.println("server to client test...");
+		//TODO: auto sync colormode from client
+		app.colors.colorMode = AnsiColors.TermColors.TRUE_COLOR;
+		app.colors.colors = app.colors.formatColor(p.bg, p.fg, "", false);
+		app.colors.print(Color.BLACK, Color.green, "OLDE TESTE");
+		System.out.println(app.colors.formatColor(Color.RED, Color.WHITE, "server to client test...", true));
 //		printTest(app.colors);
 //		System.out.println("launch in:" + (System.currentTimeMillis() - ms) + "ms");
 	}

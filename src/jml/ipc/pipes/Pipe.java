@@ -46,7 +46,7 @@ public abstract class Pipe {
 	/**
 	 * user must impl this for every different use
 	 */
-	public abstract void tick();
+	public abstract void tick() throws Throwable;
 	
 	public static enum Type
 	{
