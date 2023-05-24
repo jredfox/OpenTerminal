@@ -29,6 +29,7 @@ public class OTMain {
 			//TODO: custom TerminalApp
 			TerminalApp app = args.length != 0 ? new TerminalApp(args[0], args[1], args[2], Boolean.parseBoolean(args[3]), Boolean.parseBoolean(args[4])) : new TerminalApp("ot", "Open Terminal", OTConstants.OTVERSION);
 			OpenTerminal.open(app);
+			OpenTerminal.manager.isRunning = false;//TODO: shutdown the thread
 		}
 		else
 		{
@@ -44,7 +45,8 @@ public class OTMain {
 //				//TODO:PID keep alive check here
 //			}
 			
-			OpenTerminal.manager.isRunning = false;//shutdown the thread
+			OpenTerminal.manager.isRunning = false;//TODO: shutdown the thread
+			while(OpenTerminal.manager.isTicking);//ensure final printlines happen before shutting down the client
 			
 			//java pause for non shell terminals. should be safe to do as OpenTerminal is a separate process
 			if(System.getProperty("ot.p") != null)

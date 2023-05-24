@@ -21,6 +21,7 @@ public class PipeManager {
 	public Map<String, Pipe> pipes = new HashMap<>();
 	public Thread ticker;
 	public volatile boolean isRunning;
+	public volatile boolean isTicking = true;
 	
 	public PipeManager()
 	{
@@ -65,7 +66,9 @@ public class PipeManager {
 			{
 				do
 				{
+					PipeManager.this.isTicking = true;
 					PipeManager.this.tick();
+					PipeManager.this.isTicking = false;
 				}
 				while(PipeManager.this.isRunning);
 			}
