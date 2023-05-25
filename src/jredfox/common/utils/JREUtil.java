@@ -6,6 +6,9 @@ import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import jml.ot.OpenTerminal;
@@ -269,6 +272,80 @@ public class JREUtil {
 			e.printStackTrace();
 		}
 	}
+
+	public static Class[] getWrappedClasses(Class[] params) 
+    {
+		for(int i=0; i< params.length; i++)
+		{
+			params[i] = getWrappedClass(params[i]);
+		}
+		return params;
+	}
+	
+	public static Class getWrappedClass(Class clazz) 
+    {
+    	if(clazz.isPrimitive())
+    	{
+    		if(boolean.class.equals(clazz))
+    			return Boolean.class;
+    		else if(char.class.equals(clazz))
+    			return Character.class;
+    		else if(byte.class.equals(clazz))
+    			return Byte.class;
+    		else if(short.class.equals(clazz))
+    			return Short.class;
+    		else if(int.class.equals(clazz))
+    			return Integer.class;
+    		else if(long.class.equals(clazz))
+    			return Long.class;
+    		else if(float.class.equals(clazz))
+    			return Float.class;
+    		else if(double.class.equals(clazz))
+    			return Double.class;
+    		else
+    			return null;//unkown data type
+    	}
+		return clazz;
+	}
+	
+    public static boolean equals(Class[] compare, Class[] params)
+    {
+    	if(compare.length != params.length)
+			return false;
+		for(int i=0;i<params.length;i++)
+		{
+			Class c1 = params[i];
+			Class c2 = compare[i];
+			if(!c1.equals(c2))
+				return false;
+		}
+		return true;
+	}
+    
+    public static List<Class<?>> getAllInterfaces(final Class<?> cls) {
+        if (cls == null) {
+            return null;
+        }
+
+        final LinkedHashSet<Class<?>> interfacesFound = new LinkedHashSet<>();
+       getAllInterfaces(cls, interfacesFound);
+
+        return new ArrayList<>(interfacesFound);
+   }
+
+    protected static void getAllInterfaces(Class<?> cls, final HashSet<Class<?>> interfacesFound) {
+        while (cls != null) {
+            final Class<?>[] interfaces = cls.getInterfaces();
+
+           for (final Class<?> i : interfaces) {
+                if (interfacesFound.add(i)) {
+                    getAllInterfaces(i, interfacesFound);
+                }
+            }
+
+            cls = cls.getSuperclass();
+         }
+     }
 
 
 }

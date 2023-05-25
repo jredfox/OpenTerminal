@@ -3,6 +3,7 @@ package jml.ipc.pipes;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -100,7 +101,14 @@ public class PipeManager {
 						String line = this.reader.readLine();
 						while(line != null)
 						{
-							System.out.println(line);
+							//don't trust BufferedReader#readLine() as it will sometimes give you false new lines if data is written on the same line later
+							int b = this.getIn().read();
+							while(b != -1)
+							{
+								System.out.write(b);
+								b = this.in.read();
+							}
+							System.out.flush();
 							line = this.reader.readLine();
 						}
 					}

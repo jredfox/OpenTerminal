@@ -65,15 +65,16 @@ public class Test {
 //		{
 //			t.printStackTrace();
 //		}
-		System.err.println("server err test");
-		System.err.println("server err test");
+		System.out.print("ab");
+//		Thread.sleep(1000);
+		System.out.print("cd");
+//		System.out.println("ef");
 		//TODO: auto sync colormode from client
 		app.colors.colorMode = AnsiColors.TermColors.TRUE_COLOR;
-		app.colors.colors = app.colors.formatColor(p.bg, p.fg, "", false);
+		app.colors.colors = app.colors.formatColor(p.bg, p.fg, p.ansiFormat, false);
 		app.colors.print(Color.BLACK, Color.green, "OLDE TESTE");
 		System.out.println(app.colors.formatColor(Color.RED, Color.WHITE, "server to client test...", true));
 //		printTest(app.colors);
-//		System.out.println("launch in:" + (System.currentTimeMillis() - ms) + "ms");
 		OpenTerminal.manager.isRunning = false;//TODO: remove once PID auto detection has been reached
 	}
 	

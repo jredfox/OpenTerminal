@@ -39,11 +39,11 @@ public class OTMain {
 //			System.out.println("booted:" + OTConstants.userDir);
 //			Test.printTest(AnsiColors.INSTANCE);
 			
-//			boolean hostIsAlive = true;
-//			while(hostIsAlive)
-//			{
+			boolean hostIsAlive = true;
+			while(hostIsAlive)
+			{
 //				//TODO:PID keep alive check here
-//			}
+			}
 			
 			//ensure final printlines happen before shutting down the client
 			OpenTerminal.manager.isRunning = false;//TODO: shutdown the thread

@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import jredfox.common.file.FileUtils;
 import jredfox.common.io.IOUtils;
 
 public abstract class PipeClient extends Pipe implements Closeable {
