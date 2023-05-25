@@ -1,12 +1,12 @@
 package jml.reflect;
 
 
-public class MCPSidedString {
+public class ObfString {
 	
 	public String deob;
 	public String ob;
 	
-	public MCPSidedString(String deob, String ob)
+	public ObfString(String deob, String ob)
 	{
 		this.deob = deob;
 		this.ob = ob;

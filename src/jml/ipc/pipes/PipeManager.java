@@ -3,7 +3,6 @@ package jml.ipc.pipes;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,9 +12,8 @@ import jredfox.common.io.IOUtils;
 
 /**
  * A standard PipeManager used to configure STD, ERR, and IN from server to client. The STD & ERR will only display the output and the IN will only gather input.
- * if you need more then this simply override the load pipes method
+ * if you need more then this simply override the loadPipes() method
  * @author jredfox
- *
  */
 public class PipeManager {
 	

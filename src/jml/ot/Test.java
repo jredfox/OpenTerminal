@@ -65,10 +65,8 @@ public class Test {
 //		{
 //			t.printStackTrace();
 //		}
-		System.out.print("ab");
-//		Thread.sleep(1000);
+		System.out.print("💜ab");
 		System.out.print("cd");
-//		System.out.println("ef");
 		//TODO: auto sync colormode from client
 		app.colors.colorMode = AnsiColors.TermColors.TRUE_COLOR;
 		app.colors.colors = app.colors.formatColor(p.bg, p.fg, p.ansiFormat, false);

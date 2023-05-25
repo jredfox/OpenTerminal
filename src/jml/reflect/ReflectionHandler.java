@@ -30,7 +30,7 @@ public class ReflectionHandler {
 	}
 	public static Field elementData = ReflectionHandler.getField(ArrayList.class, "elementData");
 	
-    public static Field getField(Class clazz, MCPSidedString mcp)
+    public static Field getField(Class clazz, ObfString mcp)
     {
     	return getField(clazz, mcp.toString());
     }
@@ -61,7 +61,7 @@ public class ReflectionHandler {
         return null;
     }
 
-	public static Method getMethod(Class clazz, MCPSidedString mcp)
+	public static Method getMethod(Class clazz, ObfString mcp)
     {
     	return getMethod(clazz, mcp.toString());
     }
