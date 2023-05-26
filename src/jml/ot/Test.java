@@ -16,7 +16,6 @@ public class Test {
 
 	public static void main(String[] args) throws IOException, InterruptedException
 	{
-		long ms = System.currentTimeMillis();
 		TerminalApp app = new TerminalApp("test", "Test App", "1.0.0", false) 
 		{
 			@Override
@@ -59,27 +58,28 @@ public class Test {
 		}
 //		app.pause = false;
 		Profile p = app.getProfile();
-		System.out.println("starting");
-//		OpenTerminal.open(app);
+		System.out.println("Starting CLI");
+		OpenTerminal.open(app);
 		
-//		String color = OpenTerminal.manager.getInputNoREQ();
+		String color = OpenTerminal.manager.getInputNoREQ();
 //		System.out.println("COLORMODE:" + color);
-//		app.colors.colorMode = app.colors.setColorMode(color);
+		app.colors.colorMode = app.colors.setColorMode(color);
 		
-//		String in = OpenTerminal.manager.getInput();
-//		System.out.println("input test:" + in);
-		File f = new File(OTConstants.home, "pipes/ot.in2.txt");
-		FileUtils.create(f);
-		System.setIn(new PipeInputStream(f));
-		System.out.println(System.in);
-		BufferedReader r = IOUtils.getReader(System.in);
-		System.out.println(r.readLine());
-		System.out.println(r.readLine());
+//		Scanner scanner = new Scanner(System.in);
+//		System.out.print("TEST:");
+//		System.out.println("TEST IN WAS:" + scanner.nextLine());
+//		System.out.println("2d line TEST WAS:" + scanner.nextLine());
+		
+//		BufferedReader bf = IOUtils.getReader(System.in);
+//		System.out.print("BF1:");
+//		System.out.println(bf.readLine());
+//		System.out.print("BF2:");
+//		System.out.println(bf.readLine());
 		
 //		app.colors.colors = app.colors.formatColor(p.bg, p.fg, p.ansiFormat, false);
 //		app.colors.print(Color.BLACK, Color.green, "OLDE TESTE");
 //		System.out.println(app.colors.formatColor(Color.RED, Color.WHITE, "server to client test...", true));
-//		OpenTerminal.manager.isRunning = false;//TODO: remove once PID auto detection has been reached
+		OpenTerminal.manager.isRunning = false;//TODO: remove once PID auto detection has been reached
 	}
 	
 //	public static void printTest(AnsiColors colors)

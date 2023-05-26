@@ -1,4 +1,5 @@
-fix ansi colors on server from getting the color mode (setup IPC via files)
+fix files not getting reset on new launch
+create wrappers for replacing syso
 PID checker on both server and client to see if they close
 redo color formatting to accept formatting without rebuilding esc[<code>m every time
 

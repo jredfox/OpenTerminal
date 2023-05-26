@@ -15,14 +15,15 @@ public class Debug {
 		File fileIn = new File("in.txt").getAbsoluteFile();
 		fileIn.getParentFile().mkdirs();
 		fileIn.createNewFile();
-		InputStream in = new PipeInputStream(fileIn);
+		PipeInputStream in = new PipeInputStream(fileIn, "SIG_IN", System.out);
 		System.setIn(in);
 //		System.setIn(new FileInputStream(fileIn));
 		try
 		{
+			System.out.print("AB");
 			Scanner scanner = new Scanner(System.in);
-			System.out.println(scanner.nextLine());
-			System.out.println(scanner.nextLine());
+//			System.out.println(scanner.nextLine());
+//			System.out.println(scanner.nextLine());
 //			BufferedReader reader = IOUtils.getReader(System.in);
 //			System.out.println(reader.readLine());
 //			System.out.println(reader.readLine());

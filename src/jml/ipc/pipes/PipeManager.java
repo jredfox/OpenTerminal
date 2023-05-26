@@ -2,15 +2,20 @@ package jml.ipc.pipes;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
 import jml.ot.OTConstants;
 import jml.ot.colors.AnsiColors;
+import jredfox.common.file.FileUtils;
+import jredfox.common.io.IOUtils;
 
 /**
  * A standard PipeManager used to configure STD, ERR, and IN from server to client. The STD & ERR will only display the output and the IN will only gather input.
@@ -31,6 +36,8 @@ public class PipeManager {
 	 * IPC FILE ONLY How Long to Sleep before the input method trys to read again
 	 */
 	public long fileInSleep = 100;
+	private File noREQFile = null;
+	private BufferedReader noREQReader = null;
 	public static final String REQUEST_INPUT = "@<OT.IN>";
 	
 	public PipeManager()
@@ -44,45 +51,15 @@ public class PipeManager {
 	}
 	
 	/**
-	 * IPC FILE ONLY get input from the client.
-	 */
-	public String getInput() throws IOException
-	{
-		return this.getInput(System.out);
-	}
-	
-	/**
-	 * IPC FILE ONLY get input from the client. 
-	 * @param PrintStream being the underlying printstream from the Pipe. The default method assumes you replaced {@link System#out} and are using it for the intended CLI
-	 */
-	public String getInput(PrintStream out) throws IOException
-	{
-		PipeClient pipeIn = (PipeClient) this.pipes.get("ot.in");
-		BufferedReader reader = pipeIn.getReader();
-		String input = reader.readLine();
-		if(input != null)
-			return input;
-		
-		out.print(REQUEST_INPUT);
-		out.flush();
-		long ms = System.currentTimeMillis();
-		while(input == null)
-		{
-			input = reader.readLine();
-		}
-		return input;
-	}
-	
-	/**
 	 * assumes the client has already sent the input
 	 */
 	public String getInputNoREQ() throws IOException
 	{
-		PipeClient pipeIn = (PipeClient) this.pipes.get("ot.in");
-		BufferedReader reader = pipeIn.getReader();
-		String input = reader.readLine();
+		if(this.noREQReader == null)
+			this.noREQReader = IOUtils.getReader(this.noREQFile);
+		String input = this.noREQReader.readLine();
 		while(input == null)
-			input = reader.readLine();
+			input = this.noREQReader.readLine();
 		return input;
 	}
 	
@@ -138,6 +115,8 @@ public class PipeManager {
 //			dirPipes = new File(OTConstants.home, "pipes/" + UUID.randomUUID());
 		
 		File dirPipes = new File(OTConstants.home, "pipes");
+		this.noREQFile = new File(dirPipes, "ot-NOREQ.txt");
+		FileUtils.create(this.noREQFile);
 		
 		//client side
 		if(OTConstants.LAUNCHED)
@@ -171,6 +150,7 @@ public class PipeManager {
 							sindex++;
 							if(m.equals(PipeManager.REQUEST_INPUT))
 							{
+								System.out.flush();//ensure it flushes to display before gathering the input
 								Scanner scanner = new Scanner(System.in);
 								String input = scanner.nextLine();
 								server_in.getOut().println(input);
@@ -203,7 +183,7 @@ public class PipeManager {
 				}
 			};
 			this.register(client_out, server_in);
-			server_in.getOut().println(AnsiColors.TermColors.TRUE_COLOR);//TODO: get this to work from the batch scripts
+			IOUtils.saveFileLines(Arrays.asList("" + AnsiColors.TermColors.TRUE_COLOR), this.noREQFile , true);
 		}
 		//server side
 		else
