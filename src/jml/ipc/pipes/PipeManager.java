@@ -12,6 +12,7 @@ import java.util.Scanner;
 import jml.ipc.pipes.Pipe.Type;
 import jml.ot.OTConstants;
 import jml.ot.colors.AnsiColors;
+import jredfox.common.file.FileUtils;
 import jredfox.common.io.IOUtils;
 import jredfox.common.utils.FileUtil;
 
@@ -106,9 +107,6 @@ public class PipeManager {
 	
 	public void loadPipes()
 	{
-		//TODO:on client side make this sync instead of generate new pipes
-		//create dir pipes session and make sure it's one that doesn't exist yet
-		
 		File dirPipes = OTConstants.dirPipes;
 		this.noREQFile = new File(dirPipes, "ot-NOREQ.txt");
 		System.out.println(dirPipes + " SERVER?:" + (!OTConstants.LAUNCHED));
@@ -183,6 +181,7 @@ public class PipeManager {
 		//server side
 		else
 		{
+			this.cleanup();
 			PipeServer server_out = new PipeServer("ot.out", new File(dirPipes, "ot-out.txt"))
 			{
 				@Override
@@ -216,7 +215,6 @@ public class PipeManager {
 				}
 			};
 			this.register(server_out, client_in);
-			this.cleanup();
 			server_out.replaceSYSO(true);
 			server_out.replaceSYSO(false);
 			client_in.replaceSYSO(false);
@@ -224,21 +222,14 @@ public class PipeManager {
 	}
 
 	/**
-	 * cleans up files from previous launch
+	 * cleans up files from previous launches
 	 * @throws IOException 
 	 */
 	public void cleanup()
 	{
-		for(Pipe p : this.pipes.values())
-		{
-			if(p.type == Type.FILE)
-			{
-				p.file.delete();
-				FileUtil.create(p.file);
-			}
-		}
-		this.noREQFile.delete();
-		FileUtil.create(this.noREQFile);
+		IOUtils.deleteDirectory(OTConstants.dirPipes.getParentFile());
+		OTConstants.dirPipes.mkdirs();
+		FileUtils.create(this.noREQFile);
 	}
 
 	public void register(Pipe... ps)
