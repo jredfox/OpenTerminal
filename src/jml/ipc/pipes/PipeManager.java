@@ -3,12 +3,13 @@ package jml.ipc.pipes;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 import jml.ot.OTConstants;
 import jml.ot.colors.AnsiColors;
-import jredfox.common.io.IOUtils;
 
 /**
  * A standard PipeManager used to configure STD, ERR, and IN from server to client. The STD & ERR will only display the output and the IN will only gather input.
@@ -21,7 +22,15 @@ public class PipeManager {
 	public Thread ticker;
 	public volatile boolean isRunning;
 	public volatile boolean isTicking = true;
-	public long maxPipeTimeout = 10000;
+	/**
+	 * IPC FILE ONLY Max Timeout before the input method returns null from timeout
+	 */
+	public long fileInTimeout = -1;
+	/**
+	 * IPC FILE ONLY How Long to Sleep before the input method trys to read again
+	 */
+	public long fileInSleep = 100;
+	public static final String REQUEST_INPUT = "@<OT.IN>";
 	
 	public PipeManager()
 	{
@@ -31,6 +40,49 @@ public class PipeManager {
 	public void register(Pipe p)
 	{
 		this.pipes.put(p.id, p);
+	}
+	
+	/**
+	 * IPC FILE ONLY get input from the client.
+	 */
+	public String getInput() throws IOException
+	{
+		return this.getInput(System.out);
+	}
+	
+	/**
+	 * IPC FILE ONLY get input from the client. 
+	 * @param PrintStream being the underlying printstream from the Pipe. The default method assumes you replaced {@link System#out} and are using it for the intended CLI
+	 */
+	public String getInput(PrintStream out) throws IOException
+	{
+		PipeClient pipeIn = (PipeClient) this.pipes.get("ot.in");
+		BufferedReader reader = pipeIn.getReader();
+		String input = reader.readLine();
+		if(input != null)
+			return input;
+		
+		out.print(REQUEST_INPUT);
+		out.flush();
+		long ms = System.currentTimeMillis();
+		while(input == null)
+		{
+			input = reader.readLine();
+		}
+		return input;
+	}
+	
+	/**
+	 * assumes the client has already sent the input
+	 */
+	public String getInputNoREQ() throws IOException
+	{
+		PipeClient pipeIn = (PipeClient) this.pipes.get("ot.in");
+		BufferedReader reader = pipeIn.getReader();
+		String input = reader.readLine();
+		while(input == null)
+			input = reader.readLine();
+		return input;
 	}
 	
 	public void tick()
@@ -89,59 +141,70 @@ public class PipeManager {
 		//client side
 		if(OTConstants.LAUNCHED)
 		{
+			//write all data from System#in to the the server
+			PipeServer server_in = new PipeServer("ot.in", new File(dirPipes, "ot-in.txt"))
+			{	
+				@Override
+				public void tick() throws IOException 
+				{
+					
+				}
+			};
 			Pipe client_out = new PipeClient("ot.out", new File(dirPipes, "ot-out.txt"))
 			{
 				@Override
 				public void tick() throws IOException 
 				{
-					if(this.getReader().ready())
+					int c = 0;//flush counter
+					
+					//ignore flags
+					String m = "";
+					int sindex = 0;
+					
+					int b = this.getIn().read();
+					while(b != -1)
 					{
-						String line = this.reader.readLine();
-						while(line != null)
+						if(PipeManager.REQUEST_INPUT.charAt(sindex) == (char)b)
 						{
-							//don't trust BufferedReader#readLine() as it will sometimes give you false new lines if data is written on the same line later
-							int b = this.getIn().read();
-							while(b != -1)
+							m += (char)b;
+							sindex++;
+							if(m.equals(PipeManager.REQUEST_INPUT))
 							{
-								System.out.write(b);
-								b = this.in.read();
+								Scanner scanner = new Scanner(System.in);
+								String input = scanner.nextLine();
+								server_in.getOut().println(input);
 							}
-							System.out.flush();
-							line = this.reader.readLine();
+							b = in.read();//ensure read increments
+							continue;
 						}
-					}
-				}
-			};
-			
-			//write all data from System#in to the the server
-			PipeServer server_in = new PipeServer("ot.in", new File(dirPipes, "ot-in.txt"))
-			{
-				public BufferedReader reader;
-				
-				@Override
-				public void tick() throws IOException 
-				{
-					//make sure that the reader won't block before writing the input to the server's inputstream
-					if(this.getReader().ready())
-					{
-						String line = this.reader.readLine();
-						while(line != null)
+						else
 						{
-							this.out.println(line);
-							line = this.reader.readLine();
+							if(!m.isEmpty())
+							{
+								System.out.write(m.getBytes());//write the characters to the output that we confirmed the ignore string wasn't there
+							}
+							sindex = 0;//reset data
+							m = "";
+						}
+						
+						//do the actual copying from in to out
+						System.out.write(b);
+						b = in.read();
+						
+						//auto flush every 4,000 bytes
+						c++;
+						if(c >= 4000)
+						{
+							System.out.flush();
+							c = 0;
 						}
 					}
-				}
-
-				public BufferedReader getReader()
-				{
-					if(this.reader == null)
-						this.reader = IOUtils.getReader(System.in);
-					return this.reader;
+					//ensure it flushes even without any newline and it's a printstream
+					System.out.flush();
 				}
 			};
 			this.register(client_out, server_in);
-			server_in.getOut().println(AnsiColors.TermColors.TRUE_COLOR);//TODO: FIX IN FUTURE System.getProperty("ot.color.mode")
+			server_in.getOut().println(AnsiColors.TermColors.TRUE_COLOR);
 		}
 		//server side
 		else

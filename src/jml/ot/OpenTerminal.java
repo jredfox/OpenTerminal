@@ -22,12 +22,12 @@ public class OpenTerminal {
 			return;
 		
 		app.load();
+		startPipes();
 		ConsoleHost console = app.getConsoleHost();
 		if(console != null)
 			console.run();
 		else
 			app.getTerminalExe().run();
-		startPipes();
 	}
 
 	public static PipeManager manager;

@@ -48,7 +48,7 @@ public abstract class TerminalExe {
 		{
 			this.genStart();
 			this.createShell();
-			this.printPB(pb);
+//			this.printPB(pb);
 			pb.directory(OTConstants.userDir).start();
 		}
 		catch(Exception e)

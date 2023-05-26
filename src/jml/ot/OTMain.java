@@ -50,7 +50,7 @@ public class OTMain {
 			long time = System.currentTimeMillis();
 			while(OpenTerminal.manager.isTicking)
 			{
-				if((System.currentTimeMillis() - time) > OpenTerminal.manager.maxPipeTimeout)
+				if((System.currentTimeMillis() - time) > 10000)
 					break;//ensure it breaks
 			}
 			

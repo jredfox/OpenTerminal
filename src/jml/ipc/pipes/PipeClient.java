@@ -3,11 +3,13 @@ package jml.ipc.pipes;
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
 import jredfox.common.io.IOUtils;
+import jredfox.common.utils.JREUtil;
 
 public abstract class PipeClient extends Pipe implements Closeable {
 
@@ -47,6 +49,8 @@ public abstract class PipeClient extends Pipe implements Closeable {
 	{
 		try 
 		{
+			if(this.type == Type.FILE)
+				return new FileInputStream(this.file);
 			return this.url.openConnection().getInputStream();
 		} 
 		catch (Exception e) 

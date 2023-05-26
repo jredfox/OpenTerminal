@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import jml.ot.TerminalApp.Profile;
 import jml.ot.colors.AnsiColors;
+import jredfox.common.io.IOUtils;
 
 public class Test {
 
@@ -53,26 +54,19 @@ public class Test {
 		}
 //		app.pause = false;
 		Profile p = app.getProfile();
+		System.out.println("starting");
 		OpenTerminal.open(app);
-//		try
-//		{
-//			Thread.sleep(1000);
-//			Scanner scanner = new Scanner(System.in);
-//			System.out.println("host input is:" + scanner.nextLine());
-////			System.out.println("host input is:" + scanner.nextLine());
-//		}
-//		catch(Throwable t)
-//		{
-//			t.printStackTrace();
-//		}
-		System.out.print("💜ab");
-		System.out.print("cd");
-		//TODO: auto sync colormode from client
-		app.colors.colorMode = AnsiColors.TermColors.TRUE_COLOR;
+		
+		String color = OpenTerminal.manager.getInputNoREQ();
+		System.out.println("COLORMODE:" + color);
+		app.colors.colorMode = app.colors.setColorMode(color);
+		
+		String in = OpenTerminal.manager.getInput();
+		System.out.println("input test:" + in);
+		
 		app.colors.colors = app.colors.formatColor(p.bg, p.fg, p.ansiFormat, false);
 		app.colors.print(Color.BLACK, Color.green, "OLDE TESTE");
 		System.out.println(app.colors.formatColor(Color.RED, Color.WHITE, "server to client test...", true));
-//		printTest(app.colors);
 		OpenTerminal.manager.isRunning = false;//TODO: remove once PID auto detection has been reached
 	}
 	

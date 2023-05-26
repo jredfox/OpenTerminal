@@ -6,16 +6,26 @@ import java.io.InputStream;
 
 public class BlockingFileInputStream extends InputStream {
 
-	public BufferedReader detector;
-	public InputStream oldIn;
+	public BufferedReader reader;
+	public InputStream input;
 	
-	public BlockingFileInputStream()
+	public BlockingFileInputStream(InputStream i)
 	{
-		
+		this(IOUtils.getReader(i), i);
+	}
+	
+	/**
+	 * make sure that the reader's inputstream is the same as the inputstream param
+	 */
+	public BlockingFileInputStream(BufferedReader r, InputStream i)
+	{
+		this.reader = r;
+		this.input = i;
 	}
 	
 	@Override
-	public int read() throws IOException {
+	public int read() throws IOException 
+	{
 		// TODO Auto-generated method stub
 		return 0;
 	}
