@@ -3,6 +3,7 @@ package jml.ipc.pipes;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -180,9 +181,7 @@ public class PipeManager {
 						else
 						{
 							if(!m.isEmpty())
-							{
 								System.out.write(m.getBytes());//write the characters to the output that we confirmed the ignore string wasn't there
-							}
 							sindex = 0;//reset data
 							m = "";
 						}
@@ -204,7 +203,7 @@ public class PipeManager {
 				}
 			};
 			this.register(client_out, server_in);
-			server_in.getOut().println(AnsiColors.TermColors.TRUE_COLOR);
+			server_in.getOut().println(AnsiColors.TermColors.TRUE_COLOR);//TODO: get this to work from the batch scripts
 		}
 		//server side
 		else
@@ -224,6 +223,21 @@ public class PipeManager {
 				public void tick()
 				{
 					
+				}
+				
+				@Override
+				public InputStream getIn()
+				{
+					try
+					{
+						if(this.in == null)
+							this.in = new PipeInputStream(this.file);
+					}
+					catch(Exception e)
+					{
+						e.printStackTrace();
+					}
+					return this.in;
 				}
 			};
 			server_out.replaceSYSO(true);

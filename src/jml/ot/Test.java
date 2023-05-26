@@ -1,10 +1,15 @@
 package jml.ot;
 
 import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.util.Scanner;
 
+import jml.ipc.pipes.PipeInputStream;
 import jml.ot.TerminalApp.Profile;
 import jml.ot.colors.AnsiColors;
+import jredfox.common.file.FileUtils;
 import jredfox.common.io.IOUtils;
 
 public class Test {
@@ -55,19 +60,26 @@ public class Test {
 //		app.pause = false;
 		Profile p = app.getProfile();
 		System.out.println("starting");
-		OpenTerminal.open(app);
+//		OpenTerminal.open(app);
 		
-		String color = OpenTerminal.manager.getInputNoREQ();
-		System.out.println("COLORMODE:" + color);
-		app.colors.colorMode = app.colors.setColorMode(color);
+//		String color = OpenTerminal.manager.getInputNoREQ();
+//		System.out.println("COLORMODE:" + color);
+//		app.colors.colorMode = app.colors.setColorMode(color);
 		
-		String in = OpenTerminal.manager.getInput();
-		System.out.println("input test:" + in);
+//		String in = OpenTerminal.manager.getInput();
+//		System.out.println("input test:" + in);
+		File f = new File(OTConstants.home, "pipes/ot.in2.txt");
+		FileUtils.create(f);
+		System.setIn(new PipeInputStream(f));
+		System.out.println(System.in);
+		BufferedReader r = IOUtils.getReader(System.in);
+		System.out.println(r.readLine());
+		System.out.println(r.readLine());
 		
-		app.colors.colors = app.colors.formatColor(p.bg, p.fg, p.ansiFormat, false);
-		app.colors.print(Color.BLACK, Color.green, "OLDE TESTE");
-		System.out.println(app.colors.formatColor(Color.RED, Color.WHITE, "server to client test...", true));
-		OpenTerminal.manager.isRunning = false;//TODO: remove once PID auto detection has been reached
+//		app.colors.colors = app.colors.formatColor(p.bg, p.fg, p.ansiFormat, false);
+//		app.colors.print(Color.BLACK, Color.green, "OLDE TESTE");
+//		System.out.println(app.colors.formatColor(Color.RED, Color.WHITE, "server to client test...", true));
+//		OpenTerminal.manager.isRunning = false;//TODO: remove once PID auto detection has been reached
 	}
 	
 //	public static void printTest(AnsiColors colors)
