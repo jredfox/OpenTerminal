@@ -1,16 +1,11 @@
 package jml.ot;
 
 import java.awt.Color;
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
-import jml.ipc.pipes.PipeInputStream;
 import jml.ot.TerminalApp.Profile;
 import jml.ot.colors.AnsiColors;
-import jredfox.common.file.FileUtils;
-import jredfox.common.io.IOUtils;
 
 public class Test {
 
@@ -62,13 +57,13 @@ public class Test {
 		OpenTerminal.open(app);
 		
 		String color = OpenTerminal.manager.getInputNoREQ();
-//		System.out.println("COLORMODE:" + color);
+		System.out.println("COLORMODE:" + color);
 		app.colors.colorMode = app.colors.setColorMode(color);
 		
-//		Scanner scanner = new Scanner(System.in);
-//		System.out.print("TEST:");
-//		System.out.println("TEST IN WAS:" + scanner.nextLine());
-//		System.out.println("2d line TEST WAS:" + scanner.nextLine());
+		Scanner scanner = new Scanner(System.in);
+		System.out.print("TEST:");
+		System.out.println("TEST IN WAS:" + scanner.nextLine());
+		System.out.println("2d line TEST WAS:" + scanner.nextLine());
 		
 //		BufferedReader bf = IOUtils.getReader(System.in);
 //		System.out.print("BF1:");

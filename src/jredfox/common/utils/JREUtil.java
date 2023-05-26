@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.UUID;
 
+import jml.ot.OTConstants;
 import jml.ot.OpenTerminal;
 import jml.ot.TerminalUtil;
 
@@ -192,7 +194,7 @@ public class JREUtil {
 	}
 	
 	/**
-	 * cause a thread to sleep garenteed even with thread interuptions if boolean is true
+	 * cause a thread to sleep guaranteed even with thread interruptions if boolean is true
 	 */
 	public static void sleep(long time)
 	{
@@ -200,7 +202,7 @@ public class JREUtil {
 	}
 
 	/**
-	 * cause a thread to sleep to for time in ms. If noInterupt it won't allow interuptions to stop the sleep
+	 * cause a thread to sleep to for time in ms. If noInterupt it won't allow interruptions to stop the sleep
 	 */
 	public static void sleep(long time, boolean noInterupt)
 	{
@@ -346,6 +348,34 @@ public class JREUtil {
             cls = cls.getSuperclass();
          }
      }
+
+    /**
+     * get a UUID directory that handles collision
+     */
+	public static File getUUIDDir(File parent)
+	{
+		File dir = new File(parent, "" + UUID.randomUUID());
+		while(dir.exists())
+			dir = new File(parent, "" + UUID.randomUUID());
+		return dir;
+	}
+
+	/**
+	 * A fast way to get a unique id session directory
+	 */
+	public static File getMSDir(File parent) 
+	{
+		Object obj = new Object();
+		String o = obj.toString();
+		o = obj.toString().substring(o.indexOf('@') + 1, obj.toString().length());
+		File dir = new File(parent, "" + o + "-" + System.currentTimeMillis());
+		while(dir.exists())
+		{
+			dir = new File(parent, "" + o + "-" + System.currentTimeMillis());
+			JREUtil.sleep(1, false);
+		}
+		return dir;
+	}
 
 
 }

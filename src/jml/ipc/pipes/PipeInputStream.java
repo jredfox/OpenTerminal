@@ -82,8 +82,8 @@ public class PipeInputStream extends FileInputStream
 		if(bytes_read < 1 && this.signal != null)
 			this.signal();
 		
-		long ms = System.currentTimeMillis();
 		//if 0 bytes are read we have to wait till it reads at least 1 byte
+		long ms = System.currentTimeMillis();
 		while(bytes_read < 1)
 		{
 			bytes_read = read1(b, off, len);

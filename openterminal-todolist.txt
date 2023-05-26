@@ -1,4 +1,3 @@
-fix files not getting reset on new launch
 create wrappers for replacing syso
 PID checker on both server and client to see if they close
 redo color formatting to accept formatting without rebuilding esc[<code>m every time
@@ -22,3 +21,4 @@ done:
 ot.l=launch
 ot.w=flag to use windows console host hack to enable colors from within java
 ot.p=java pause. pause from java not the shell. this won't occur if the program crashes
+ot.s = open terminal session used specifically for that launch used by IPC file pipes

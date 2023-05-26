@@ -26,10 +26,9 @@ public class OTMain {
 		AnsiColors.enableCmdColors();//ensure ANSI colors are enabled by loading the class
 		if(System.console() == null)
 		{
-			//TODO: custom TerminalApp
 			TerminalApp app = args.length != 0 ? new TerminalApp(args[0], args[1], args[2], Boolean.parseBoolean(args[3]), Boolean.parseBoolean(args[4])) : new TerminalApp("ot", "Open Terminal", OTConstants.OTVERSION);
 			OpenTerminal.open(app);
-			OpenTerminal.manager.isRunning = false;//TODO: shutdown the thread
+			OpenTerminal.manager.isRunning = false;
 		}
 		else
 		{

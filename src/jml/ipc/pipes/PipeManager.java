@@ -2,20 +2,18 @@ package jml.ipc.pipes;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import jml.ipc.pipes.Pipe.Type;
 import jml.ot.OTConstants;
 import jml.ot.colors.AnsiColors;
-import jredfox.common.file.FileUtils;
 import jredfox.common.io.IOUtils;
+import jredfox.common.utils.FileUtil;
 
 /**
  * A standard PipeManager used to configure STD, ERR, and IN from server to client. The STD & ERR will only display the output and the IN will only gather input.
@@ -110,13 +108,10 @@ public class PipeManager {
 	{
 		//TODO:on client side make this sync instead of generate new pipes
 		//create dir pipes session and make sure it's one that doesn't exist yet
-//		File dirPipes = new File(OTConstants.home, "pipes/" + UUID.randomUUID());
-//		while(dirPipes.exists())
-//			dirPipes = new File(OTConstants.home, "pipes/" + UUID.randomUUID());
 		
-		File dirPipes = new File(OTConstants.home, "pipes");
+		File dirPipes = OTConstants.dirPipes;
 		this.noREQFile = new File(dirPipes, "ot-NOREQ.txt");
-		FileUtils.create(this.noREQFile);
+		System.out.println(dirPipes + " SERVER?:" + (!OTConstants.LAUNCHED));
 		
 		//client side
 		if(OTConstants.LAUNCHED)
@@ -220,11 +215,30 @@ public class PipeManager {
 					return this.in;
 				}
 			};
+			this.register(server_out, client_in);
+			this.cleanup();
 			server_out.replaceSYSO(true);
 			server_out.replaceSYSO(false);
 			client_in.replaceSYSO(false);
-			this.register(server_out, client_in);
 		}
+	}
+
+	/**
+	 * cleans up files from previous launch
+	 * @throws IOException 
+	 */
+	public void cleanup()
+	{
+		for(Pipe p : this.pipes.values())
+		{
+			if(p.type == Type.FILE)
+			{
+				p.file.delete();
+				FileUtil.create(p.file);
+			}
+		}
+		this.noREQFile.delete();
+		FileUtil.create(this.noREQFile);
 	}
 
 	public void register(Pipe... ps)

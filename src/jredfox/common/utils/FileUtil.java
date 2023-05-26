@@ -59,4 +59,16 @@ public class FileUtil {
 				return true;
 		return false;
 	}
+
+	public static void create(File file)
+	{
+		try
+		{
+			file.createNewFile();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 }

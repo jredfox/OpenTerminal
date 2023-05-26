@@ -9,7 +9,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import jredfox.common.file.FileUtils;
 import jredfox.common.io.IOUtils;
 
 public abstract class PipeServer extends Pipe implements Closeable {
