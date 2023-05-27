@@ -2,16 +2,14 @@ package jml.ot;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
-import jml.ipc.pipes.ColoredPrintStream;
-import jml.ipc.pipes.Pipe;
-import jml.ipc.pipes.PipeClient;
-import jml.ipc.pipes.PipeServer;
 import jml.ipc.pipes.WrappedPrintStream;
 import jml.ot.colors.AnsiColors;
 import jml.ot.colors.AnsiColors.TermColors;
@@ -48,7 +46,11 @@ public class TerminalApp {
 	/**
 	 * when enabled it loggs boot errors and sanity reasons. The boot log only loogs the boot debug and not your program
 	 */
-	public boolean logBoot = true;
+	public boolean canLogBoot = true;
+	/**
+	 * Logger during boot of {@link OpenTerminal#open(TerminalApp)}. It closes after boot has been completed
+	 */
+	public PrintStream bootLogger;
 	/**
 	 * wheather or not your TerminalApp should log. disabled by default in case users want to use jredfox logger or log4j
 	 */
@@ -299,6 +301,22 @@ public class TerminalApp {
 	public String getBootPaletteColor(Profile p)
 	{
 		return p == null ? "" : this.colors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.XTERM_256, p.bg, p.fg, p.ansiFormat, false);
+	}
+
+	public PrintStream getBootLogger() 
+	{
+		try
+		{
+			File flog = new File(OTConstants.home, "logs/" + id + "/boot-" + (OTConstants.LAUNCHED ? "client" : "host") + ".txt");
+			FileUtil.create(flog);
+			this.bootLogger = new PrintStream(new FileOutputStream(flog), true);
+			return this.bootLogger;
+		} 
+		catch (FileNotFoundException e) 
+		{
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.List;
 
 import jml.ot.OTConstants;
-import jml.ot.OpenTerminal;
 import jml.ot.TerminalApp;
 import jredfox.common.io.IOUtils;
 
@@ -50,12 +49,15 @@ public abstract class TerminalExe {
 			this.genStart();
 			this.createShell();
 //			this.printPB(pb);
+			if(this.app.canLogBoot)
+				this.logPB(pb);
 			pb.directory(OTConstants.userDir).start();
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
-			OpenTerminal.logBoot(e);
+			if(this.app.canLogBoot)
+				e.printStackTrace(this.app.bootLogger);
 			this.cleanup();
 		}
 	}
@@ -74,6 +76,16 @@ public abstract class TerminalExe {
 	{
 		IOUtils.saveFileLines(li, sh, true);
 		IOUtils.makeExe(sh);
+	}
+	
+	/**
+	 * add the process builder debug info into the log
+	 */
+	public void logPB(ProcessBuilder pb)
+	{
+		for (String s : pb.command())
+			this.app.bootLogger.print(s + " ");
+		this.app.bootLogger.println("\b");
 	}
 	
 	public void printPB(ProcessBuilder pb)
