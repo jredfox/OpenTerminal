@@ -1,3 +1,2 @@
 issues:
 - ot flags and specifically ot.s
-- when clicking enter to get the input from CLI the log file doesn't have a line feed

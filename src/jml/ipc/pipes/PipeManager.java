@@ -31,6 +31,7 @@ public class PipeManager {
 	public boolean isClient;
 	public File dirPipes;
 	public static final String REQUEST_INPUT = "@<OT.IN>";
+	public static final int REQ_LEN = REQUEST_INPUT.length();
 	
 	public PipeManager()
 	{
@@ -160,6 +161,8 @@ public class PipeManager {
 								Scanner scanner = new Scanner(System.in);
 								String input = scanner.nextLine();
 								server_in.getOut().println(input);
+								sindex = 0;//reset data
+								m = "";
 							}
 							b = in.read();//ensure read increments
 							continue;
