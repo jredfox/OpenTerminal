@@ -8,9 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import jml.ipc.pipes.ColoredPrintStream;
 import jml.ipc.pipes.Pipe;
 import jml.ipc.pipes.PipeClient;
 import jml.ipc.pipes.PipeServer;
+import jml.ipc.pipes.WrappedPrintStream;
 import jml.ot.colors.AnsiColors;
 import jml.ot.colors.AnsiColors.TermColors;
 import jml.ot.terminal.BatchExe;
@@ -25,6 +27,7 @@ import jml.ot.terminal.ValaTerminalExe;
 import jml.ot.terminal.host.ConsoleHost;
 import jml.ot.terminal.host.WTHost;
 import jredfox.common.config.MapConfig;
+import jredfox.common.utils.FileUtil;
 
 public class TerminalApp {
 	
@@ -42,6 +45,14 @@ public class TerminalApp {
 	 */
 	public boolean ANSI4BIT;
 	public AnsiColors colors = new AnsiColors();
+	/**
+	 * when enabled it loggs boot errors and sanity reasons. The boot log only loogs the boot debug and not your program
+	 */
+	public boolean logBoot = true;
+	/**
+	 * wheather or not your TerminalApp should log. disabled by default in case users want to use jredfox logger or log4j
+	 */
+	public boolean shouldLog = false;
 	
 	public TerminalApp(String id, String name, String version)
 	{
@@ -148,6 +159,25 @@ public class TerminalApp {
 	public void load()
 	{
 		this.loadConfig();
+		this.enableLoggers();
+	}
+
+	public void enableLoggers() 
+	{
+		if(this.shouldLog)
+		{
+			try
+			{
+				File log = new File(OTConstants.home, "logs/" + this.id + "/latest.log");
+				FileUtil.create(log);
+				System.setOut(new WrappedPrintStream(System.out, log));
+				System.setErr(new WrappedPrintStream(System.err, log));
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void loadConfig() 

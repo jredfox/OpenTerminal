@@ -1,4 +1,4 @@
-if IPC type not file create logger printstream
+if IPC type file and logger is enabled nulloutputstream
 re-add wrapped args
 colored error streams
 fix shells to input the color mode into JVM

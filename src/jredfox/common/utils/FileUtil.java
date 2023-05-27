@@ -64,6 +64,9 @@ public class FileUtil {
 	{
 		try
 		{
+			File parent = file.getParentFile();
+			if(parent != null && !parent.exists())
+				parent.mkdirs();
 			file.createNewFile();
 		}
 		catch(Exception e)

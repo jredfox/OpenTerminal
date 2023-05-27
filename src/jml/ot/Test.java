@@ -55,6 +55,7 @@ public class Test {
 //		app.pause = false;
 		Profile p = app.getProfile();
 		System.out.println("Starting CLI");
+		app.shouldLog = true;
 		OpenTerminal.open(app);
 		
 		String color = OpenTerminal.manager.getInputNoREQ();

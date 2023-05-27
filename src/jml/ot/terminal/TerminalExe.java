@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 import jml.ot.OTConstants;
+import jml.ot.OpenTerminal;
 import jml.ot.TerminalApp;
 import jredfox.common.io.IOUtils;
 
@@ -54,6 +55,7 @@ public abstract class TerminalExe {
 		catch(Exception e)
 		{
 			e.printStackTrace();
+			OpenTerminal.logBoot(e);
 			this.cleanup();
 		}
 	}
