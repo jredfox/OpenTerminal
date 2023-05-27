@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jml.ipc.pipes.PipeManager;
 import jml.ipc.pipes.WrappedPrintStream;
 import jml.ot.colors.AnsiColors;
 import jml.ot.colors.AnsiColors.TermColors;
@@ -55,6 +56,7 @@ public class TerminalApp {
 	 * wheather or not your TerminalApp should log. disabled by default in case users want to use jredfox logger or log4j
 	 */
 	public boolean shouldLog = false;
+	public PipeManager manager;
 	
 	public TerminalApp(String id, String name, String version)
 	{
@@ -162,6 +164,17 @@ public class TerminalApp {
 	{
 		this.loadConfig();
 		this.enableLoggers();
+		this.startPipeManager();
+	}
+
+	/**
+	 * called during boot to setup the IPC PipeManager
+	 */
+	public void startPipeManager() 
+	{
+		this.manager = new PipeManager();
+		this.manager.loadPipes();
+		this.manager.start();
 	}
 
 	public void enableLoggers() 

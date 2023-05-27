@@ -6,7 +6,6 @@ import java.util.Scanner;
 
 import jml.ot.TerminalApp.Profile;
 import jml.ot.colors.AnsiColors;
-import jredfox.common.utils.JREUtil;
 
 public class Test {
 
@@ -58,7 +57,7 @@ public class Test {
 		app.shouldLog = true;
 		OpenTerminal.open(app);
 		
-		String color = OpenTerminal.manager.getInputNoREQ();
+		String color = app.manager.getInputNoREQ();
 		System.out.println("COLORMODE:" + color);
 		app.colors.colorMode = app.colors.setColorMode(color);
 		
@@ -76,7 +75,7 @@ public class Test {
 //		app.colors.colors = app.colors.formatColor(p.bg, p.fg, p.ansiFormat, false);
 //		app.colors.print(Color.BLACK, Color.green, "OLDE TESTE");
 //		System.out.println(app.colors.formatColor(Color.RED, Color.WHITE, "server to client test...", true));
-		OpenTerminal.manager.isRunning = false;//TODO: remove once PID auto detection has been reached
+		app.manager.isRunning = false;//TODO: remove once PID auto detection has been reached
 	}
 	
 //	public static void printTest(AnsiColors colors)

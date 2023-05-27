@@ -2,7 +2,6 @@ package jml.ot;
 
 import java.io.PrintStream;
 
-import jml.ipc.pipes.PipeManager;
 import jml.ot.terminal.host.ConsoleHost;
 
 public class OpenTerminal {
@@ -15,6 +14,10 @@ public class OpenTerminal {
 			 System.err.println("Boot Logger is NULL while being enabled TerminalApp:" + app.id);
 			 return;
 		 }
+		 //log JRE & JRE VENDOR & OS
+		 if(app.canLogBoot)
+			 boot.println("JAVA:\t" + System.getProperty("java.version") + "\tJAVA VENDOR:" + System.getProperty("java.vendor") + "\tJAVAHOME:" + System.getProperty("java.home")
+			 + "\n" + TerminalUtil.osName + "\tVERSION:" + System.getProperty("os.version") + "\tCPU-ISA(OS-ARCH):" + System.getProperty("os.arch") + "\n");
 		
 		//if open terminal has launched and failed printline and exit the application as it failed
 		if(System.console() == null && OTConstants.LAUNCHED)
@@ -44,7 +47,6 @@ public class OpenTerminal {
 		try
 		{
 			app.load();
-			startPipes();
 			ConsoleHost console = app.getConsoleHost();
 			if(console != null)
 				console.run();
@@ -60,14 +62,6 @@ public class OpenTerminal {
 		{
 			boot.close();
 		}
-	}
-
-	public static PipeManager manager;
-	public static void startPipes()
-	{
-		manager = new PipeManager();//setup IPC pipes
-		manager.loadPipes();
-		manager.start();
 	}
 
 }

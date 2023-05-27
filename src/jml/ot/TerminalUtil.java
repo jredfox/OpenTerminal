@@ -8,7 +8,7 @@ import jredfox.common.utils.JavaUtil;
 
 public class TerminalUtil {
 	
-	private static String osName = System.getProperty("os.name").toLowerCase();
+	public static String osName = System.getProperty("os.name").toLowerCase();
 	private static boolean isWindows = osName.contains("windows");
 	private static boolean isLinux = osName.contains("linux") || osName.contains("nux") || osName.contains("aix");
 	private static boolean isMac = osName.contains("mac") && !isLinux || osName.contains("osx") || osName.contains("darwin");

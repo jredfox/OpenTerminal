@@ -1,0 +1,2 @@
+Possible issues:
+- when clicking enter to get the input from CLI the log file doesn't have a line feed

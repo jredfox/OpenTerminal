@@ -28,11 +28,12 @@ public class OTMain {
 		{
 			TerminalApp app = args.length != 0 ? new TerminalApp(args[0], args[1], args[2], Boolean.parseBoolean(args[3]), Boolean.parseBoolean(args[4])) : new TerminalApp("ot", "Open Terminal", OTConstants.OTVERSION);
 			OpenTerminal.open(app);
-			OpenTerminal.manager.isRunning = false;
+			app.manager.isRunning = false;
 		}
 		else
 		{
-			OpenTerminal.startPipes();
+			TerminalApp app = new TerminalApp("dummy", "Dummy", "1.0.0");//TODO: improve with override update
+			app.startPipeManager();
 //			new ProcessBuilder("cmd", "/c", "color 2f").inheritIO().start().waitFor();
 //			new ProcessBuilder("cmd", "/c", "").inheritIO().start().waitFor();
 //			System.out.println("booted:" + OTConstants.userDir);
@@ -45,9 +46,9 @@ public class OTMain {
 			}
 			
 			//ensure final printlines happen before shutting down the client
-			OpenTerminal.manager.isRunning = false;//TODO: shutdown the thread
+			app.manager.isRunning = false;//TODO: shutdown the thread
 			long time = System.currentTimeMillis();
-			while(OpenTerminal.manager.isTicking)
+			while(app.manager.isTicking)
 			{
 				if((System.currentTimeMillis() - time) > 10000)
 					break;//ensure it breaks
