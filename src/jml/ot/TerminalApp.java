@@ -184,10 +184,8 @@ public class TerminalApp {
 		this.manager = new PipeManager();
 		this.manager.loadPipes(OTConstants.LAUNCHED, this.replaceSYSO);
 		this.manager.start();
-//		if(manager.isClient)
-//			this.manager.printNoREQ("" + AnsiColors.TermColors.TRUE_COLOR);
 		
-		//more optimized to send a one time communication to the host since that's all it needs
+		//more optimized to send a one time communication to the host since that's all it needss
 		IOUtils.saveFileLines(Arrays.asList("" + AnsiColors.TermColors.TRUE_COLOR), this.manager.noREQFile , true);//TODO: SYNC COLOR and move to it's own method
 	}
 
