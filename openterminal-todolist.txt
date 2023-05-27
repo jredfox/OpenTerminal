@@ -1,4 +1,6 @@
 PID checker on both server and client to see if they close
+colored error streams
+fix shells to input the color mode into JVM
 redo color formatting to accept formatting without rebuilding esc[<code>m every time
 
 create SocketPipes(pipes over the network from a socket)
