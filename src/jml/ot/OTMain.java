@@ -33,6 +33,7 @@ public class OTMain {
 		else
 		{
 			TerminalApp app = new TerminalApp("dummy", "Dummy", "1.0.0");//TODO: improve with override update
+			app.loadSession();
 			app.startPipeManager();
 //			new ProcessBuilder("cmd", "/c", "color 2f").inheritIO().start().waitFor();
 //			new ProcessBuilder("cmd", "/c", "").inheritIO().start().waitFor();

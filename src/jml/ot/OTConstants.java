@@ -11,12 +11,12 @@ public class OTConstants {
 	public static final File configs = new File(home, "configs");
 	public static final File profiles = new File(home, "profiles");
 	public static final File scripts = new File(home, "scripts");
+	public static final File sessions = new File(home, "sessions");
 	public static final File start = new File(scripts, "start");
 	public static final File boot = new File(scripts, "boot");
 	public static final File userDir = JREUtil.getProgramDir().getAbsoluteFile();
 	public static final boolean LAUNCHED = System.getProperty("ot.l") != null;
-	public static final File dirPipes = LAUNCHED ? new File(home,"pipes/" + System.getProperty("ot.s")) : JREUtil.getMSDir(new File(home, "pipes"));
 	public static final String java_home = "\"" + System.getProperty("java.home") + "/bin/java\"";
-	public static final String args = "-Dot.s=" + dirPipes.getName() + " -Dot.l -cp \"" + System.getProperty("java.class.path") + "\" jml.ot.OTMain";//TODO: make it so it hard codes the file only the main class and the path to the jar is needed
+	public static final String args = "-Dot.l -cp \"" + System.getProperty("java.class.path") + "\" jml.ot.OTMain";
 
 }

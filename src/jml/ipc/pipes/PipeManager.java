@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import jml.ot.OTConstants;
 import jredfox.common.file.FileUtils;
 import jredfox.common.io.IOUtils;
 
@@ -30,6 +29,7 @@ public class PipeManager {
 	public File noREQFile = null;
 	private BufferedReader noREQReader = null;
 	public boolean isClient;
+	public File dirPipes;
 	public static final String REQUEST_INPUT = "@<OT.IN>";
 	
 	public PipeManager()
@@ -74,6 +74,7 @@ public class PipeManager {
 	
 	public void tick()
 	{
+		this.isTicking = true;
 		for(Pipe p : this.pipes.values())
 		{
 			try
@@ -82,11 +83,14 @@ public class PipeManager {
 			}
 			catch(Throwable t)
 			{
-				System.err.println("error while ticking pipe:" + p.id + ("\nisHost:" + !this.isClient) + "\nisPipeServer:" + (p instanceof PipeServer));
+				System.err.println("Error while ticking pipe:" + p.id + ("\nisHost:" + !this.isClient) + "\nisPipeServer:" + (p instanceof PipeServer));
 				t.printStackTrace();
+				this.isRunning = false;
+				System.exit(-1);//Crash the App an error occurred while ticking
 			}
 			//TODO: check PID's is alive here based on if is host or CLI and then stop this thread
 		}
+		this.isTicking = false;
 	}
 	
 	public void start()
@@ -105,9 +109,7 @@ public class PipeManager {
 			{
 				do
 				{
-					PipeManager.this.isTicking = true;
 					PipeManager.this.tick();
-					PipeManager.this.isTicking = false;
 				}
 				while(PipeManager.this.isRunning);
 			}
@@ -115,10 +117,10 @@ public class PipeManager {
 		this.ticker.start();
 	}
 	
-	public void loadPipes(boolean client, boolean replaceSYSO)
+	public void loadPipes(File dirPipes, boolean client, boolean replaceSYSO)
 	{
+		this.dirPipes = dirPipes;
 		this.isClient = client;
-		File dirPipes = OTConstants.dirPipes;
 		this.noREQFile = new File(dirPipes, "ot-NOREQ.txt");
 		System.out.println(dirPipes + " isHost:" + (!this.isClient));
 		
@@ -241,8 +243,8 @@ public class PipeManager {
 	 */
 	public void cleanup()
 	{
-		IOUtils.deleteDirectory(OTConstants.dirPipes.getParentFile());
-		OTConstants.dirPipes.mkdirs();
+		IOUtils.deleteDirectory(this.dirPipes.getParentFile());
+		this.dirPipes.mkdirs();
 		FileUtils.create(this.noREQFile);
 	}
 

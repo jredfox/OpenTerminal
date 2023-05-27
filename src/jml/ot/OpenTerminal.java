@@ -47,6 +47,8 @@ public class OpenTerminal {
 		try
 		{
 			app.load();
+			if(app.canLogBoot)
+				boot.println("TerminalApp Session Started On:\t" + app.session);
 			ConsoleHost console = app.getConsoleHost();
 			if(console != null)
 				console.run();
