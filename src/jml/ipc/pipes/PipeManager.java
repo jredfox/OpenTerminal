@@ -2,15 +2,16 @@ package jml.ipc.pipes;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
 import jml.ot.OTConstants;
-import jml.ot.colors.AnsiColors;
 import jredfox.common.file.FileUtils;
 import jredfox.common.io.IOUtils;
 
@@ -26,8 +27,9 @@ public class PipeManager {
 	public volatile boolean isRunning;
 	public volatile boolean isTicking = true;
 	public boolean useWrappedIn;
-	private File noREQFile = null;
+	public File noREQFile = null;
 	private BufferedReader noREQReader = null;
+	public boolean isClient;
 	public static final String REQUEST_INPUT = "@<OT.IN>";
 	
 	public PipeManager()
@@ -53,6 +55,23 @@ public class PipeManager {
 		return input;
 	}
 	
+	public PrintStream noReQPrinter;
+	public void printNoREQ(String s)
+	{
+		if(!this.isClient)
+			throw new IllegalArgumentException("");
+		if(this.noReQPrinter == null)
+		{
+			try {
+				this.noReQPrinter = new PrintStream(new FileOutputStream(this.noREQFile), true);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		this.noReQPrinter.println(s);
+	}
+	
 	public void tick()
 	{
 		for(Pipe p : this.pipes.values())
@@ -63,7 +82,7 @@ public class PipeManager {
 			}
 			catch(Throwable t)
 			{
-				System.err.println("error while ticking pipe:" + p.id + ("\nisHost:" + OTConstants.LAUNCHED) + "\nisPipeServer:" + (p instanceof PipeServer));
+				System.err.println("error while ticking pipe:" + p.id + ("\nisHost:" + !this.isClient) + "\nisPipeServer:" + (p instanceof PipeServer));
 				t.printStackTrace();
 			}
 			//TODO: check PID's is alive here based on if is host or CLI and then stop this thread
@@ -96,14 +115,15 @@ public class PipeManager {
 		this.ticker.start();
 	}
 	
-	public void loadPipes()
+	public void loadPipes(boolean client, boolean replaceSYSO)
 	{
+		this.isClient = client;
 		File dirPipes = OTConstants.dirPipes;
 		this.noREQFile = new File(dirPipes, "ot-NOREQ.txt");
-		System.out.println(dirPipes + " SERVER?:" + (!OTConstants.LAUNCHED));
+		System.out.println(dirPipes + " isHost:" + (!this.isClient));
 		
 		//client side
-		if(OTConstants.LAUNCHED)
+		if(client)
 		{
 			//write all data from System#in to the the server
 			PipeServer server_in = new PipeServer("ot.in", new File(dirPipes, "ot-in.txt"))
@@ -167,7 +187,6 @@ public class PipeManager {
 				}
 			};
 			this.register(client_out, server_in);
-			IOUtils.saveFileLines(Arrays.asList("" + AnsiColors.TermColors.TRUE_COLOR), this.noREQFile , true);
 		}
 		//server side
 		else
@@ -205,10 +224,14 @@ public class PipeManager {
 					return this.in;
 				}
 			};
+			
 			this.register(server_out, client_in);
-			server_out.replaceSYSO(true);
-			server_out.replaceSYSO(false);
-			client_in.replaceSYSO(this.useWrappedIn);
+			if(replaceSYSO)
+			{
+				server_out.replaceSYSO(true);
+				server_out.replaceSYSO(false);
+				client_in.replaceSYSO(this.useWrappedIn);
+			}
 		}
 	}
 

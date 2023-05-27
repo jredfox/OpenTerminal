@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ import jml.ot.terminal.ValaTerminalExe;
 import jml.ot.terminal.host.ConsoleHost;
 import jml.ot.terminal.host.WTHost;
 import jredfox.common.config.MapConfig;
+import jredfox.common.io.IOUtils;
 import jredfox.common.utils.FileUtil;
 
 public class TerminalApp {
@@ -56,7 +58,14 @@ public class TerminalApp {
 	 * wheather or not your TerminalApp should log. disabled by default in case users want to use jredfox logger or log4j
 	 */
 	public boolean shouldLog = false;
+	/**
+	 * the IPC Pipe manager
+	 */
 	public PipeManager manager;
+	/**
+	 * tell's PipeManager whether or not to replace the STD ERR & IN. Disable this if you have multiple CLI's running at once for your program
+	 */
+	public boolean replaceSYSO = true;
 	
 	public TerminalApp(String id, String name, String version)
 	{
@@ -173,8 +182,13 @@ public class TerminalApp {
 	public void startPipeManager() 
 	{
 		this.manager = new PipeManager();
-		this.manager.loadPipes();
+		this.manager.loadPipes(OTConstants.LAUNCHED, this.replaceSYSO);
 		this.manager.start();
+//		if(manager.isClient)
+//			this.manager.printNoREQ("" + AnsiColors.TermColors.TRUE_COLOR);
+		
+		//more optimized to send a one time communication to the host since that's all it needs
+		IOUtils.saveFileLines(Arrays.asList("" + AnsiColors.TermColors.TRUE_COLOR), this.manager.noREQFile , true);//TODO: SYNC COLOR and move to it's own method
 	}
 
 	public void enableLoggers() 

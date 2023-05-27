@@ -1,2 +1,8 @@
-Possible issues:
+issues:
+- sessions for logging and IPC pipes
 - when clicking enter to get the input from CLI the log file doesn't have a line feed
+
+fixed:
+- always replacing SYSO
+- hard coding OT data into an independant IPC pipe library
+- messy code
