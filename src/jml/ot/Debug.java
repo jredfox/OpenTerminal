@@ -1,57 +1,31 @@
 package jml.ot;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Scanner;
+import java.io.PrintStream;
 
-import jml.ipc.pipes.PipeInputStream;
+import jml.ipc.pipes.WrappedPrintStream;
+import jredfox.common.file.FileUtils;
 
 public class Debug {
 
 	public static void main(String[] args) throws IOException
 	{
-		System.out.println(OTConstants.dirPipes);
-//		System.out.println("starting");
-//		File fileIn = new File("in.txt").getAbsoluteFile();
-//		fileIn.getParentFile().mkdirs();
-//		fileIn.createNewFile();
-//		PipeInputStream in = new PipeInputStream(fileIn, "SIG_IN", System.out);
-//		System.setIn(in);
-////		System.setIn(new FileInputStream(fileIn));
-//		try
-//		{
-//			System.out.print("AB");
-//			Scanner scanner = new Scanner(System.in);
-////			System.out.println(scanner.nextLine());
-////			System.out.println(scanner.nextLine());
-////			BufferedReader reader = IOUtils.getReader(System.in);
-////			System.out.println(reader.readLine());
-////			System.out.println(reader.readLine());
-////			System.out.println(reader.readLine());
-//		}
-//		catch(Throwable t)
-//		{
-//			t.printStackTrace();
-//		}
-//		System.setIn(new BufferedInputStream(new PipeInputStream(fileIn)));
-//		int b = System.in.read();
-//		while(b != -1)
-//		{
-//			System.out.print(b + ",");
-//			System.out.flush();
-//			b = System.in.read();
-//		}
-//		System.out.flush();
-//		while(true)
-//		{
-//			String l = reader.readLine();
-//			while(l != null)
-//			{
-//				System.out.println(l);
-//				l = reader.readLine();
-//			}
-//		}
+		File log = new File("log.txt").getAbsoluteFile();
+		FileUtils.create(log);
+		System.setOut(new WrappedPrintStream(System.out, new PrintStream(new FileOutputStream(log), true)));
+		System.out.println("A TESTa");
+		System.out.print("123\nakjfkajfa\nLine Test:");
+		System.out.println(true);
+		System.out.println((byte)0);
+		System.out.println((int)1);
+		System.out.println((short)2);
+		System.out.println((long)3);
+		System.out.println('a');
+		System.out.println(4.0F);
+		System.out.println((double)5.0D);
+		System.out.println("ChAras".toCharArray());
 	}
 
 }

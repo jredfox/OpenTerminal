@@ -9,12 +9,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import jml.ipc.pipes.Pipe.Type;
 import jml.ot.OTConstants;
 import jml.ot.colors.AnsiColors;
 import jredfox.common.file.FileUtils;
 import jredfox.common.io.IOUtils;
-import jredfox.common.utils.FileUtil;
 
 /**
  * A standard PipeManager used to configure STD, ERR, and IN from server to client. The STD & ERR will only display the output and the IN will only gather input.
@@ -27,14 +25,7 @@ public class PipeManager {
 	public Thread ticker;
 	public volatile boolean isRunning;
 	public volatile boolean isTicking = true;
-	/**
-	 * IPC FILE ONLY Max Timeout before the input method returns null from timeout
-	 */
-	public long fileInTimeout = -1;
-	/**
-	 * IPC FILE ONLY How Long to Sleep before the input method trys to read again
-	 */
-	public long fileInSleep = 100;
+	public boolean useWrappedIn;
 	private File noREQFile = null;
 	private BufferedReader noREQReader = null;
 	public static final String REQUEST_INPUT = "@<OT.IN>";
@@ -217,7 +208,7 @@ public class PipeManager {
 			this.register(server_out, client_in);
 			server_out.replaceSYSO(true);
 			server_out.replaceSYSO(false);
-			client_in.replaceSYSO(false);
+			client_in.replaceSYSO(this.useWrappedIn);
 		}
 	}
 

@@ -59,11 +59,13 @@ public abstract class PipeClient extends Pipe implements Closeable {
 		return null;
 	}
 
+	/**
+	 *  True for wrapper class and False for override
+	 */
 	@Override
-	public void replaceSYSO(boolean std)
+	public void replaceSYSO(boolean wrapper)
 	{
-		//TODO: create a wrapper to not conflict
-		System.setIn(this.getIn());
+		System.setIn(wrapper ? new WrappedInputStream(System.in, this.getIn()) : this.getIn());
 	}
 
 	/**

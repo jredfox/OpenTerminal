@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import jml.ot.TerminalApp.Profile;
 import jml.ot.colors.AnsiColors;
+import jredfox.common.utils.JREUtil;
 
 public class Test {
 
