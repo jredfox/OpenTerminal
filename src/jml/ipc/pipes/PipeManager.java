@@ -129,7 +129,7 @@ public class PipeManager {
 		{
 			//write all data from System#in to the the server
 			PipeServer server_in = new PipeServer("ot.in", new File(dirPipes, "ot-in.txt"))
-			{	
+			{
 				@Override
 				public void tick() throws IOException 
 				{
@@ -193,7 +193,7 @@ public class PipeManager {
 		//server side
 		else
 		{
-			this.cleanup();
+			FileUtils.create(this.noREQFile);
 			PipeServer server_out = new PipeServer("ot.out", new File(dirPipes, "ot-out.txt"))
 			{
 				@Override
@@ -235,17 +235,6 @@ public class PipeManager {
 				client_in.replaceSYSO(this.useWrappedIn);
 			}
 		}
-	}
-
-	/**
-	 * cleans up files from previous launches
-	 * @throws IOException 
-	 */
-	public void cleanup()
-	{
-		IOUtils.deleteDirectory(this.dirPipes.getParentFile());
-		this.dirPipes.mkdirs();
-		FileUtils.create(this.noREQFile);
 	}
 
 	public void register(Pipe... ps)

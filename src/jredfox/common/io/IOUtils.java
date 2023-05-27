@@ -187,18 +187,24 @@ public class IOUtils {
 	{
 		return new BufferedReader(new InputStreamReader(IOUtils.class.getClassLoader().getResourceAsStream(input)));
 	}
-
+	
 	public static void deleteDirectory(File file)
+	{
+		deleteDirectory(file, true);
+	}
+
+	public static void deleteDirectory(File file, boolean print)
 	{
 		if(!file.exists())
 			return;
 	    if(file.isDirectory())
 	        for(File f : file.listFiles()) 
 	            if(!Files.isSymbolicLink(f.toPath())) 
-	            	deleteDirectory(f);
+	            	deleteDirectory(f, print);
 	    
 	    if(!file.delete())
-	    	System.err.println("unable to delete file:" + file);
+	    	if(print)
+	    		System.err.println("unable to delete file:" + file);
 	}
 
 }

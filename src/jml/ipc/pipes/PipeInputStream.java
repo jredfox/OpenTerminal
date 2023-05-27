@@ -134,7 +134,10 @@ public class PipeInputStream extends FileInputStream
 		if(this.out instanceof PrintStream)
 			((PrintStream)this.out).print(this.signal);
 		else
+		{
 			this.out.write(this.signal.getBytes());
+//			this.out.write(System.lineSeparator().getBytes());//ENSURE LINE FEED TO SIMULUTE CLI ENTER key has been pressed
+		}
 		this.out.flush();
 	}
 	

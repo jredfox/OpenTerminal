@@ -1,4 +1,3 @@
-fix sessions for IPC TYPE File and loggers
 if IPC type file and logger is enabled nulloutputstream
 re-add wrapped args
 colored error streams

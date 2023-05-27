@@ -186,8 +186,12 @@ public class TerminalApp {
 
 	public void loadSession()
 	{
-		this.session = OTConstants.LAUNCHED ? new File(OTConstants.sessions, System.getProperty("ot.s")) : JREUtil.getMSDir(OTConstants.sessions);
+		this.session = OTConstants.LAUNCHED ? new File(OTConstants.tmp, System.getProperty("ot.s")) : JREUtil.getMSDir(OTConstants.tmp);
 		this.sessionName = this.session.getName();
+		
+		//cleanup previous sessions
+		if(!OTConstants.LAUNCHED)
+			IOUtils.deleteDirectory(this.session.getParentFile(), false);
 	}
 
 	/**
@@ -203,13 +207,13 @@ public class TerminalApp {
 		IOUtils.saveFileLines(Arrays.asList("" + AnsiColors.TermColors.TRUE_COLOR), this.manager.noREQFile , true);//TODO: SYNC COLOR and move to it's own method
 	}
 
-	public void enableLoggers() 
+	public void enableLoggers()
 	{
 		if(this.shouldLog)
 		{
 			try
 			{
-				File log = new File(OTConstants.home, "logs/" + this.id + "/log-" + this.session.getName() + ".txt");
+				File log = new File(OTConstants.home, "logs/" + this.id + "/log-" + this.sessionName + ".txt");
 				FileUtil.create(log);
 				System.setOut(new WrappedPrintStream(System.out, log));
 				System.setErr(new WrappedPrintStream(System.err, log));

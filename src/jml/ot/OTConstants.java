@@ -6,12 +6,12 @@ import jredfox.common.utils.JREUtil;
 
 public class OTConstants {
 	
-	public static final String OTVERSION = "alpha-1.0.0";
+	public static final String OTVERSION = "alpha-1.0.1";
 	public static final File home = new File(TerminalUtil.getAppData().getAbsoluteFile(), "OpenTerminal");
 	public static final File configs = new File(home, "configs");
 	public static final File profiles = new File(home, "profiles");
 	public static final File scripts = new File(home, "scripts");
-	public static final File sessions = new File(home, "sessions");
+	public static final File tmp = new File(home, "tmp");
 	public static final File start = new File(scripts, "start");
 	public static final File boot = new File(scripts, "boot");
 	public static final File userDir = JREUtil.getProgramDir().getAbsoluteFile();
