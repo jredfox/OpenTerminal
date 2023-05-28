@@ -1,9 +1,12 @@
 package jml.ot;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Scanner;
 
 import jml.ot.colors.AnsiColors;
+import jml.reflect.ObfString;
+import jml.reflect.ReflectionHandler;
 import jredfox.common.utils.JREUtil;
 
 public class OTMain {
@@ -46,7 +49,13 @@ public class OTMain {
 //			{
 ////				//TODO:PID keep alive check here
 //			}
-			JREUtil.sleep(8000);
+//			Map<String,String> c = ReflectionHandler.get(ReflectionHandler.getField(ReflectionHandler.getClass("java.lang.ProcessEnvironment"), new ObfString("theCaseInsensitiveEnvironment", "theCaseInsensitiveEnvironment")), null);
+//			for(String s : c.keySet())
+//			{
+//				System.out.println(s);
+//			}
+			System.out.println("A:" + System.getenv("$color") + " " + System.getenv("color") + " " + System.getenv("color"));
+			JREUtil.sleep(3000);
 			
 			//ensure final printlines happen before shutting down the client
 			app.manager.isRunning = false;//TODO: shutdown the thread

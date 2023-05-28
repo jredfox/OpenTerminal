@@ -94,7 +94,8 @@ public class PowerShellExe extends TerminalExe {
                     + "Start-Process -Wait -NoNewWindow $java_home -ArgumentList $java_args\n"
                     + "if($pause -eq \"true\")\n"
                     + "{\n"
-                    + "    Write-Host -NoNewline (\"$colors\" + \"Press ENTER to continue...\")\n"
+                    + "	 \"Press ENTER to continue...\"\n"
+//                    + "    Write-Host -NoNewline (\"$colors\" + \"Press ENTER to continue...\")\n"
                     + "    Read-Host\n"
                     + "}");
             this.makeShell(li);
@@ -130,7 +131,6 @@ public class PowerShellExe extends TerminalExe {
 	public String getJVMFlags()
 	{
 		return "-Dot.w=false " + super.getJVMFlags0();
-//		return "-Dot.w=false " + (this.app.pause ? "-Dot.p " : "") + super.getJVMFlags0();
 	}
 
 }
