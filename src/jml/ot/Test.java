@@ -70,8 +70,8 @@ public class Test {
 //		System.out.print("BF2:");
 //		System.out.println(bf.readLine());
 		
-		app.colors.colors = app.colors.formatColor(p.bg, p.fg, p.ansiFormat, false);
-		app.colors.print(Color.BLACK, Color.green, "OLDE TESTE");
+//		app.colors.colors = app.colors.formatColor(p.bg, p.fg, p.ansiFormat, false);
+//		app.colors.print(Color.BLACK, Color.green, "OLDE TESTE");
 		System.out.println(app.colors.formatColor(Color.RED, Color.WHITE, "server to client test...", true));
 //		System.out.println(app.colors.colors.replace(AnsiColors.ESC, "ESC"));
 		app.manager.isRunning = false;//TODO: remove once PID auto detection has been reached

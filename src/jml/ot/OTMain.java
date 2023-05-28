@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 import jml.ot.colors.AnsiColors;
+import jredfox.common.utils.JREUtil;
 
 public class OTMain {
 	
@@ -41,10 +42,11 @@ public class OTMain {
 //			Test.printTest(AnsiColors.INSTANCE);
 			
 			boolean hostIsAlive = true;
-			while(hostIsAlive)
-			{
-//				//TODO:PID keep alive check here
-			}
+//			while(hostIsAlive)
+//			{
+////				//TODO:PID keep alive check here
+//			}
+			JREUtil.sleep(8000);
 			
 			//ensure final printlines happen before shutting down the client
 			app.manager.isRunning = false;//TODO: shutdown the thread
