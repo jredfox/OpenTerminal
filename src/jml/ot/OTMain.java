@@ -1,10 +1,8 @@
 package jml.ot;
 
-import java.io.IOException;
 import java.util.Scanner;
 
 import jml.ot.colors.AnsiColors;
-import jredfox.common.utils.JREUtil;
 
 public class OTMain {
 	
@@ -22,43 +20,26 @@ public class OTMain {
 	 * @NOTE: USE java -cp INSTEAD OF java -jar for custom TerminalApp classes as you will get a NoClassFoundException otherwise
 	 * @author jredfox
 	 */
-	public static void main(String[] args) throws IOException, InterruptedException
+	public static void main(String[] args)
 	{
 		AnsiColors.enableCmdColors();//ensure ANSI colors are enabled by loading the class
 		if(!OTConstants.LAUNCHED)
 		{
-			try
-			{
 			TerminalApp app = args.length != 0 ? new TerminalApp(args[0], args[1], args[2], Boolean.parseBoolean(args[3]), Boolean.parseBoolean(args[4])) : new TerminalApp("ot", "Open Terminal", OTConstants.OTVERSION);
-			app.javaPause = true;
 			OpenTerminal.open(app);
 			app.manager.isRunning = false;
-			}catch(Throwable e)
-			{
-				e.printStackTrace();
-			}
 		}
 		else
 		{
 			TerminalApp app = new TerminalApp("dummy", "Dummy", "1.0.0");//TODO: improve with override update
 			app.loadSession();
 			app.startPipeManager();
-//			new ProcessBuilder("cmd", "/c", "color 2f").inheritIO().start().waitFor();
-//			new ProcessBuilder("cmd", "/c", "").inheritIO().start().waitFor();
-//			System.out.println("booted:" + OTConstants.userDir);
-//			Test.printTest(AnsiColors.INSTANCE);
-			
-			boolean hostIsAlive = true;
+//			boolean hostIsAlive = true;
 //			while(hostIsAlive)
 //			{
 ////				//TODO:PID keep alive check here
 //			}
-//			Map<String,String> c = ReflectionHandler.get(ReflectionHandler.getField(ReflectionHandler.getClass("java.lang.ProcessEnvironment"), new ObfString("theCaseInsensitiveEnvironment", "theCaseInsensitiveEnvironment")), null);
-//			for(String s : c.keySet())
-//			{
-//				System.out.println(s);
-//			}
-			JREUtil.sleep(3000);
+//			JREUtil.sleep(3000);
 			System.out.println(System.getProperty("ot.app"));
 			
 			//ensure final printlines happen before shutting down the client
@@ -74,7 +55,7 @@ public class OTMain {
 			if(System.getProperty("ot.jp") != null)
 			{
 				System.out.print("Press ENTER to continue...");
-				System.out.println("FUC");
+				System.out.flush();//ensure it's written imediatly
 				new Scanner(System.in).nextLine();//TODO: improve logic in case system#in becomes a file and throws an exception
 			}
 		}

@@ -82,6 +82,10 @@ public class TerminalApp {
 	 */
 	public File session;
 	public String sessionName;
+	/**
+	 * set this field if you require custom logic on the CLI client side running it must have a valid default contructor
+	 */
+	public Class<? extends TerminalApp> appClass = TerminalApp.class;//TODO: make this null by default after debugging
 	
 	public TerminalApp(String id, String name, String version)
 	{
@@ -98,6 +102,8 @@ public class TerminalApp {
 		Assert.is(!JavaUtil.containsAny(id, OTConstants.illegals + " "), "Terminal app id cannot contain spaces or:" + OTConstants.illegals);
 		Assert.is(!JavaUtil.containsAny(name, OTConstants.illegals), "Terminal app name cannot contain:" + OTConstants.illegals);
 		Assert.is(!JavaUtil.containsAny(version, OTConstants.illegals), "Terminal app version cannot contain:" + OTConstants.illegals);
+		if(JREUtil.isCompiled())
+			Assert.is(this.appClass == null);//TODO: remove after debugging
 		this.id = id;
 		this.name = name;
 		this.version = version;

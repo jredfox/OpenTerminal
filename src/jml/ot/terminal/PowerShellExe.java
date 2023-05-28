@@ -69,7 +69,7 @@ public class PowerShellExe extends TerminalExe {
 		cmd.add("-java_args");
 		cmd.add(q + this.getJVMFlags() + " " + OTConstants.args.replaceAll(q, q2).replace(";", "$") + q);
 		cmd.add("-pause");
-		cmd.add(q + this.app.pause + q);//do not use write-host clears the coloring and there is no way to work around it for true color or custom ansi formatting
+		cmd.add(q + this.app.pause + q);
 		return cmd;
 	}
 	
