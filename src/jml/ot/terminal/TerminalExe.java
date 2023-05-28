@@ -38,6 +38,15 @@ public abstract class TerminalExe {
 	 * get's the boot command used by a console host instead of forcing a new window through other means
 	 */
 	public abstract List<String> getBootCmd();
+	/**
+	 * get the JVM flags in an organized fashion
+	 */
+	public abstract String getJVMFlags();
+	
+	public String getJVMFlags0() 
+	{
+		return "-Dot.w -Dot.id=" + this.app.id + " -Dot.s=" + this.app.sessionName + (this.app.shouldLog ? " -Dot.log" : "") + (this.app.getClass().equals(TerminalApp.class) ? "" : " -Dot.c.app=" + this.app.getClass().getName().replace("$", "@"));
+	}
 	
 	/**
 	 * run the process builder with genStart and the boot shell checks
@@ -48,7 +57,7 @@ public abstract class TerminalExe {
 		{
 			this.genStart();
 			this.createShell();
-//			this.printPB(pb);
+			this.printPB(pb);
 			if(this.app.canLogBoot)
 				this.logPB(pb);
 			pb.directory(OTConstants.userDir).start();
@@ -85,7 +94,7 @@ public abstract class TerminalExe {
 	{
 		for (String s : pb.command())
 			this.app.bootLogger.print(s + " ");
-		this.app.bootLogger.println("\b");
+//		this.app.bootLogger.println("\b");
 	}
 	
 	public void printPB(ProcessBuilder pb)

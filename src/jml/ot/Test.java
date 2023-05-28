@@ -53,7 +53,7 @@ public class Test {
 		}
 //		app.pause = false;
 		Profile p = app.getProfile();
-		System.out.println("Starting CLI");
+		System.out.println("Starting CLI:" + app.getTitle());
 		app.shouldLog = true;
 		OpenTerminal.open(app);
 		

@@ -36,7 +36,7 @@ public class BatchExe extends TerminalExe {
 				q + this.shell.getPath() + q,//path to the boot shell
 				profile != null && profile.bg != null ? q + colors + q : q + "" + q,//color
 				q + this.app.getTitle() + q,
-				q + (OTConstants.java_home + " -Dot.w=true -Dot.s=" + this.app.sessionName + " " + OTConstants.args).replaceAll("\"", ",") + q,
+				q + (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replaceAll("\"", ",") + q,
 				q + this.app.pause + q
 			});
 		}
@@ -47,7 +47,7 @@ public class BatchExe extends TerminalExe {
 			{
 				"cmd",
 				TerminalUtil.getExeAndClose(),
-				"start " + q + this.app.getTitle() + q + " " + OTConstants.java_home + (this.app.pause ? " -Dot.p " : " ") + "-Dot.w=true -Dot.s=" + this.app.sessionName + " " + OTConstants.args
+				"start " + q + this.app.getTitle() + q + " " + OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args
 			});
 		}
 		this.run(pb);
@@ -66,7 +66,7 @@ public class BatchExe extends TerminalExe {
 		cmd.add(q + this.shell.getPath() + q);//path to the boot shell
 		cmd.add(profile != null && profile.bg != null ? q + colors + q : "");
 		cmd.add(q + this.app.getTitle() + q);
-		cmd.add(q + (OTConstants.java_home + " -Dot.w=true -Dot.s=" + this.app.sessionName + " " + OTConstants.args).replaceAll("\"", ",").replace(";", "$") + q);
+		cmd.add(q + (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replaceAll("\"", ",").replace(";", "$") + q);
 		cmd.add(q + this.app.pause + q);
 		return cmd;
 	}
@@ -87,6 +87,7 @@ public class BatchExe extends TerminalExe {
                     + "set boot=%~3\n"
                     + "set boot=%boot:,=^\"% ::RE-MAP the boot command to double quotes\n"
                     + "set boot=%boot:$=;\"% ::Work around for WT\n"
+                    + "set boot=%boot:@=$%\n"
                     + "call %boot%\n"
                     + "IF \"%~4%\" == \"true\" (\n"
                     + "set /p DUMMY=Press ENTER to continue...\n"
@@ -106,6 +107,12 @@ public class BatchExe extends TerminalExe {
 	public void cleanup() 
 	{
 		this.shell.delete();
+	}
+
+	@Override
+	public String getJVMFlags() 
+	{
+		return "-Dot.w " + this.app.getProfile() == null ? " -Dot.p" : "" +  super.getJVMFlags0();
 	}
 
 }
