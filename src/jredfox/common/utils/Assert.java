@@ -16,5 +16,11 @@ public class Assert {
 		if(!b)
 			throw new AssertionError();
 	}
+	
+	public static void is(boolean b, Object o)
+	{
+		if(!b)
+		   throw new AssertionError(o);
+	}
 
 }
