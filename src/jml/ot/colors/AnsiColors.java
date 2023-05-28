@@ -218,7 +218,7 @@ public class AnsiColors {
 	}
 	
 	/**
-	 * hack windows 10 conhost.exe to enable colors straight from java
+	 * hack windows 10 conhost.exe and wt to enable colors straight from java
 	 */
 	public static void enableCmdColors()
 	{
