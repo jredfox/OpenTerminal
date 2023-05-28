@@ -32,11 +32,12 @@ public class OTMain {
 			TerminalApp app = new TerminalApp("dummy", "Dummy", "1.0.0");//TODO: improve with override update
 			app.loadSession();
 			app.startPipeManager();
-//			boolean hostIsAlive = true;
-//			while(hostIsAlive)
-//			{
-////				//TODO:PID keep alive check here
-//			}
+			app.sendColors();
+			boolean hostIsAlive = true;
+			while(hostIsAlive)
+			{
+//				//TODO:PID keep alive check here
+			}
 //			JREUtil.sleep(3000);
 			System.out.println(System.getProperty("ot.app"));
 			

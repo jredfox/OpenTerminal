@@ -112,7 +112,7 @@ public class AnsiColors {
 	public TermColors setColorMode(String mode)
 	{
 		mode = mode.toLowerCase();
-		TermColors colorMode = mode.equals("ansi4bit") ? TermColors.ANSI4BIT : mode.contains("true") && mode.contains("color") ? TermColors.TRUE_COLOR : TermColors.XTERM_256;
+		TermColors colorMode = mode.equals("ansi4bit") ? TermColors.ANSI4BIT : (mode.contains("true") && mode.contains("color") || mode.contains("24") && mode.contains("bit")) ? TermColors.TRUE_COLOR : TermColors.XTERM_256;
 		setColorMode(colorMode);
 		return colorMode;
 	}

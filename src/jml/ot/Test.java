@@ -36,8 +36,8 @@ public class Test {
 					Profile p = Profile.newMac("jredfox.openterminal.purpleCollege", "resources/jml/ot/mac/college.terminal");
 //					Profile p = Profile.newMac("Red Sands");
 //					Profile p  = new Profile();
-					p.bg = Color.GRAY;
-					p.fg = Color.GREEN;
+//					p.bg = Color.GRAY;
+//					p.fg = Color.GREEN;
 					return p;
 				}
 				else if(TerminalUtil.isLinux())
@@ -57,6 +57,7 @@ public class Test {
 //		app.shouldLog = true;
 		OpenTerminal.open(app);
 		
+		//begin testing
 		System.out.println("COLORMODE:" + app.colors.colorMode);
 		
 		Scanner scanner = new Scanner(System.in);

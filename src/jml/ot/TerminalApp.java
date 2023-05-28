@@ -200,7 +200,7 @@ public class TerminalApp {
 		this.loadSession();
 		this.enableLoggers();
 		this.startPipeManager();
-//		System.out.println("Started CLI Session on:" + this.session);
+		System.out.println("Started CLI Session on:" + this.session);
 	}
 
 	public void loadSession()
@@ -221,10 +221,7 @@ public class TerminalApp {
 		this.manager = new PipeManager();
 		this.manager.loadPipes(this.session, OTConstants.LAUNCHED, this.replaceSYSO);
 		this.manager.start();
-		
-		//more optimized to send a one time communication to the host since that's all it needs
-		if(OTConstants.LAUNCHED)
-			IOUtils.saveFileLines(Arrays.asList("" + AnsiColors.TermColors.TRUE_COLOR), this.manager.noREQFile , true);//TODO: SYNC COLOR and move to it's own method
+		this.sendColors();
 	}
 
 	public void enableLoggers()
@@ -384,11 +381,22 @@ public class TerminalApp {
 
 	public void loadColors() throws IOException 
 	{
-		String mode = this.manager.getInputNoREQ(-1);//no timeout by default this trusts the CLI but users can set it to a timeout for security reasons
-		this.colors.setColorMode(mode);
+		String mode = this.manager.getInputNoREQ(-1);//no timeout by default this trusts the CLI but users can set it to a timeout for security reason
+		this.colors.setColorMode(mode.equalsIgnoreCase("nullnull") ? (this.ANSI4BIT ? "ansi4bit" : "truecolor") : mode);
 		Profile p = this.getProfile();
 		if(p != null)
 			this.colors.setReset(p.bg, p.fg, p.ansiFormat, true);
+	}
+	
+	/**
+	 * on CLI Client Side sending to Host Server Side
+	 */
+	public void sendColors()
+	{
+		String col = System.getenv("TERM") + System.getenv("COLORTERM");
+		//more optimized to send a one time communication to the host since that's all it needs
+		if(OTConstants.LAUNCHED)
+			IOUtils.saveFileLines(Arrays.asList(col), this.manager.noREQFile , true);
 	}
 
 	/**
