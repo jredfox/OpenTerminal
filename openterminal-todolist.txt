@@ -1,7 +1,6 @@
-if IPC type file and logger is enabled nulloutputstream
+fix shells to input the color mode into JVM
 re-add wrapped args
 colored error streams
-fix shells to input the color mode into JVM
 PID checker on both server and client to see if they close
 
 create SocketPipes(pipes over the network from a socket)

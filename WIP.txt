@@ -1,2 +1,3 @@
 issues:
 - ot flags and specifically ot.s
+- fix shells to input the color mode into JVM
