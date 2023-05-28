@@ -21,6 +21,7 @@ ot.force
 ot.pause
 ot.terminal
 ot.conhost
+ot.jvmArgs && ot.dirs...= #includes program args if launched with any. this will boot the program if nessary with the proper changes
 redo color formatting to accept formatting without rebuilding esc[<code>m every time
 
 done:
