@@ -187,7 +187,7 @@ public class MacBashExe extends TerminalExe {
 		String q = TerminalUtil.getQuote();
 		Profile p = this.getAppProfile();
 		String profileId = p.mac_profileName;
-		String command = (OTConstants.java_home + " " + OTConstants.args).replaceAll(q, "\\\\" + q);
+		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replaceAll(q, "\\\\" + q);
 		String trueColor = app.getBootTrueColor(p).replace(AnsiColors.ESC, "\\033");
 		String platteColor = app.getBootPaletteColor(p).replace(AnsiColors.ESC, "\\033");
 		String bash = "bash " + q + this.shell.getPath() + q + " " + q + trueColor + q + " " + q + platteColor + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + System.currentTimeMillis() + q + " " + q + closeMeScpt.getPath() + q;
@@ -216,7 +216,7 @@ public class MacBashExe extends TerminalExe {
 	{
 		String q = TerminalUtil.getQuote();
 		Profile p = this.getAppProfile();
-		String command = (OTConstants.java_home + " " + OTConstants.args).replaceAll(q, "\\\\" + q);
+		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replaceAll(q, "\\\\" + q);
 		String trueColor = app.getBootTrueColor(p).replace(AnsiColors.ESC, "\\033");
 		String platteColor = app.getBootPaletteColor(p).replace(AnsiColors.ESC, "\\033");
 		String bash = "bash " + q + this.shell.getPath() + q + " " + q + trueColor + q + " " + q + platteColor + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + System.currentTimeMillis() + q + " " + q + closeMeScpt.getPath() + q;
@@ -249,6 +249,12 @@ public class MacBashExe extends TerminalExe {
 	{
 		this.shell.delete();
 		IOUtils.deleteDirectory(macStart);
+	}
+
+	@Override
+	public String getJVMFlags() 
+	{
+		return super.getJVMFlags0();
 	}
 
 }

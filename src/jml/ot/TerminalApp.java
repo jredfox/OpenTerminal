@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import jml.ipc.pipes.PipeManager;
 import jml.ipc.pipes.WrappedPrintStream;
@@ -388,6 +389,21 @@ public class TerminalApp {
 		Profile p = this.getProfile();
 		if(p != null)
 			this.colors.setReset(p.bg, p.fg, p.ansiFormat, true);
+	}
+
+	/**
+	 * used by {@link OTMain#main(String[])} at the end of the program on CLI client side to get the java pause
+	 * to override this behavior simply override {@link #appClass} to your TerminalApp class and then override this method
+	 */
+	public void pause() 
+	{
+		if(this.javaPause)
+		{
+			System.out.println("JAVA PAUSE DEBUG");
+			System.out.print("Press ENTER to continue...");
+			System.out.flush();//ensure it's written right away
+			new Scanner(System.in).nextLine();
+		}
 	}
 
 }

@@ -1,7 +1,5 @@
 package jml.ot;
 
-import java.util.Scanner;
-
 import jml.ot.colors.AnsiColors;
 
 public class OTMain {
@@ -50,14 +48,8 @@ public class OTMain {
 				if((System.currentTimeMillis() - time) > 10000)
 					break;//ensure it breaks
 			}
-			
-			//java pause for non shell terminals. should be safe to do as OpenTerminal is a separate process
-			if(System.getProperty("ot.jp") != null)
-			{
-				System.out.print("Press ENTER to continue...");
-				System.out.flush();//ensure it's written imediatly
-				new Scanner(System.in).nextLine();//TODO: improve logic in case system#in becomes a file and throws an exception
-			}
+			//pause the app
+			app.pause();
 		}
 	}
 
