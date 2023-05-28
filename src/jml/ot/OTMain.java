@@ -54,8 +54,8 @@ public class OTMain {
 //			{
 //				System.out.println(s);
 //			}
-			System.out.println("A:" + System.getenv("$color") + " " + System.getenv("color") + " " + System.getenv("color"));
 			JREUtil.sleep(3000);
+			System.out.println(System.getProperty("ot.app"));
 			
 			//ensure final printlines happen before shutting down the client
 			app.manager.isRunning = false;//TODO: shutdown the thread

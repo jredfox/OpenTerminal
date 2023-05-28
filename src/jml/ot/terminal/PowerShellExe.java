@@ -90,11 +90,11 @@ public class PowerShellExe extends TerminalExe {
                     + "Write-Host -NoNewLine \"$colors\"\n"
                     + "cls\n"
                     + "$host.UI.RawUI.WindowTitle = \"$title\"\n"
-                    + "$java_args = $java_args.Replace(\"'\", \"\"\"\").Replace(\"$\", \";\")\n"
+                    + "$java_args = $java_args.Replace(\"'\", \"\"\"\").Replace(\"$\", \";\").Replace(\"@\",\"$\")\n"
                     + "Start-Process -Wait -NoNewWindow $java_home -ArgumentList $java_args\n"
                     + "if($pause -eq \"true\")\n"
                     + "{\n"
-                    + "	 \"Press ENTER to continue...\"\n"
+                    + "	\"Press ENTER to continue...\"\n"
 //                    + "    Write-Host -NoNewline (\"$colors\" + \"Press ENTER to continue...\")\n"
                     + "    Read-Host\n"
                     + "}");
