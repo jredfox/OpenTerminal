@@ -87,9 +87,9 @@ public class TerminalApp {
 	
 	public TerminalApp(String id, String name, String version, boolean force, boolean pause)
 	{
-		Assert.is(!JavaUtil.containsAny(id, OTConstants.illegals), "Terminal app id cannot contain:" + OTConstants.illegals);
+		Assert.is(!JavaUtil.containsAny(id, OTConstants.illegals + " "), "Terminal app id cannot contain spaces or:" + OTConstants.illegals);
 		Assert.is(!JavaUtil.containsAny(name, OTConstants.illegals), "Terminal app name cannot contain:" + OTConstants.illegals);
-		Assert.is(!JavaUtil.containsAny(name, OTConstants.illegals), "Terminal app name cannot contain:" + OTConstants.illegals);
+		Assert.is(!JavaUtil.containsAny(version, OTConstants.illegals), "Terminal app version cannot contain:" + OTConstants.illegals);
 		this.id = id;
 		this.name = name;
 		this.version = version;

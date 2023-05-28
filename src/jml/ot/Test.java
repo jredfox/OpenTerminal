@@ -11,7 +11,7 @@ public class Test {
 
 	public static void main(String[] args) throws IOException, InterruptedException
 	{
-		TerminalApp app = new TerminalApp("test", "Test App", "1.0.0", false) 
+		TerminalApp app = new TerminalApp("test", "Test App", "1.0.0", false)
 		{
 			@Override
 			public Profile getProfile() 
@@ -61,6 +61,7 @@ public class Test {
 		System.out.println("COLORMODE:" + color);
 		app.colors.colorMode = app.colors.setColorMode(color);
 		
+		System.out.println(app.getTerminalExe().getJVMFlags());
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("TEST:");
 		System.out.println("TEST IN WAS:" + scanner.nextLine());

@@ -112,7 +112,7 @@ public class BatchExe extends TerminalExe {
 	@Override
 	public String getJVMFlags() 
 	{
-		return "-Dot.w " + this.app.getProfile() == null ? " -Dot.p" : "" +  super.getJVMFlags0();
+		return "-Dot.w " + (this.app.getProfile() == null ? " -Dot.p" : "") +  super.getJVMFlags0();
 	}
 
 }

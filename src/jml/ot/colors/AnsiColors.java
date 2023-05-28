@@ -225,6 +225,7 @@ public class AnsiColors {
 		String prop = System.getProperty("ot.w");
 		if(OTConstants.LAUNCHED && prop != null)
 		{
+//			System.out.println("hacking color profiles");
 			boolean cmd = prop.equals("true");
 			try
 			{

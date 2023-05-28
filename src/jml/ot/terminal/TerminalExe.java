@@ -45,7 +45,7 @@ public abstract class TerminalExe {
 	
 	public String getJVMFlags0() 
 	{
-		return "-Dot.w -Dot.id=" + this.app.id + " -Dot.s=" + this.app.sessionName + (this.app.shouldLog ? " -Dot.log" : "") + (this.app.getClass().equals(TerminalApp.class) ? "" : " -Dot.c.app=" + this.app.getClass().getName().replace("$", "@"));
+		return "-Dot.id=" + this.app.id + " -Dot.s=" + this.app.sessionName + (this.app.shouldLog ? " -Dot.log" : "") + (this.app.getClass().equals(TerminalApp.class) ? "" : " -Dot.c.app=" + this.app.getClass().getName().replace("$", "@"));
 	}
 	
 	/**
@@ -57,7 +57,7 @@ public abstract class TerminalExe {
 		{
 			this.genStart();
 			this.createShell();
-			this.printPB(pb);
+//			this.printPB(pb);
 			if(this.app.canLogBoot)
 				this.logPB(pb);
 			pb.directory(OTConstants.userDir).start();
