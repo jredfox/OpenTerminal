@@ -40,7 +40,7 @@ public class PowerShellExe extends TerminalExe {
 			"-java_home",
 			OTConstants.java_home,
 			"-java_args",
-			q + (this.app.pause ? "-Dot.p " : "") + "-Dot.w=false " + OTConstants.args.replaceAll(q, "'") + q,
+			q + this.getJVMFlags() + " " + OTConstants.args.replaceAll(q, "'") + q,
 			"-pause",
 			q + false + q,
 		});
@@ -67,7 +67,7 @@ public class PowerShellExe extends TerminalExe {
 		cmd.add("-java_home");
 		cmd.add(OTConstants.java_home);
 		cmd.add("-java_args");
-		cmd.add(q + (this.app.pause ? "-Dot.p " : "") + "-Dot.w=false " + OTConstants.args.replaceAll(q, q2).replace(";", "$") + q);
+		cmd.add(q + this.getJVMFlags() + " " + OTConstants.args.replaceAll(q, q2).replace(";", "$") + q);
 		cmd.add("-pause");
 		cmd.add(q + false + q);//do not use write-host clears the coloring and there is no way to work around it for true color or custom ansi formatting
 		return cmd;
@@ -129,7 +129,7 @@ public class PowerShellExe extends TerminalExe {
 	@Override
 	public String getJVMFlags()
 	{
-		return "-Dot.w=false " + (this.app.pause ? "-Dot.p") + super.getJVMFlags0();
+		return "-Dot.w=false " + (this.app.pause ? "-Dot.p " : "") + super.getJVMFlags0();
 	}
 
 }
