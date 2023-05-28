@@ -1,4 +1,3 @@
-fix shells to input the color mode into JVM
 re-add wrapped args
 colored error streams
 PID checker on both server and client to see if they close

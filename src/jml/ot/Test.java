@@ -53,15 +53,12 @@ public class Test {
 		}
 //		app.pause = false;
 		Profile p = app.getProfile();
-		System.out.println("Starting CLI:" + app.getTitle());
-		app.shouldLog = true;
+		System.out.println("Starting CLI:" + app.getProfile());
+//		app.shouldLog = true;
 		OpenTerminal.open(app);
 		
-		String color = app.manager.getInputNoREQ();
-		System.out.println("COLORMODE:" + color);
-		app.colors.colorMode = app.colors.setColorMode(color);
+		System.out.println("COLORMODE:" + app.colors.colorMode);
 		
-		System.out.println(app.getTerminalExe().getJVMFlags());
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("TEST:");
 		System.out.println("TEST IN WAS:" + scanner.nextLine());
@@ -73,9 +70,10 @@ public class Test {
 //		System.out.print("BF2:");
 //		System.out.println(bf.readLine());
 		
-//		app.colors.colors = app.colors.formatColor(p.bg, p.fg, p.ansiFormat, false);
-//		app.colors.print(Color.BLACK, Color.green, "OLDE TESTE");
-//		System.out.println(app.colors.formatColor(Color.RED, Color.WHITE, "server to client test...", true));
+		app.colors.colors = app.colors.formatColor(p.bg, p.fg, p.ansiFormat, false);
+		app.colors.print(Color.BLACK, Color.green, "OLDE TESTE");
+		System.out.println(app.colors.formatColor(Color.RED, Color.WHITE, "server to client test...", true));
+		System.out.println(app.colors.colors.replace(AnsiColors.ESC, "ESC"));
 		app.manager.isRunning = false;//TODO: remove once PID auto detection has been reached
 	}
 	

@@ -48,7 +48,7 @@ public class AnsiColors {
 	
 	public AnsiColors()
 	{
-		this.colors = TerminalUtil.getPropertySafely("ot.color.format").replace("$", ";");
+		this.colors = "";
 		this.colorMode = setColorMode(TerminalUtil.getPropertySafely("ot.color.mode"));
 	}
 	
@@ -232,7 +232,10 @@ public class AnsiColors {
 				if(cmd)
 					new ProcessBuilder(new String[]{"cmd", "/c", "echo | set /p dummyName=\"\""}).inheritIO().start().waitFor();
 				else
+				{
+					System.out.println("hacking powershell colors:");
 					new ProcessBuilder(new String[]{"powershell", "/c", "Write-Output \"$null\""}).inheritIO().start().waitFor();
+				}
 			}
 			catch (Exception e){e.printStackTrace();}
 		}

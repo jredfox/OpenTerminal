@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -207,7 +208,8 @@ public class TerminalApp {
 		this.manager.start();
 		
 		//more optimized to send a one time communication to the host since that's all it needs
-		IOUtils.saveFileLines(Arrays.asList("" + AnsiColors.TermColors.TRUE_COLOR), this.manager.noREQFile , true);//TODO: SYNC COLOR and move to it's own method
+		if(OTConstants.LAUNCHED)
+			IOUtils.saveFileLines(Arrays.asList("" + AnsiColors.TermColors.TRUE_COLOR), this.manager.noREQFile , true);//TODO: SYNC COLOR and move to it's own method
 	}
 
 	public void enableLoggers()
@@ -363,6 +365,14 @@ public class TerminalApp {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public void loadColors() throws IOException 
+	{
+		String mode = this.manager.getInputNoREQ(-1);//no timeout by default this trusts the CLI but users can set it to a timeout for security reasons
+		this.colors.setColorMode(mode);
+		Profile p = this.getProfile();
+		this.colors.setReset(p.bg, p.fg, false);
 	}
 
 }

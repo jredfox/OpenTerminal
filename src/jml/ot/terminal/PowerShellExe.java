@@ -23,7 +23,7 @@ public class PowerShellExe extends TerminalExe {
 	public void run() 
 	{
 		String q = TerminalUtil.getQuote();
-		String colors = this.app.getBootTrueColor(this.app.getProfile());
+		String colors = this.app.getBootTrueColor(this.app.getProfile()).replace(";", "$");
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
 			"powershell",
@@ -40,9 +40,9 @@ public class PowerShellExe extends TerminalExe {
 			"-java_home",
 			OTConstants.java_home,
 			"-java_args",
-			q + this.getJVMFlags() + " " + OTConstants.args.replaceAll(q, "'") + q,
+			q + this.getJVMFlags() + " " + OTConstants.args.replaceAll(q, "'").replace(";", "$") + q,
 			"-pause",
-			q + false + q,
+			q + true + q,
 		});
 		this.run(pb);
 	}

@@ -54,6 +54,7 @@ public class OpenTerminal {
 				console.run();
 			else
 				app.getTerminalExe().run();
+			app.loadColors();//sync colors here
 		}
 		catch(Throwable t)
 		{

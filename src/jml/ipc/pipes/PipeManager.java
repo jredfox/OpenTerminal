@@ -13,6 +13,7 @@ import java.util.Scanner;
 
 import jredfox.common.file.FileUtils;
 import jredfox.common.io.IOUtils;
+import jredfox.common.utils.JREUtil;
 
 /**
  * A standard PipeManager used to configure STD, ERR, and IN from server to client. The STD & ERR will only display the output and the IN will only gather input.
@@ -46,13 +47,20 @@ public class PipeManager {
 	/**
 	 * assumes the client has already sent the input
 	 */
-	public String getInputNoREQ() throws IOException
+	public String getInputNoREQ(long timeout) throws IOException
 	{
 		if(this.noREQReader == null)
 			this.noREQReader = IOUtils.getReader(this.noREQFile);
 		String input = this.noREQReader.readLine();
+		boolean tm = timeout > -1;
+		long ms = tm ? System.currentTimeMillis() : 0;//do not call system.currentms as it's laggy when not needed
 		while(input == null)
+		{
+			if(tm && (System.currentTimeMillis()-ms) > timeout)
+				break;
 			input = this.noREQReader.readLine();
+			JREUtil.sleep(1);
+		}
 		return input;
 	}
 	
@@ -196,6 +204,7 @@ public class PipeManager {
 		//server side
 		else
 		{
+			System.out.println(this.noREQFile);
 			FileUtils.create(this.noREQFile);
 			PipeServer server_out = new PipeServer("ot.out", new File(dirPipes, "ot-out.txt"))
 			{
