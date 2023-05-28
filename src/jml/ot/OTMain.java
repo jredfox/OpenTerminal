@@ -25,11 +25,18 @@ public class OTMain {
 	public static void main(String[] args) throws IOException, InterruptedException
 	{
 		AnsiColors.enableCmdColors();//ensure ANSI colors are enabled by loading the class
-		if(System.console() == null)
+		if(!OTConstants.LAUNCHED)
 		{
+			try
+			{
 			TerminalApp app = args.length != 0 ? new TerminalApp(args[0], args[1], args[2], Boolean.parseBoolean(args[3]), Boolean.parseBoolean(args[4])) : new TerminalApp("ot", "Open Terminal", OTConstants.OTVERSION);
+			app.javaPause = true;
 			OpenTerminal.open(app);
 			app.manager.isRunning = false;
+			}catch(Throwable e)
+			{
+				e.printStackTrace();
+			}
 		}
 		else
 		{
@@ -64,10 +71,11 @@ public class OTMain {
 			}
 			
 			//java pause for non shell terminals. should be safe to do as OpenTerminal is a separate process
-			if(System.getProperty("ot.p") != null)
+			if(System.getProperty("ot.jp") != null)
 			{
 				System.out.print("Press ENTER to continue...");
-				new Scanner(System.in).nextLine();
+				System.out.println("FUC");
+				new Scanner(System.in).nextLine();//TODO: improve logic in case system#in becomes a file and throws an exception
 			}
 		}
 	}

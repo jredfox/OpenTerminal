@@ -40,7 +40,14 @@ public class TerminalApp {
 	public String name;
 	public String version;
 	public boolean force;//when enabled will always open a window
+	/**
+	 * shellscript pause will always require user input even on {@link System#exit(int)} from CLI Client side
+	 */
 	public boolean pause;
+	/***
+	 * java pause will not pause on {@link System#exit(int)} only when the program hasn't crashed and only from CLI Client side which {@link OpenTerminal#open(TerminalApp)} would have had to create a new CLI client
+	 */
+	public boolean javaPause;
 	public String terminal = "";
 	public String conHost = "";
 	public List<String> linuxCmdsExe = new ArrayList<>(0);//configurable list to use LinuxCmdExe instead of LinuxBash or another
@@ -96,6 +103,7 @@ public class TerminalApp {
 		this.version = version;
 		this.force = force;
 		this.pause = pause;
+		this.javaPause = System.getProperty("ot.jp") != null;
 	}
 
 	public String getTitle()
@@ -372,7 +380,8 @@ public class TerminalApp {
 		String mode = this.manager.getInputNoREQ(-1);//no timeout by default this trusts the CLI but users can set it to a timeout for security reasons
 		this.colors.setColorMode(mode);
 		Profile p = this.getProfile();
-		this.colors.setReset(p.bg, p.fg, p.ansiFormat, true);
+		if(p != null)
+			this.colors.setReset(p.bg, p.fg, p.ansiFormat, true);
 	}
 
 }

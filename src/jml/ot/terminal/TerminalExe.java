@@ -43,9 +43,12 @@ public abstract class TerminalExe {
 	 */
 	public abstract String getJVMFlags();
 	
+	/**
+	 * ot.jp is only a java pause not a shell script pause. when java exits it won't pause after execution
+	 */
 	public String getJVMFlags0() 
 	{
-		return "-Dot.id=" + this.app.id + " -Dot.s=" + this.app.sessionName + (this.app.shouldLog ? " -Dot.log" : "") + (this.app.getClass().equals(TerminalApp.class) ? "" : " -Dot.app=" + this.app.getClass().getName().replace("$", "@"));
+		return (this.app.javaPause ? "-Dot.jp " : "") + "-Dot.id=" + this.app.id + " -Dot.s=" + this.app.sessionName + (this.app.shouldLog ? " -Dot.log" : "") + (this.app.getClass().equals(TerminalApp.class) ? "" : " -Dot.app=" + this.app.getClass().getName().replace("$", "@"));
 	}
 	
 	/**
@@ -94,13 +97,13 @@ public abstract class TerminalExe {
 	{
 		for (String s : pb.command())
 			this.app.bootLogger.print(s + " ");
-//		this.app.bootLogger.println("\b");
+		this.app.bootLogger.println("");
 	}
 	
 	public void printPB(ProcessBuilder pb)
 	{
 		for (String s : pb.command())
 			System.out.print(s + " ");
-		System.out.println("\b");
+		System.out.println("");
 	}
 }

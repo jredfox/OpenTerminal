@@ -2,6 +2,8 @@ ot.id
 ot.s
 ot.log
 ot.c.app #can populate the pipes, colors etc with custom terminal app
+ot.jp #java pause
+ot.p #shell pause
 
 issues:
 - fix logging writing to both log files and IPC pipe files

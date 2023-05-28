@@ -24,7 +24,7 @@ public class BatchExe extends TerminalExe {
 		ProcessBuilder pb = null;
 		Profile profile = this.app.getProfile();
 		String colors = this.app.getBootTrueColor(profile);
-		if(profile != null)
+		if(profile != null || this.app.pause)
 		{
 			pb = new ProcessBuilder(new String[]
 			{
@@ -47,7 +47,7 @@ public class BatchExe extends TerminalExe {
 			{
 				"cmd",
 				TerminalUtil.getExeAndClose(),
-				"start " + q + this.app.getTitle() + q + " " + OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args
+				"start " + q + this.app.getTitle() + q + " " + OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args,
 			});
 		}
 		this.run(pb);
@@ -112,7 +112,7 @@ public class BatchExe extends TerminalExe {
 	@Override
 	public String getJVMFlags() 
 	{
-		return "-Dot.w=true " + (this.app.getProfile() == null ? "-Dot.p " : "") +  super.getJVMFlags0();
+		return "-Dot.w=true " + super.getJVMFlags0();//TODO: PAUSE SCRIPT after java is done being executed
 	}
 
 }
