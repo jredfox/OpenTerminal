@@ -126,4 +126,10 @@ public class PowerShellExe extends TerminalExe {
 		this.shell.delete();
 	}
 
+	@Override
+	public String getJVMFlags()
+	{
+		return "-Dot.w=false " + (this.app.pause ? "-Dot.p") + super.getJVMFlags0();
+	}
+
 }
