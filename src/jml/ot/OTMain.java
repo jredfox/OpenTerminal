@@ -1,12 +1,9 @@
 package jml.ot;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.Scanner;
 
 import jml.ot.colors.AnsiColors;
-import jml.reflect.ObfString;
-import jml.reflect.ReflectionHandler;
 import jredfox.common.utils.JREUtil;
 
 public class OTMain {

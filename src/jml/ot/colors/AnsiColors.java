@@ -231,8 +231,8 @@ public class AnsiColors {
 			{
 				if(cmd)
 					new ProcessBuilder(new String[]{"cmd", "/c", "echo | set /p dummyName=\"\""}).inheritIO().start().waitFor();
-				else
-					new ProcessBuilder(new String[]{"powershell", "/c", "Write-Output \"$null\""}).inheritIO().start().waitFor();
+//				else
+//					new ProcessBuilder(new String[]{"powershell", "/c", "Write-Output \"$null\""}).inheritIO().start().waitFor();
 			}
 			catch (Exception e){e.printStackTrace();}
 		}
