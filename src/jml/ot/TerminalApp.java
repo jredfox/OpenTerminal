@@ -139,7 +139,7 @@ public class TerminalApp {
 			case "cmd":
 				return new BatchExe(this);
 			case "powershell":
-				System.out.println("powershell is very buggy when it comes to the start-process command it's not recommended as a default terminal for your java application!");
+				this.bootLogger.println("Powershell has some bugs especially in windows 10 and is not recommended for your application's default! The Start-Process command may have different bugs in different versions and not boot the CLI");
 				return new PowerShellExe(this);
 			case "Terminal.app":
 			{
@@ -185,7 +185,7 @@ public class TerminalApp {
 		this.loadSession();
 		this.enableLoggers();
 		this.startPipeManager();
-		System.out.println("Started CLI Session on:" + this.session);
+//		System.out.println("Started CLI Session on:" + this.session);
 	}
 
 	public void loadSession()
@@ -372,7 +372,7 @@ public class TerminalApp {
 		String mode = this.manager.getInputNoREQ(-1);//no timeout by default this trusts the CLI but users can set it to a timeout for security reasons
 		this.colors.setColorMode(mode);
 		Profile p = this.getProfile();
-		this.colors.setReset(p.bg, p.fg, false);
+		this.colors.setReset(p.bg, p.fg, p.ansiFormat, true);
 	}
 
 }

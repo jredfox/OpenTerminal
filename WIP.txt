@@ -5,3 +5,4 @@ ot.c.app #can populate the pipes, colors etc with custom terminal app
 
 issues:
 - fix logging writing to both log files and IPC pipe files
+- shells don't specify colormode yet

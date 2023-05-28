@@ -131,7 +131,7 @@ public class PipeManager {
 		this.dirPipes = dirPipes;
 		this.isClient = client;
 		this.noREQFile = new File(dirPipes, "ot-NOREQ.txt");
-		System.out.println(dirPipes + " isHost:" + (!this.isClient));
+//		System.out.println(dirPipes + " isHost:" + (!this.isClient));
 		
 		//client side
 		if(client)
@@ -204,7 +204,6 @@ public class PipeManager {
 		//server side
 		else
 		{
-			System.out.println(this.noREQFile);
 			FileUtils.create(this.noREQFile);
 			PipeServer server_out = new PipeServer("ot.out", new File(dirPipes, "ot-out.txt"))
 			{
