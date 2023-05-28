@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import jredfox.common.utils.Assert;
 import jredfox.common.utils.JREUtil;
 
 /**
@@ -145,7 +146,7 @@ public class PipeInputStream extends FileInputStream
 	
 	public void setTimeOut(long time)
 	{
-		assert time != 0;
+		Assert.is(time != 0);
 		this.timeout = time;
 	}
 }

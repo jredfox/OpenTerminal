@@ -28,8 +28,10 @@ import jml.ot.terminal.host.ConsoleHost;
 import jml.ot.terminal.host.WTHost;
 import jredfox.common.config.MapConfig;
 import jredfox.common.io.IOUtils;
+import jredfox.common.utils.Assert;
 import jredfox.common.utils.FileUtil;
 import jredfox.common.utils.JREUtil;
+import jredfox.common.utils.JavaUtil;
 
 public class TerminalApp {
 	
@@ -85,8 +87,8 @@ public class TerminalApp {
 	
 	public TerminalApp(String id, String name, String version, boolean force, boolean pause)
 	{
-		assert !id.contains(" ") : "Terminal app id cannot contain spaces!";
-		assert !name.contains("\"") : "Terminal app name cannot contain double quotes!";
+		Assert.is(!JavaUtil.containsAny(id, OTConstants.illegals), "Terminal app id cannot contain:" + OTConstants.illegals);
+		Assert.is(!JavaUtil.containsAny(name, OTConstants.illegals), "Terminal app name cannot contain:" + OTConstants.illegals);
 		this.id = id;
 		this.name = name;
 		this.version = version;

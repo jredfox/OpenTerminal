@@ -12,10 +12,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 
-import jml.ot.OTConstants;
 import jml.ot.OpenTerminal;
 import jml.ot.TerminalUtil;
-import jredfox.common.file.FileUtils;
 
 public class JREUtil {
 	
@@ -39,7 +37,7 @@ public class JREUtil {
 	{
 		setUserDir(new File(System.getProperty("runnables.jar")).getParentFile());
 	}
-	
+
 	/**
 	 * patch macOs
 	 */
