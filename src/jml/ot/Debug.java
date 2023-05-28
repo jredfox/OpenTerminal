@@ -27,5 +27,5 @@ public class Debug {
 		System.out.println((double)5.0D);
 		System.out.println("ChAras".toCharArray());
 	}
-
+	
 }
