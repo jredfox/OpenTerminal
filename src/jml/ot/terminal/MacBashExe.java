@@ -73,6 +73,8 @@ public class MacBashExe extends TerminalExe {
 	@Override
 	public void genStart() throws IOException 
 	{
+		long ms = System.currentTimeMillis();
+		List<Process> processes = new ArrayList<>(5);
 		if(!closeMeScpt.exists())
 		{
 			List<String> li = new ArrayList<>();
@@ -98,7 +100,7 @@ public class MacBashExe extends TerminalExe {
 					+ "		end repeat\n"
 					+ "	end tell\n"
 					+ "end run");
-			this.makeAs(li, closeMeAs, closeMeScpt);
+			this.makeAs(processes, li, closeMeAs, closeMeScpt);
 		}
 		if(!importScpt.exists())
 		{
@@ -111,7 +113,7 @@ public class MacBashExe extends TerminalExe {
 					+ "	do shell script \"osascript \\\"\" & closeScript & \"\\\"\" & \" oti.\" & profileId & \".profile\"\n"
 					+ "	tell application \"Terminal\" to set custom title of settings set profileId to \"\" --after importing it change profile's title window to blank\n"
 					+ "end run");
-			this.makeAs(li, importAs, importScpt);
+			this.makeAs(processes, li, importAs, importScpt);
 		}
 		if(!profileScpt.exists())
 		{
@@ -123,7 +125,7 @@ public class MacBashExe extends TerminalExe {
 					+ "		set current settings of (every window whose name contains profileId) to settings set profileName\n"
 					+ "	end tell\n"
 					+ "end run");
-			this.makeAs(li, profileAs, profileScpt);
+			this.makeAs(processes, li, profileAs, profileScpt);
 		}
 		if(!startScpt.exists())
 		{
@@ -152,20 +154,66 @@ public class MacBashExe extends TerminalExe {
 					+ "		activate\n"
 					+ "	end tell\n"
 					+ "end run");
-			this.makeAs(li, startAs, startScpt);
+			this.makeAs(processes, li, startAs, startScpt);
 		}
 		
-		//import the profile logging to boot if possible
+		//import the profile while compiling and logging to boot if possible
 		importProfile(this.app.getProfile(), this.app.canLogBoot ? this.app.bootLogger : System.out);
+		
+		//wait for all the compiles to be done
+		for(Process p : processes)
+		{
+			try 
+			{
+				p.waitFor();
+			} catch (InterruptedException e)
+			{
+				e.printStackTrace();
+				while(p.isAlive());//continue to wait since Process#waitFor() can cause exceptions
+			}
+		}
+		
+		//make the scripts runnable
+		if(!processes.isEmpty())
+		{
+			IOUtils.makeExe(closeMeScpt);
+			IOUtils.makeExe(importScpt);
+			IOUtils.makeExe(profileScpt);
+			IOUtils.makeExe(startScpt);
+		}
+		
+		long time = System.currentTimeMillis()-ms;
+		System.out.println("AppleScript & Import Profile File Time:" + time + "ms");
+		this.app.logBoot("AppleScript & Import Profile File Time:" + time + "ms");
 	}
-
+	
+	public void makeAs(List<Process> processes, List<String> commands, File applescript, File scpt) throws IOException
+	{
+		this.makeShell(commands, applescript);
+		if(!scpt.exists())
+			processes.add(this.noSyncCompileAS(applescript, scpt));
+	}
+	
 	public void makeAs(List<String> commands, File applescript, File scpt) throws IOException
 	{
 		this.makeShell(commands, applescript);
-		this.compileAS(applescript, scpt);
+		compileAS(applescript, scpt);
+	}
+
+	public Process noSyncCompileAS(File as, File scpt) throws IOException
+	{
+		ProcessBuilder pb = new ProcessBuilder(new String[]
+		{
+			"osacompile",
+			"-o",
+			scpt.getPath(),
+			as.getPath()
+		}).directory(OTConstants.userDir);
+		Process p = pb.start();
+		return p;
 	}
 	
-	public void compileAS(File as, File scpt) throws IOException
+	public static void compileAS(File as, File scpt) throws IOException
 	{
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
