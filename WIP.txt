@@ -7,5 +7,5 @@ ot.p #shell pause
 
 issues:
 - fix logging writing to both log files and IPC pipe files
-- bash shells don't send color to java
-- bash shells ot.app needs to replace the @ with $
+- linux shells fix flags
+- linux shells ot.app needs to replace the @ with $
