@@ -1,4 +1,3 @@
-optimize macOs gen applescripts #can create and run all script commands at once then make executable later
 cleanup PipeManager code
 
 ot.id
