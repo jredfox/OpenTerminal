@@ -16,6 +16,7 @@ public class Test {
 			@Override
 			public Profile getProfile() 
 			{
+				this.appClass = this.getClass();
 				if(TerminalUtil.isWindows())
 				{
 					Profile p = new Profile(Color.CYAN, Color.WHITE);

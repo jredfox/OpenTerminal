@@ -1,5 +1,9 @@
 package jml.ot;
 
+import java.util.HashSet;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import jml.ot.colors.AnsiColors;
 
 public class OTMain {
@@ -29,17 +33,18 @@ public class OTMain {
 		}
 		else
 		{
+			quickFix();
 			TerminalApp app = new TerminalApp("dummy", "Dummy", "1.0.0");//TODO: improve with override update
 			app.loadSession();
 			app.startPipeManager();
 			app.sendColors();
 			boolean hostIsAlive = true;
-			while(hostIsAlive)
-			{
+//			while(hostIsAlive)
+//			{
 //				//TODO:PID keep alive check here
-			}
+//			}
 //			JREUtil.sleep(3000);
-			System.out.println(System.getProperty("ot.app"));
+			System.out.println("HERE:" + System.getProperty("ot.app"));
 			
 			//ensure final printlines happen before shutting down the client
 			app.manager.isRunning = false;//TODO: shutdown the thread
@@ -51,6 +56,28 @@ public class OTMain {
 			}
 			//pause the app
 			app.pause();
+		}
+	}
+
+	/**
+	 * convert all "@" to "$" from system.properties
+	 */
+	public static void quickFix() 
+	{
+		Set<String> qf = new HashSet<>(5);
+		
+		for(Entry<Object, Object> s : System.getProperties().entrySet())
+		{
+			if(s.getValue().toString().contains("@"))
+			{
+				qf.add((String) s.getKey());
+			}
+		}
+		
+		for(String q : qf)
+		{
+			System.out.println("QF Patching:\t" + q);
+			System.setProperty(q, System.getProperty(q).replace("@", "$"));
 		}
 	}
 
