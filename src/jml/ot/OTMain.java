@@ -39,12 +39,10 @@ public class OTMain {
 			app.startPipeManager();
 			app.sendColors();
 			boolean hostIsAlive = true;
-//			while(hostIsAlive)
-//			{
+			while(hostIsAlive)
+			{
 //				//TODO:PID keep alive check here
-//			}
-//			JREUtil.sleep(3000);
-			System.out.println("HERE:" + System.getProperty("ot.app"));
+			}
 			
 			//ensure final printlines happen before shutting down the client
 			app.manager.isRunning = false;//TODO: shutdown the thread

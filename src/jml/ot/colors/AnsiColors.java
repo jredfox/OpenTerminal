@@ -81,7 +81,7 @@ public class AnsiColors {
 	
 	public void setReset(Color background, Color text, String ansiEsc, boolean cls)
 	{
-		colors = formatColor(background, text, ansiEsc, false);
+		this.colors = formatColor(background, text, ansiEsc, false);
 		System.out.print(getReset());
 		System.out.flush(); //ensure the color is set to the terminal before clearing the screen
 		if(cls)
@@ -113,7 +113,7 @@ public class AnsiColors {
 	{
 		mode = mode.toLowerCase();
 		TermColors colorMode = mode.equals("ansi4bit") ? TermColors.ANSI4BIT : (mode.contains("true") && mode.contains("color") || mode.contains("24") && mode.contains("bit")) ? TermColors.TRUE_COLOR : TermColors.XTERM_256;
-		setColorMode(colorMode);
+		this.setColorMode(colorMode);
 		return colorMode;
 	}
 	
@@ -125,7 +125,7 @@ public class AnsiColors {
 		if(mode == null) 
 			return;
 		
-		colorMode = mode;
+		this.colorMode = mode;
 	}
 	
 	/**
@@ -225,7 +225,6 @@ public class AnsiColors {
 		String prop = System.getProperty("ot.w");
 		if(OTConstants.LAUNCHED && prop != null)
 		{
-//			System.out.println("hacking color profiles");
 			boolean cmd = prop.equals("true");
 			try
 			{
