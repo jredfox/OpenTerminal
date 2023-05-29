@@ -126,12 +126,12 @@ public class PipeManager {
 		this.ticker.start();
 	}
 	
-	public void loadPipes(File dirPipes, boolean client, boolean replaceSYSO)
+	public void loadPipes(File dirPipes, File log, boolean client, boolean replaceSYSO)
 	{
 		this.dirPipes = dirPipes;
 		this.isClient = client;
 		this.noREQFile = new File(dirPipes, "ot-NOREQ.txt");
-//		System.out.println(dirPipes + " isHost:" + (!this.isClient));
+		File std = log != null ? log : new File(dirPipes, "ot-out.txt");
 		
 		//client side
 		if(client)
@@ -145,7 +145,7 @@ public class PipeManager {
 					
 				}
 			};
-			Pipe client_out = new PipeClient("ot.out", new File(dirPipes, "ot-out.txt"))
+			Pipe client_out = new PipeClient("ot.out", std)
 			{
 				@Override
 				public void tick() throws IOException 
@@ -205,7 +205,7 @@ public class PipeManager {
 		else
 		{
 			FileUtils.create(this.noREQFile);
-			PipeServer server_out = new PipeServer("ot.out", new File(dirPipes, "ot-out.txt"))
+			PipeServer server_out = new PipeServer("ot.out", std)
 			{
 				@Override
 				public void tick() 
@@ -241,8 +241,12 @@ public class PipeManager {
 			this.register(server_out, client_in);
 			if(replaceSYSO)
 			{
-				server_out.replaceSYSO(true);
-				server_out.replaceSYSO(false);
+				//don't replace SYSO if we are logging with IPC TYPE file to prevent too much I/O on the disk
+				if(log == null)
+				{
+					server_out.replaceSYSO(true);//replace syso both streams to the same file to prevent de-sync
+					server_out.replaceSYSO(false);
+				}
 				client_in.replaceSYSO(this.useWrappedIn);
 			}
 		}

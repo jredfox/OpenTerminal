@@ -34,15 +34,15 @@ public class OTMain {
 		else
 		{
 			quickFix();
-			TerminalApp app = new TerminalApp("dummy", "Dummy", "1.0.0");//TODO: improve with override update
+			TerminalApp app = new TerminalApp(System.getProperty("ot.id"), "CLI CLient", "1.0.0");
 			app.loadSession();
 			app.startPipeManager();
 			app.sendColors();
 			boolean hostIsAlive = true;
-//			while(hostIsAlive)
-//			{
+			while(hostIsAlive)
+			{
 ////				//TODO:PID keep alive check here
-//			}
+			}
 			
 			//ensure final printlines happen before shutting down the client
 			app.manager.isRunning = false;//TODO: shutdown the thread

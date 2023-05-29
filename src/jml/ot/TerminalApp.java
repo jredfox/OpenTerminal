@@ -71,6 +71,10 @@ public class TerminalApp {
 	 */
 	public boolean shouldLog = false;
 	/**
+	 * the log file populated during {@link #loadSession()}
+	 */
+	public File logger;
+	/**
 	 * the IPC Pipe manager
 	 */
 	public PipeManager manager;
@@ -111,6 +115,7 @@ public class TerminalApp {
 		this.force = force;
 		this.pause = pause;
 		this.javaPause = System.getProperty("ot.jp") != null;
+		this.shouldLog = System.getProperty("ot.log") != null;
 	}
 
 	public String getTitle()
@@ -218,10 +223,18 @@ public class TerminalApp {
 	 */
 	public void startPipeManager() 
 	{
+		File l = this.shouldLog ? this.getLogger() : null;
 		this.manager = new PipeManager();
-		this.manager.loadPipes(this.session, OTConstants.LAUNCHED, this.replaceSYSO);
+		this.manager.loadPipes(this.session, l, OTConstants.LAUNCHED, this.replaceSYSO);
 		this.manager.start();
 		this.sendColors();
+	}
+
+	public File getLogger() 
+	{
+		if(this.logger == null)
+			this.logger = new File(OTConstants.home, "logs/" + this.id + "/log-" + this.sessionName + ".txt");
+		return this.logger;
 	}
 
 	public void enableLoggers()
@@ -230,7 +243,7 @@ public class TerminalApp {
 		{
 			try
 			{
-				File log = new File(OTConstants.home, "logs/" + this.id + "/log-" + this.sessionName + ".txt");
+				File log = this.getLogger();
 				FileUtil.create(log);
 				System.setOut(new WrappedPrintStream(System.out, log));
 				System.setErr(new WrappedPrintStream(System.err, log));
@@ -385,7 +398,7 @@ public class TerminalApp {
 		this.colors.setColorMode(mode.equalsIgnoreCase("nullnull") ? (this.ANSI4BIT ? "ansi4bit" : "truecolor") : mode);
 		Profile p = this.getProfile();
 		if(p != null)
-			this.colors.setReset(p.bg, p.fg, p.ansiFormat, true);
+			this.colors.setReset(p.bg, p.fg, p.ansiFormat, false);//No NEED for CLS as it gets enabled in the shell scripts and it would also clear the line feed of anything that printed previously
 	}
 	
 	/**

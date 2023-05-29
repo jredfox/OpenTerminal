@@ -55,8 +55,9 @@ public class Test {
 //		app.pause = false;
 		Profile p = app.getProfile();
 //		System.out.println("Starting CLI:" + app.getProfile());
-//		app.shouldLog = true;
+		app.shouldLog = true;
 		OpenTerminal.open(app);
+		System.out.println("STD:\t" + app.getLogger() + " SIDE:" + OTConstants.LAUNCHED);
 		
 		//begin testing
 		System.out.println("COLORMODE:" + app.colors.colorMode);
