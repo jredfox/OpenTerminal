@@ -33,7 +33,7 @@ public class OTMain {
 		}
 		else
 		{
-			quickFix();
+//			quickFix();
 			TerminalApp app = new TerminalApp("dummy", "Dummy", "1.0.0");//TODO: improve with override update
 			app.loadSession();
 			app.startPipeManager();
@@ -60,7 +60,7 @@ public class OTMain {
 	}
 
 	/**
-	 * convert all "@" to "$" from system.properties
+	 * convert all "@" to "$" from {@link System#getProperties()}
 	 */
 	public static void quickFix() 
 	{
@@ -68,7 +68,7 @@ public class OTMain {
 		
 		for(Entry<Object, Object> s : System.getProperties().entrySet())
 		{
-			if(s.getValue().toString().contains("@"))
+			if(s.getKey().toString().startsWith("ot.") && s.getValue().toString().contains("@"))
 			{
 				qf.add((String) s.getKey());
 			}
