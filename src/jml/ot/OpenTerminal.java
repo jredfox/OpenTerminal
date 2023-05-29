@@ -8,38 +8,34 @@ public class OpenTerminal {
 	
 	public static void open(TerminalApp app)
 	{
-		 PrintStream boot = app.getBootLogger();//the boot logger for sanity and error checking
+		 PrintStream boot = app.createBootLogger();
 		 if(app.canLogBoot && boot == null)
 		 {
 			 System.err.println("Boot Logger is NULL while being enabled TerminalApp:" + app.id);
 			 return;
 		 }
-		 //log JRE & JRE VENDOR & OS
-		 if(app.canLogBoot)
-			 boot.println("JAVA:\t" + System.getProperty("java.version") + "\tJAVA VENDOR:" + System.getProperty("java.vendor") + "\tJAVAHOME:" + System.getProperty("java.home")
-			 + "\n" + TerminalUtil.osName + "\tVERSION:" + System.getProperty("os.version") + "\tCPU-ISA(OS-ARCH):" + System.getProperty("os.arch") + "\n");
+		//log JRE & JRE VENDOR & OS
+		 app.logBoot("JAVA:\t" + System.getProperty("java.version") + "\tJAVA VENDOR:" + System.getProperty("java.vendor") + "\tJAVAHOME:" + System.getProperty("java.home")
+		 + "\n" + TerminalUtil.osName + "\tVERSION:" + System.getProperty("os.version") + "\tCPU-ISA(OS-ARCH):" + System.getProperty("os.arch") + "\n");
 		
 		//if open terminal has launched and failed printline and exit the application as it failed
 		if(System.console() == null && OTConstants.LAUNCHED)
 		{
-			if(app.canLogBoot)
-				boot.println("System console boot failed report to https://github.com/jredfox/OpenTerminal/issues");
+			app.logBoot("System console boot failed report to https://github.com/jredfox/OpenTerminal/issues");
 			System.err.println("System console boot failed report to https://github.com/jredfox/OpenTerminal/issues");
 			boot.close();
 			System.exit(-1);
 		}
 		else if(System.console() != null && !app.force)
 		{
-			if(app.canLogBoot)
-				boot.println("Console is non-null while forcing a new window isn't enabled!");
+			app.logBoot("Console is non-null while forcing a new window isn't enabled!");
 			System.err.println("Console is non-null while forcing a new window isn't enabled!");
 			boot.close();
 			return;
 		}
 		else if(System.getProperty("ot.bg") != null || System.getProperty("ot.background") != null)
 		{
-			if(app.canLogBoot)
-				boot.println("Running in the background...");//don't printstream only log it
+			app.logBoot("Running in the background...");//don't printstream only log it
 			boot.close();
 			return;
 		}
@@ -47,8 +43,7 @@ public class OpenTerminal {
 		try
 		{
 			app.load();
-			if(app.canLogBoot)
-				boot.println("TerminalApp Session Started On:\t" + app.session);
+			app.logBoot("TerminalApp Session Started On:\t" + app.session);
 			ConsoleHost console = app.getConsoleHost();
 			if(console != null)
 				console.run();

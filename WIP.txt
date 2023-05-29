@@ -1,5 +1,5 @@
-cleanup logger code
 cleanup PipeManager code
+optimize macOs gen applescripts #can create and run all script commands at once then make executable later
 
 ot.id
 ot.s

@@ -382,7 +382,7 @@ public class TerminalApp {
 		return p == null ? "" : this.colors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.XTERM_256, p.bg, p.fg, p.ansiFormat, false);
 	}
 
-	public PrintStream getBootLogger() 
+	public PrintStream createBootLogger()
 	{
 		try
 		{
@@ -390,7 +390,7 @@ public class TerminalApp {
 			FileUtil.create(flog);
 			this.bootLogger = new PrintStream(new FileOutputStream(flog), true);
 			return this.bootLogger;
-		} 
+		}
 		catch (FileNotFoundException e) 
 		{
 			e.printStackTrace();
@@ -436,6 +436,12 @@ public class TerminalApp {
 			System.out.flush();//ensure it's written right away
 			new Scanner(System.in).nextLine();
 		}
+	}
+
+	public void logBoot(String msg) 
+	{
+		if(this.canLogBoot)
+			this.bootLogger.println(msg);
 	}
 
 }
