@@ -6,6 +6,5 @@ ot.jp #java pause
 ot.p #shell pause
 
 issues:
-- fix logging writing to both log files and IPC pipe files
 - linux shells fix flags
 - linux shells ot.app needs to replace the @ with $
