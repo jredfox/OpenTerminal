@@ -22,10 +22,14 @@ import jredfox.common.utils.JREUtil;
  */
 public class PipeManager {
 	
+	//pipe registry
 	public Map<String, Pipe> pipes = new HashMap<>();
-	public Thread ticker;
+	
+	//thread vars
 	public volatile boolean isRunning;
 	public volatile boolean isTicking = true;
+	public Thread ticker;
+	
 	public boolean useWrappedIn;
 	public File noREQFile = null;
 	private BufferedReader noREQReader = null;
