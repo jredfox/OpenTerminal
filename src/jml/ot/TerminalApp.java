@@ -407,7 +407,6 @@ public class TerminalApp {
 	{
 		if(this.javaPause)
 		{
-			System.out.println("JAVA PAUSE DEBUG");
 			System.out.print("Press ENTER to continue...");
 			System.out.flush();//ensure it's written right away
 			new Scanner(System.in).nextLine();

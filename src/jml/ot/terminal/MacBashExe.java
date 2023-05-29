@@ -190,7 +190,7 @@ public class MacBashExe extends TerminalExe {
 		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replaceAll(q, "\\\\" + q).replace("$", "\\\\\"\"$\"\"");
 		String trueColor = app.getBootTrueColor(p).replace(AnsiColors.ESC, "\\033");
 		String platteColor = app.getBootPaletteColor(p).replace(AnsiColors.ESC, "\\033");
-		String bash = "bash " + q + this.shell.getPath() + q + " " + q + trueColor + q + " " + q + platteColor + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + System.currentTimeMillis() + q + " " + q + closeMeScpt.getPath() + q;
+		String bash = "bash " + q + this.shell.getPath() + q + " " + q + trueColor + q + " " + q + platteColor + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + this.app.sessionName + q + " " + q + closeMeScpt.getPath() + q;
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
 			"osascript",
@@ -219,7 +219,7 @@ public class MacBashExe extends TerminalExe {
 		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replaceAll(q, "\\\\" + q).replace("$", "\\\\\"\"$\"\"");
 		String trueColor = app.getBootTrueColor(p).replace(AnsiColors.ESC, "\\033");
 		String platteColor = app.getBootPaletteColor(p).replace(AnsiColors.ESC, "\\033");
-		String bash = "bash " + q + this.shell.getPath() + q + " " + q + trueColor + q + " " + q + platteColor + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + System.currentTimeMillis() + q + " " + q + closeMeScpt.getPath() + q;
+		String bash = "bash " + q + this.shell.getPath() + q + " " + q + trueColor + q + " " + q + platteColor + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + this.app.sessionName + q + " " + q + closeMeScpt.getPath() + q;
 		List<String> li = new ArrayList<>();
 		li.add("bash");
 		li.add(bash);
