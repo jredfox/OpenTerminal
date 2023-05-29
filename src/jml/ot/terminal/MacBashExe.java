@@ -21,11 +21,11 @@ public class MacBashExe extends TerminalExe {
 	public static final File closeMeAs = new File(macStart, "closeMe.applescript");
 	public static final File importAs = new File(macStart, "import.applescript");
 	public static final File profileAs = new File(macStart, "profile.applescript");
-	public static final File start2As = new File(macStart, "start2.applescript");
+	public static final File startAs = new File(macStart, "start.applescript");
 	public static final File closeMeScpt = new File(macStart, "closeMe.scpt");
 	public static final File importScpt = new File(macStart, "import.scpt");
 	public static final File profileScpt = new File(macStart, "profile.scpt");
-	public static final File start2Scpt = new File(macStart, "start2.scpt");
+	public static final File startScpt = new File(macStart, "start.scpt");
 	public static final File profileMac = new File(OTConstants.profiles, "mac");
 
 	public MacBashExe(TerminalApp app) 
@@ -124,7 +124,7 @@ public class MacBashExe extends TerminalExe {
 					+ "end run");
 			this.makeAs(li, profileAs, profileScpt);
 		}
-		if(!start2Scpt.exists())
+		if(!startScpt.exists())
 		{
 			List<String> li = new ArrayList<>();
 			li.add("on run argv\n"
@@ -151,7 +151,7 @@ public class MacBashExe extends TerminalExe {
 					+ "		activate\n"
 					+ "	end tell\n"
 					+ "end run");
-			this.makeAs(li, start2As, start2Scpt);
+			this.makeAs(li, startAs, startScpt);
 		}
 		
 		//import the profile
@@ -194,7 +194,7 @@ public class MacBashExe extends TerminalExe {
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
 			"osascript",
-			start2Scpt.getPath(),
+			startScpt.getPath(),
 			bash,
 			profileId,
 			OTConstants.home.getPath()
@@ -222,7 +222,6 @@ public class MacBashExe extends TerminalExe {
 		String bash = "bash " + q + this.shell.getPath() + q + " " + q + trueColor + q + " " + q + platteColor + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + System.currentTimeMillis() + q + " " + q + closeMeScpt.getPath() + q;
 		List<String> li = new ArrayList<>();
 		li.add("bash");
-		li.add("-c");
 		li.add(bash);
 		return li;
 	}
