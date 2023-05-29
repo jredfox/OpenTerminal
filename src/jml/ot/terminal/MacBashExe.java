@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -154,8 +155,8 @@ public class MacBashExe extends TerminalExe {
 			this.makeAs(li, startAs, startScpt);
 		}
 		
-		//import the profile
-		importProfile(this.app.getProfile());
+		//import the profile logging to boot if possible
+		importProfile(this.app.getProfile(), this.app.canLogBoot ? this.app.bootLogger : System.out);
 	}
 
 	public void makeAs(List<String> commands, File applescript, File scpt) throws IOException
@@ -185,8 +186,8 @@ public class MacBashExe extends TerminalExe {
 	public void run() 
 	{
 		String q = TerminalUtil.getQuote();
-		Profile p = this.getAppProfile();
-		String profileId = p.mac_profileName;
+		Profile p = this.app.getProfile();
+		String profileId = p == null ? null : p.mac_profileName;
 		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replaceAll(q, "\\\\" + q).replace("$", "\\\\\"\"$\"\"");
 		String trueColor = app.getBootTrueColor(p).replace(AnsiColors.ESC, "\\033");
 		String platteColor = app.getBootPaletteColor(p).replace(AnsiColors.ESC, "\\033");
@@ -201,24 +202,15 @@ public class MacBashExe extends TerminalExe {
 		});
 		this.run(pb);
 	}
-
-	/**
-	 * @return nonnull profile
-	 */
-	public Profile getAppProfile() 
-	{
-		Profile p = this.app.getProfile();
-		return p != null ? p : new Profile();
-	}
-
+	
 	@Override
 	public List<String> getBootCmd() 
 	{
 		String q = TerminalUtil.getQuote();
-		Profile p = this.getAppProfile();
+		Profile p = this.app.getProfile();
 		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replaceAll(q, "\\\\" + q).replace("$", "\\\\\"\"$\"\"");
-		String trueColor = app.getBootTrueColor(p).replace(AnsiColors.ESC, "\\033");
-		String platteColor = app.getBootPaletteColor(p).replace(AnsiColors.ESC, "\\033");
+		String trueColor = this.app.getBootTrueColor(p).replace(AnsiColors.ESC, "\\033");
+		String platteColor = this.app.getBootPaletteColor(p).replace(AnsiColors.ESC, "\\033");
 		String bash = "bash " + q + this.shell.getPath() + q + " " + q + trueColor + q + " " + q + platteColor + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + this.app.sessionName + q + " " + q + closeMeScpt.getPath() + q;
 		List<String> li = new ArrayList<>();
 		li.add("bash");
@@ -226,14 +218,14 @@ public class MacBashExe extends TerminalExe {
 		return li;
 	}
 	
-	public static void importProfile(Profile p) throws IOException
+	public static void importProfile(Profile p, PrintStream out) throws IOException
 	{
 		if(p != null && p.mac_profileId != null)
 		{
 			File pf = new File(profileMac, p.mac_profileId + ".terminal");
 			if(!pf.exists())
 			{
-				System.out.println("extracting Terminal.app profile " + p.mac_profileId);
+				out.println("extracting Terminal.app profile " + p.mac_profileId);
 				
 				//copy the profile.terminal to the disk
 				InputStream in = ClassLoader.getSystemClassLoader().getResourceAsStream(p.mac_profilePath);

@@ -23,9 +23,9 @@ public class BatchExe extends TerminalExe {
 		String q = TerminalUtil.getQuote();
 		ProcessBuilder pb = null;
 		Profile profile = this.app.getProfile();
-		String colors = this.app.getBootTrueColor(profile);
 		if(profile != null || this.app.pause)
 		{
+			String colors = this.app.getBootTrueColor(profile);
 			pb = new ProcessBuilder(new String[]
 			{
 				"cmd",

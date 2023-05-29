@@ -1,3 +1,6 @@
+cleanup logger code
+cleanup PipeManager code
+
 ot.id
 ot.s
 ot.log

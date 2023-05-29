@@ -53,7 +53,7 @@ public class Test {
 			app.terminal = "gnome-terminal";//set's the initial terminal the configuration overrides this from TerminalApp#getTerminalExe called by OpenTerminal#open
 		}
 //		app.pause = false;
-		Profile p = app.getProfile();
+//		Profile p = app.getProfile();
 //		System.out.println("Starting CLI:" + app.getProfile());
 //		app.shouldLog = true;
 //		app.pause = false;

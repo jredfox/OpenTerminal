@@ -53,6 +53,7 @@ public class TerminalApp {
 	public String conHost = "";
 	public List<String> linuxCmdsExe = new ArrayList<>(0);//configurable list to use LinuxCmdExe instead of LinuxBash or another
 	public Map<String, String> linuxFlags = new HashMap<>(0);//override linux new window flags in case you have an updated or outdated version then is currently supported
+	protected Profile profile;
 	/**
 	 * changing this to true will make you use 4 bit ANSI colors instead of xterm256 or true colors
 	 */
@@ -124,11 +125,16 @@ public class TerminalApp {
 	}
 	
 	/**
-	 * return the profile based on the OS
+	 * Results should be consistent based on the OS Terminal or other data as it's called multiple times between objects
 	 */
 	public Profile getProfile()
 	{
-		return null;
+		return this.profile;
+	}
+
+	public void setProfile(Profile p)
+	{
+		this.profile = p;
 	}
 	
 	/**
@@ -361,7 +367,7 @@ public class TerminalApp {
 	}
 
 	/**
-	 * @return shell true color or if in ansi 4 bit mode it will return ansi 4 bit colors
+	 * @return shell true color or if in ansi 4 bit or an empty string if the profile is null
 	 */
 	public String getBootTrueColor(Profile p)
 	{
@@ -398,7 +404,7 @@ public class TerminalApp {
 	public boolean shouldCLS;
 	public void loadColors() throws IOException 
 	{
-		System.out.println("CLS:" + this.shouldCLS);
+//		System.out.println("CLS:" + this.shouldCLS);
 		String mode = this.manager.getInputNoREQ(-1);//no timeout by default this trusts the CLI but users can set it to a timeout for security reason
 		this.colors.setColorMode(mode.equalsIgnoreCase("nullnull") ? (this.ANSI4BIT ? "ansi4bit" : "truecolor") : mode);
 		Profile p = this.getProfile();
