@@ -392,13 +392,19 @@ public class TerminalApp {
 		return null;
 	}
 
+	/**
+	 * set this to true when your not booting off of a shell script in {@link TerminalExe#run()}
+	 */
+	public boolean shouldCLS;
 	public void loadColors() throws IOException 
 	{
+		System.out.println("CLS:" + this.shouldCLS);
 		String mode = this.manager.getInputNoREQ(-1);//no timeout by default this trusts the CLI but users can set it to a timeout for security reason
 		this.colors.setColorMode(mode.equalsIgnoreCase("nullnull") ? (this.ANSI4BIT ? "ansi4bit" : "truecolor") : mode);
 		Profile p = this.getProfile();
 		if(p != null)
-			this.colors.setReset(p.bg, p.fg, p.ansiFormat, false);//No NEED for CLS as it gets enabled in the shell scripts and it would also clear the line feed of anything that printed previously
+			this.colors.setReset(p.bg, p.fg, p.ansiFormat, this.shouldCLS);//CLS is used in the shell scripts already as it's faster but if there is no shell we need to call this
+		this.shouldCLS = false;
 	}
 	
 	/**

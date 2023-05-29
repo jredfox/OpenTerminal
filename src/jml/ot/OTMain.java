@@ -34,7 +34,7 @@ public class OTMain {
 		else
 		{
 			quickFix();
-			TerminalApp app = new TerminalApp(System.getProperty("ot.id"), "CLI CLient", "1.0.0");
+			TerminalApp app = new TerminalApp(System.getProperty("ot.id"), "CLI CLient", OTConstants.OTVERSION);
 			app.loadSession();
 			app.startPipeManager();
 			app.sendColors();
@@ -58,7 +58,7 @@ public class OTMain {
 	}
 
 	/**
-	 * convert all "@" to "$" from {@link System#getProperties()}
+	 * convert all ot.* "@" to "$" from {@link System#getProperties()}
 	 */
 	public static void quickFix() 
 	{
@@ -74,7 +74,7 @@ public class OTMain {
 		
 		for(String q : qf)
 		{
-			System.out.println("QF Patching:\t" + q);
+			System.out.println("QF Patching:\t" + q);//TODO: remove before release
 			System.setProperty(q, System.getProperty(q).replace("@", "$"));
 		}
 	}

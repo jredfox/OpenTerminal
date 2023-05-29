@@ -23,6 +23,7 @@ public class WTHost extends ConsoleHost {
 	@Override
 	public void run()
 	{
+		this.app.shouldCLS = true;//clear line feed when setting the color due to no shell
 		TerminalExe term = this.app.getTerminalExe();
 		List<String> cmd = new ArrayList<>();
 		boolean isCmd = this.app.terminal.equals("cmd");
