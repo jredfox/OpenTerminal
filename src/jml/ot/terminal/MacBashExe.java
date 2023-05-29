@@ -187,7 +187,7 @@ public class MacBashExe extends TerminalExe {
 	{
 		String q = TerminalUtil.getQuote();
 		Profile p = this.app.getProfile();
-		String profileId = p == null ? null : p.mac_profileName;
+		String profileId = p == null ? "" : p.mac_profileName;
 		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replaceAll(q, "\\\\" + q).replace("$", "\\\\\"\"$\"\"");
 		String trueColor = app.getBootTrueColor(p).replace(AnsiColors.ESC, "\\033");
 		String platteColor = app.getBootPaletteColor(p).replace(AnsiColors.ESC, "\\033");
@@ -218,6 +218,9 @@ public class MacBashExe extends TerminalExe {
 		return li;
 	}
 	
+	/**
+	 * imports the profile from from the jar to the correct location
+	 */
 	public static void importProfile(Profile p, PrintStream out) throws IOException
 	{
 		if(p != null && p.mac_profileId != null)
@@ -225,7 +228,7 @@ public class MacBashExe extends TerminalExe {
 			File pf = new File(profileMac, p.mac_profileId + ".terminal");
 			if(!pf.exists())
 			{
-				out.println("extracting Terminal.app profile " + p.mac_profileId);
+				out.println("extracting Terminal.app profile " + p.mac_profileId + " to:" + pf);
 				
 				//copy the profile.terminal to the disk
 				InputStream in = ClassLoader.getSystemClassLoader().getResourceAsStream(p.mac_profilePath);
