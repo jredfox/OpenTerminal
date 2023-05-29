@@ -233,7 +233,8 @@ public class TerminalApp {
 		this.manager = new PipeManager();
 		this.manager.loadPipes(this.session, l, OTConstants.LAUNCHED, this.replaceSYSO);
 		this.manager.start();
-		this.sendColors();
+		if(OTConstants.LAUNCHED)
+			this.sendColors();
 	}
 
 	public File getLogger() 
@@ -419,9 +420,7 @@ public class TerminalApp {
 	public void sendColors()
 	{
 		String col = System.getenv("TERM") + System.getenv("COLORTERM");
-		//more optimized to send a one time communication to the host since that's all it needs
-		if(OTConstants.LAUNCHED)
-			IOUtils.saveFileLines(Arrays.asList(col), this.manager.noREQFile , true);
+		IOUtils.saveFileLines(Arrays.asList(col), this.manager.noREQFile , true);
 	}
 
 	/**
