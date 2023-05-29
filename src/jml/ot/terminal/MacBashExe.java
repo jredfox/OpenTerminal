@@ -183,7 +183,6 @@ public class MacBashExe extends TerminalExe {
 		}
 		
 		long time = System.currentTimeMillis()-ms;
-		System.out.println("AppleScript & Import Profile File Time:" + time + "ms");
 		this.app.logBoot("AppleScript & Import Profile File Time:" + time + "ms");
 	}
 	
