@@ -159,23 +159,23 @@ public class MacBashExe extends TerminalExe {
 		
 		//import the profile while compiling and logging to boot if possible
 		importProfile(this.app.getProfile(), this.app.canLogBoot ? this.app.bootLogger : System.out);
-		
-		//wait for all the compiles to be done
-		for(Process p : processes)
-		{
-			try 
-			{
-				p.waitFor();
-			} catch (InterruptedException e)
-			{
-				e.printStackTrace();
-				while(p.isAlive());//continue to wait since Process#waitFor() can cause exceptions
-			}
-		}
-		
-		//make the scripts runnable
+
 		if(!processes.isEmpty())
 		{
+			//wait for all the compiles to be done
+			for(Process p : processes)
+			{
+				try 
+				{
+					p.waitFor();
+				} 
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+					while(p.isAlive());//continue to wait since Process#waitFor() can cause exceptions
+				}
+			}
+			//make the scripts runnable
 			IOUtils.makeExe(closeMeScpt);
 			IOUtils.makeExe(importScpt);
 			IOUtils.makeExe(profileScpt);
@@ -190,8 +190,7 @@ public class MacBashExe extends TerminalExe {
 	public void makeAs(List<Process> processes, List<String> commands, File applescript, File scpt) throws IOException
 	{
 		this.makeShell(commands, applescript);
-		if(!scpt.exists())
-			processes.add(this.noSyncCompileAS(applescript, scpt));
+		processes.add(this.noSyncCompileAS(applescript, scpt));
 	}
 	
 	public void makeAs(List<String> commands, File applescript, File scpt) throws IOException
