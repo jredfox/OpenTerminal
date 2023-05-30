@@ -33,7 +33,7 @@ public class TerminalUtil {
 	
 	public static List<String> linux_terminals = JavaUtil.asArray(new String[]
 	{
-		"alacritty",//ubuntu snap app
+		"alacritty",//TODO: confirm working
 		"aterm",
 		"cool-retro-term",
 		"deepin-terminal",
@@ -265,8 +265,6 @@ public class TerminalUtil {
 		{
 			case "gnome-terminal":
 				return "--";//same as -x which doesn't support parameterized parsing of the command but updated to get around the depreciated values
-			case "gnome-terminal.wrapper":
-				return "--";
 			case "xfce4-terminal":
 				return x;
 			case "terminator":

@@ -211,7 +211,7 @@ public class TerminalApp {
 		this.loadSession();
 		this.enableLoggers();
 		this.startPipeManager();
-		System.out.println("Started CLI Session on:" + this.session);
+//		System.out.println("Started CLI Session on:" + this.session);
 	}
 
 	public void loadSession()

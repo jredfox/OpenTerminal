@@ -33,12 +33,13 @@ public class OTMain {
 		}
 		else
 		{
-			quickFix();
+//			quickFix(); TODO: re-enable after debugging
 			TerminalApp app = new TerminalApp(System.getProperty("ot.id"), "CLI CLient", OTConstants.OTVERSION);
 			app.loadSession();
 			app.startPipeManager();
 			app.sendColors();
 			boolean hostIsAlive = true;
+			System.out.println("OTMAIN:" + System.getProperty("ot.app"));
 			while(hostIsAlive)
 			{
 ////				//TODO:PID keep alive check here

@@ -290,11 +290,5 @@ public class MacBashExe extends TerminalExe {
 		this.shell.delete();
 		IOUtils.deleteDirectory(macStart);
 	}
-
-	@Override
-	public String getJVMFlags() 
-	{
-		return super.getJVMFlags0();
-	}
-
+	
 }

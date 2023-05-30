@@ -112,7 +112,7 @@ public class BatchExe extends TerminalExe {
 	@Override
 	public String getJVMFlags() 
 	{
-		return "-Dot.w=true " + super.getJVMFlags0();//TODO: PAUSE SCRIPT after java is done being executed
+		return "-Dot.w=true " + super.getJVMFlags();
 	}
 
 }

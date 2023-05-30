@@ -130,7 +130,7 @@ public class PowerShellExe extends TerminalExe {
 	@Override
 	public String getJVMFlags()
 	{
-		return "-Dot.w=false " + super.getJVMFlags0();
+		return "-Dot.w=false " + super.getJVMFlags();
 	}
 
 }

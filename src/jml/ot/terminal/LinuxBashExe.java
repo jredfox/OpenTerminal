@@ -5,12 +5,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jml.ot.TerminalUtil;
-import jml.ot.colors.AnsiColors;
-import jredfox.common.utils.JavaUtil;
 import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
 import jml.ot.TerminalApp.Profile;
+import jml.ot.TerminalUtil;
+import jml.ot.colors.AnsiColors;
 
 public class LinuxBashExe extends TerminalExe{
 
@@ -64,10 +63,10 @@ public class LinuxBashExe extends TerminalExe{
 	@Override
 	public void run() 
 	{
-		String command = (OTConstants.java_home + " " + OTConstants.args);
-		if(this.quoteCmd)
-			command = command.replaceAll(TerminalUtil.getQuote(),"\\\\" + TerminalUtil.getQuote());
 		Profile p = this.app.getProfile();
+		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replace("$", "\\$");
+		if(this.quoteCmd)
+			command = command.replaceAll(TerminalUtil.getQuote(),"\\\\" + TerminalUtil.getQuote()).replace("$", "\"\"$\"\"");
 		String trueColor = this.app.getBootTrueColor(p).replace(AnsiColors.ESC, "\\033");
 		String platteColor = this.app.getBootPaletteColor(p).replace(AnsiColors.ESC, "\\033");
 		ProcessBuilder pb = new ProcessBuilder(new String[]
@@ -89,7 +88,7 @@ public class LinuxBashExe extends TerminalExe{
 	@Override
 	public List<String> getBootCmd() 
 	{
-		String command = (OTConstants.java_home + " " + OTConstants.args);
+		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replace("$", "\\$");
 		Profile p = this.app.getProfile();
 		String trueColor = this.app.getBootTrueColor(p).replace(AnsiColors.ESC, "\\033");
 		String platteColor = this.app.getBootPaletteColor(p).replace(AnsiColors.ESC, "\\033");
@@ -104,26 +103,17 @@ public class LinuxBashExe extends TerminalExe{
 		li.add(String.valueOf(this.app.pause));
 		return li;
 	}
-	
-	/**
-	 * for console host terminals that require one line commands instead of pre-parsed params
-	 */
-	public List<String> getBootCmdOneLine()
-	{
-		String q = "'";
-		Profile p = this.app.getProfile();
-		String trueColor = this.app.getBootTrueColor(p).replace(AnsiColors.ESC, "\\033");
-		String platteColor = this.app.getBootPaletteColor(p).replace(AnsiColors.ESC, "\\033");
-		String command = (OTConstants.java_home + " " + OTConstants.args);
-		return JavaUtil.asArray(new String[] {"bash " + q + this.shell.getPath() + q + " " + 
-		q + trueColor + q + " " + q + platteColor + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir.getPath() 
-			+ q + " " + q + command + q + " " + q + this.app.pause + q});
-	}
 
 	@Override
 	public void cleanup() 
 	{
 		this.shell.delete();
+	}
+	
+	@Override
+	public String getJVMFlags()
+	{
+		return super.getJVMFlags().replace("@", "$");
 	}
 
 }

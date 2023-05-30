@@ -18,7 +18,7 @@ public class TerminologyExe extends LinuxBashExe {
 	public void run() 
 	{
 		String q = "'";
-		String args = "-Dot.p " + OTConstants.args;//add the java pause option
+		String args = this.getJVMFlags() + " " + OTConstants.args;//add the java pause option
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
 			"terminology",
@@ -32,6 +32,14 @@ public class TerminologyExe extends LinuxBashExe {
 			args
 		});
 		this.run(pb);
+	}
+	
+	//TODO: see why JP is nessary here
+	@Override
+	public String getJVMFlags()
+	{
+		String f = super.getJVMFlags();
+		return f;
 	}
 
 }

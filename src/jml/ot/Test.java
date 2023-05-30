@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.Scanner;
 
-import jml.ot.TerminalApp.Profile;
 import jml.ot.colors.AnsiColors;
 
 public class Test {
@@ -16,7 +15,6 @@ public class Test {
 			@Override
 			public Profile getProfile() 
 			{
-				this.appClass = this.getClass();
 				if(TerminalUtil.isWindows())
 				{
 					Profile p = new Profile(Color.CYAN, Color.WHITE);
@@ -48,17 +46,19 @@ public class Test {
 				return null;
 			}
 		};
+		app.appClass = app.getClass();
+		
 		if(TerminalUtil.isLinux())
 		{
 			app.terminal = "gnome-terminal";//set's the initial terminal the configuration overrides this from TerminalApp#getTerminalExe called by OpenTerminal#open
 		}
 //		app.pause = false;
 //		Profile p = app.getProfile();
-//		System.out.println("Starting CLI:" + app.getProfile());
 //		app.shouldLog = true;
 //		app.pause = false;
 		OpenTerminal.open(app);
-		System.out.println("STD:\t" + app.getLogger() + " SIDE:" + OTConstants.LAUNCHED);
+		
+		System.out.println("Starting CLI:" + app.appClass);
 		
 		//begin testing
 		System.out.println("COLORMODE:" + app.colors.colorMode);

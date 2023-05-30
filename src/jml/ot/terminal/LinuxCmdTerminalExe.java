@@ -19,7 +19,7 @@ public class LinuxCmdTerminalExe extends LinuxBashExe {
 	public void run() 
 	{
 		String q = "'";
-		String command = (OTConstants.java_home + " " + OTConstants.args);
+		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args);
 		Profile p = this.app.getProfile();
 		String trueColor = this.app.getBootTrueColor(p).replace(AnsiColors.ESC, "\\033");
 		String platteColor = this.app.getBootPaletteColor(p).replace(AnsiColors.ESC, "\\033");

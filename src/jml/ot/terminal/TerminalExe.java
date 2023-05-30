@@ -41,12 +41,7 @@ public abstract class TerminalExe {
 	/**
 	 * get the JVM flags in an organized fashion
 	 */
-	public abstract String getJVMFlags();
-	
-	/**
-	 * ot.jp is only a java pause not a shell script pause. when java exits it won't pause after execution
-	 */
-	public String getJVMFlags0() 
+	public String getJVMFlags() 
 	{
 		return (this.app.javaPause ? "-Dot.jp " : "") + "-Dot.id=" + this.app.id + " -Dot.s=" + this.app.sessionName + (this.app.shouldLog ? " -Dot.log" : "") + (this.app.appClass == null ? "" : (" -Dot.app=" + this.app.appClass.getName().replace("$", "@")) );
 	}
