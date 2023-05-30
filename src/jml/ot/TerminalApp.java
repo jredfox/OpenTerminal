@@ -320,6 +320,7 @@ public class TerminalApp {
 		public Color bg;
 		public Color fg;
 		public String ansiFormat;
+		public String pauseMsg = OTConstants.pauseMsg;
 		public String wtTab;//WT Tab color
 		public String wtScheme;//WT color scheme
 		public boolean wtFullScreen;
@@ -369,6 +370,14 @@ public class TerminalApp {
 			p.mac_profilePath = pp;
 			return p;
 		}
+
+		/**
+		 * @return a non-null Pause Message String
+		 */
+		public String getPauseMsg() 
+		{
+			return this.pauseMsg;
+		}
 	}
 
 	/**
@@ -391,7 +400,7 @@ public class TerminalApp {
 	{
 		try
 		{
-			File flog = new File(OTConstants.home, "logs/" + id + "/boot-" + (OTConstants.LAUNCHED ? "client" : "host") + ".txt");
+			File flog = new File(OTConstants.home, "logs/" + id + "/boot" + (OTConstants.LAUNCHED ? "-client" : "") + ".txt");
 			FileUtil.create(flog);
 			this.bootLogger = new PrintStream(new FileOutputStream(flog), true);
 			return this.bootLogger;
@@ -429,7 +438,7 @@ public class TerminalApp {
 	{
 		if(this.javaPause)
 		{
-			System.out.print("Press ENTER to continue...");
+			System.out.print(OTConstants.pauseMsg);
 			System.out.flush();//ensure it's written right away
 			new Scanner(System.in).nextLine();
 		}

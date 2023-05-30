@@ -7,6 +7,8 @@ import jredfox.common.utils.JREUtil;
 public class OTConstants {
 	
 	public static final String OTVERSION = "alpha-1.0.1";
+	public static final String illegals = "\"';:$@";
+	public static final String pauseMsg = "Press ENTER to continue...";
 	public static final File home = new File(TerminalUtil.getAppData().getAbsoluteFile(), "OpenTerminal");
 	public static final File configs = new File(home, "configs");
 	public static final File profiles = new File(home, "profiles");
@@ -18,6 +20,5 @@ public class OTConstants {
 	public static final boolean LAUNCHED = System.getProperty("ot.l") != null;
 	public static final String java_home = "\"" + System.getProperty("java.home") + "/bin/java\"";
 	public static final String args = "-Dot.l -cp \"" + System.getProperty("java.class.path") + "\" jml.ot.OTMain";
-	public static final String illegals = "\"';:$@";
 
 }

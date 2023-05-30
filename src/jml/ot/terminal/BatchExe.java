@@ -25,6 +25,7 @@ public class BatchExe extends TerminalExe {
 		Profile profile = this.app.getProfile();
 		if(profile != null || this.app.pause)
 		{
+			String pmsg = profile != null ? profile.getPauseMsg() : "";
 			String colors = this.app.getBootTrueColor(profile);
 			pb = new ProcessBuilder(new String[]
 			{
@@ -37,7 +38,8 @@ public class BatchExe extends TerminalExe {
 				profile != null && profile.bg != null ? q + colors + q : q + "" + q,//color
 				q + this.app.getTitle() + q,
 				q + (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replaceAll("\"", ",") + q,
-				q + this.app.pause + q
+				q + this.app.pause + q,
+				q + pmsg + q
 			});
 		}
 		else
@@ -89,8 +91,10 @@ public class BatchExe extends TerminalExe {
                     + "set boot=%boot:$=;\"% ::Work around for WT\n"
                     + "set boot=%boot:@=$%\n"
                     + "call %boot%\n"
+                    + "set pmsg=%~5%\n"
+                    + "IF \"%pmsg%\" == \"\" set pmsg=Press ENTER to continue...\n"
                     + "IF \"%~4%\" == \"true\" (\n"
-                    + "set /p DUMMY=Press ENTER to continue...\n"
+                    + "set /p DUMMY=%pmsg%\n"
                     + ")\n"
                     + "exit 0 ::Work around from a command prompt bug");
             this.makeShell(li);

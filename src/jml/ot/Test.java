@@ -26,6 +26,7 @@ public class Test {
 //						p.wtMaximized = true;
 //						p.wtFullScreen = true;
 					}
+					p.pauseMsg="PROGRAM is Exiting:";
 					return p;
 //					return null;
 				}
