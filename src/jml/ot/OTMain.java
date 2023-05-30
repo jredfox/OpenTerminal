@@ -33,7 +33,7 @@ public class OTMain {
 		}
 		else
 		{
-//			quickFix(); TODO: re-enable after debugging
+			quickFix();
 			TerminalApp app = new TerminalApp(System.getProperty("ot.id"), "CLI CLient", OTConstants.OTVERSION);
 			app.loadSession();
 			app.startPipeManager();
