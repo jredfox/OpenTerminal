@@ -58,7 +58,7 @@ public class Test {
 //		app.pause = false;
 		OpenTerminal.open(app);
 		
-		System.out.println("Starting CLI:" + app.appClass);
+//		System.out.println("Starting CLI:" + app.appClass);
 		
 		//begin testing
 		System.out.println("COLORMODE:" + app.colors.colorMode);

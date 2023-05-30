@@ -64,7 +64,8 @@ public class LinuxBashExe extends TerminalExe{
 	public void run() 
 	{
 		Profile p = this.app.getProfile();
-		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replace("$", "\\$");
+//		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replace("$", "\\$");
+		String command = (OTConstants.java_home + " " + OTConstants.args).replace("$", "\\$");
 		if(this.quoteCmd)
 			command = command.replaceAll(TerminalUtil.getQuote(),"\\\\" + TerminalUtil.getQuote()).replace("$", "\"\"$\"\"");
 		String trueColor = this.app.getBootTrueColor(p).replace(AnsiColors.ESC, "\\033");

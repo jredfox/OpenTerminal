@@ -271,6 +271,7 @@ public class TerminalApp {
 		if(!TerminalUtil.isExeValid(this.terminal))
 		{
 			this.terminal = TerminalUtil.getTerminal();
+			System.out.println("ERR TERMINAL NOT FOUND:" + this.terminal);
 			cfg.set("terminal", this.terminal);
 		}
 		if(!this.conHost.isEmpty() && !TerminalUtil.isExeValid(this.conHost))
