@@ -54,7 +54,6 @@ public class TerminalUtil {
 		"mrxvt-full",
 		"pangoterm",
 		"pterm",
-		"qterminal",
 		"roxterm",
 		"rxvt",
 		"rxvt-unicode",

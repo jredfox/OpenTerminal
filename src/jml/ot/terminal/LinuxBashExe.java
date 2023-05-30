@@ -65,11 +65,17 @@ public class LinuxBashExe extends TerminalExe{
 	{
 		Profile p = this.app.getProfile();
 //		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replace("$", "\\$");
-		String command = (OTConstants.java_home + " " + OTConstants.args).replace("$", "\\$");
+		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replace("$", "\\$");
+		if(this.app.terminal.equals("tilix"))
+			command = command.replace("\\$", "\\\\$");//appears to want \\$ instead of just \$
 		if(this.quoteCmd)
-			command = command.replaceAll(TerminalUtil.getQuote(),"\\\\" + TerminalUtil.getQuote()).replace("$", "\"\"$\"\"");
-		String trueColor = this.app.getBootTrueColor(p).replace(AnsiColors.ESC, "\\033");
-		String platteColor = this.app.getBootPaletteColor(p).replace(AnsiColors.ESC, "\\033");
+		{
+			//only used for terminalpp
+			command = command.replace("\\$", "\"\"$\"\"");
+			command = command.replaceAll(TerminalUtil.getQuote(),"\\\\" + TerminalUtil.getQuote()).replace("$", "\\\\$");
+		}
+		String trueColor = this.app.getBootTrueColor(p);
+		String platteColor = this.app.getBootPaletteColor(p);
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
 			this.app.terminal,
@@ -114,7 +120,7 @@ public class LinuxBashExe extends TerminalExe{
 	@Override
 	public String getJVMFlags()
 	{
-		return super.getJVMFlags().replace("@", "$");
+		return super.getJVMFlags().replace("@", "$");//TODO: fix after debug
 	}
 
 }
