@@ -1,8 +1,2 @@
+update all shell and java pause to allow custom pause msg
 cleanup PipeManager code
-
-ot.id
-ot.s
-ot.log
-ot.c.app #can populate the pipes, colors etc with custom terminal app
-ot.jp #java pause
-ot.p #shell pause

@@ -89,6 +89,10 @@ public class TerminalApp {
 	public File session;
 	public String sessionName;
 	/**
+	 * set this to true to {@link System#exit(int)} on CLI client close
+	 */
+	public boolean exitOnCLI;
+	/**
 	 * set this field if you require custom logic on the CLI client side running it must have a valid default contructor
 	 */
 	public Class<? extends TerminalApp> appClass = TerminalApp.class;//TODO: make this null by default after debugging
@@ -435,6 +439,19 @@ public class TerminalApp {
 	{
 		if(this.canLogBoot)
 			this.bootLogger.println(msg);
+	}
+	
+	/**
+	 * fired once the CLI closes.
+	 */
+	public void closeCLIEvent()
+	{
+		//TODO:make it work with the PID isAlive() update
+		if(this.exitOnCLI)
+		{
+			System.out.println("Host process is closing due to CLI closing");
+			System.exit(0);
+		}
 	}
 
 }
