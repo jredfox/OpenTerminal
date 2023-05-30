@@ -9,7 +9,6 @@ import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
 import jml.ot.TerminalApp.Profile;
 import jml.ot.TerminalUtil;
-import jml.ot.colors.AnsiColors;
 
 public class LinuxBashExe extends TerminalExe{
 
@@ -64,11 +63,10 @@ public class LinuxBashExe extends TerminalExe{
 	public void run() 
 	{
 		Profile p = this.app.getProfile();
-//		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replace("$", "\\$");
 		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replace("$", "\\$");
 		if(this.app.terminal.equals("tilix"))
 			command = command.replace("\\$", "\\\\$");//appears to want \\$ instead of just \$
-		if(this.quoteCmd)
+		else if(this.quoteCmd)
 		{
 			//only used for terminalpp
 			command = command.replace("\\$", "\"\"$\"\"");
@@ -97,8 +95,8 @@ public class LinuxBashExe extends TerminalExe{
 	{
 		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replace("$", "\\$");
 		Profile p = this.app.getProfile();
-		String trueColor = this.app.getBootTrueColor(p).replace(AnsiColors.ESC, "\\033");
-		String platteColor = this.app.getBootPaletteColor(p).replace(AnsiColors.ESC, "\\033");
+		String trueColor = this.app.getBootTrueColor(p);
+		String platteColor = this.app.getBootPaletteColor(p);
 		List<String> li = new ArrayList<>();
 		li.add("bash");
 		li.add(this.shell.getPath());
@@ -115,12 +113,6 @@ public class LinuxBashExe extends TerminalExe{
 	public void cleanup() 
 	{
 		this.shell.delete();
-	}
-	
-	@Override
-	public String getJVMFlags()
-	{
-		return super.getJVMFlags().replace("@", "$");//TODO: fix after debug
 	}
 
 }

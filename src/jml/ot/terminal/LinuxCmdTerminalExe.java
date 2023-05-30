@@ -3,7 +3,6 @@ package jml.ot.terminal;
 import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
 import jml.ot.TerminalApp.Profile;
-import jml.ot.colors.AnsiColors;
 
 /**
  * for the terminals that can't handle pre-parsed arguments
