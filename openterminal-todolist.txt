@@ -7,6 +7,8 @@ create SharedPipes (localhost pipes)
 saveable last arguments #request input and add robot keys to input the last known command
 tabbing and key events #since already in input mode detect when key is down and provide a limited very limited tab IMPL which will continue to replace the tab field with each press and backspace to delete them
 singleton(don't boot if one has already been launched)
+progress bar API??? set progress and have a charcter that later turns green
+passwords??
 re-fix can't boot with eclipse's JAR IN JAR
 
 ot.p #shell script pause overrides TerminalApp#pause
