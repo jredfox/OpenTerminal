@@ -35,6 +35,7 @@ public class OTMain {
 		}
 		else
 		{
+//			System.exit(-1);
 			correctProps();
 			TerminalApp app = new TerminalApp(System.getProperty("ot.id"), "CLI CLient", OTConstants.OTVERSION);
 			app.loadSession();

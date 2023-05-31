@@ -61,11 +61,17 @@ public class MacBashExe extends TerminalExe {
 					+ "cd \"$4\"\n"
 					+ "eval \"$5\"\n"
 					+ "if [ \"$6\" = true ]; then\n"
-					+ "    read -p \"Press ENTER to continue...\"\n"
+					+ "pmsg=$7\n"
+					+ "if [ -z \"$pmsg\" ]\n"
+					+ "then\n"
+					+ "pmsg=\"Press ENTER to continue...\"\n"
 					+ "fi\n"
-					+ "c=\"closeMe_ $7\"\n"
+					+ "printf \"$pmsg\"\n"
+					+ "read -p \"\"\n"
+					+ "fi\n"
+					+ "c=\"closeMe_ $8\"\n"
 					+ "echo -n -e \"\\033]0;\"$c\"\\007\"\n"
-					+ "osascript \"$8\" \"$c\" & exit");
+					+ "osascript \"$9\" \"$c\" & exit");
 			this.makeShell(li);
 		}
 	}
@@ -233,11 +239,12 @@ public class MacBashExe extends TerminalExe {
 	{
 		String q = TerminalUtil.getQuote();
 		Profile p = this.app.getProfile();
+		String pmsg = p == null ? "" : p.getPauseMsg().replace(AnsiColors.ESC, "\\033");
 		String profileId = p == null ? "" : p.mac_profileName;
 		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replaceAll(q, "\\\\" + q).replace("$", "\\\\\"\"$\"\"");
 		String trueColor = app.getBootTrueColor(p).replace(AnsiColors.ESC, "\\033");
 		String platteColor = app.getBootPaletteColor(p).replace(AnsiColors.ESC, "\\033");
-		String bash = "bash " + q + this.shell.getPath() + q + " " + q + trueColor + q + " " + q + platteColor + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + this.app.sessionName + q + " " + q + closeMeScpt.getPath() + q;
+		String bash = "bash " + q + this.shell.getPath() + q + " " + q + trueColor + q + " " + q + platteColor + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + pmsg + q + " " + q + this.app.sessionName + q + " " + q + closeMeScpt.getPath() + q;
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
 			"osascript",
@@ -254,10 +261,11 @@ public class MacBashExe extends TerminalExe {
 	{
 		String q = TerminalUtil.getQuote();
 		Profile p = this.app.getProfile();
+		String pmsg = p == null ? "" : p.getPauseMsg().replace(AnsiColors.ESC, "\\033");
 		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replaceAll(q, "\\\\" + q).replace("$", "\\\\\"\"$\"\"");
 		String trueColor = this.app.getBootTrueColor(p).replace(AnsiColors.ESC, "\\033");
 		String platteColor = this.app.getBootPaletteColor(p).replace(AnsiColors.ESC, "\\033");
-		String bash = "bash " + q + this.shell.getPath() + q + " " + q + trueColor + q + " " + q + platteColor + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + this.app.sessionName + q + " " + q + closeMeScpt.getPath() + q;
+		String bash = "bash " + q + this.shell.getPath() + q + " " + q + trueColor + q + " " + q + platteColor + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir + q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + pmsg + q + " " + q + this.app.sessionName + q + " " + q + closeMeScpt.getPath() + q;
 		List<String> li = new ArrayList<>();
 		li.add("bash");
 		li.add(bash);

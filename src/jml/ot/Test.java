@@ -39,6 +39,8 @@ public class Test {
 //					Profile p  = new Profile();
 //					p.bg = Color.GRAY;
 //					p.fg = Color.GREEN;
+//					p.pauseMsg = "TEST";
+//					p.pauseMsg = AnsiColors.INSTANCE.formatColor(Color.GREEN, Color.WHITE, "PROGRAM is Exiting:", false);
 					return p;
 				}
 				else if(TerminalUtil.isLinux())
