@@ -28,7 +28,8 @@ public class Test {
 //						p.wtFullScreen = true;
 					}
 					//colored pause message
-					p.pauseMsg = AnsiColors.INSTANCE.formatColor(Color.GREEN, Color.WHITE, "PROGRAM is Exiting:", false);
+//					p.pauseMsg = AnsiColors.INSTANCE.formatColor(Color.GREEN, Color.WHITE, "PROGRAM is Exiting:", false);
+					this.setPauseMsg(Color.ORANGE, Color.WHITE, "Done", p);
 					return p;
 //					return null;
 				}
