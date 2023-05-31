@@ -35,9 +35,11 @@ public class LinuxBashExe extends TerminalExe{
 					+ "if [[ $t == *\"true\"* && $t == *\"color\"* ]] || [[ $t == *\"24\"* && $t == *\"bit\"* ]]; then\n"
 					+ "  printf \"$1\"\n"
 					+ "  clear && printf \"\\033[3J\" #clears screen\n"
+					+ "  f=true\n"
 					+ "else\n"
 					+ "  printf \"$2\"\n"
 					+ "  clear && printf \"\\033[3J\" #clears screen\n"
+					+ "  f=false\n"
 					+ "fi\n"
 					+ "if ! [ -z \"$3\" ]\n"
 					+ "then\n"
@@ -45,8 +47,19 @@ public class LinuxBashExe extends TerminalExe{
 					+ "fi\n"
 					+ "cd \"$4\"\n"
 					+ "eval \"$5\"\n"
+					+ "#start advanced pause method\n"
 					+ "if [ \"$6\" = true ]; then\n"
-					+ "    read -p \"Press ENTER to continue...\"\n"
+					+ "  if [ \"$f\" = true ]; then\n"
+					+ "      pmsg=\"$7\" #hd pause\n"
+					+ "  else\n"
+					+ "      pmsg=\"$8\" #xterm-256 or ansi4bit pause\n"
+					+ "  fi\n"
+					+ "  if [ -z \"$pmsg\" ]\n"
+					+ "  then\n"
+					+ "      pmsg=\"Press ENTER to continue...\"\n"
+					+ "  fi\n"
+					+ "  printf \"$pmsg\" #print pause\n"
+					+ "  read -p \"\" #do the actual pause with no print due to CLI issues\n"
 					+ "fi\n"
 					+ "exit");
 			this.makeShell(li);
@@ -63,6 +76,8 @@ public class LinuxBashExe extends TerminalExe{
 	public void run() 
 	{
 		Profile p = this.app.getProfile();
+		String hd = p == null ? "" : p.getPauseMsg();
+		String lowRes = p == null ? "" : p.getPauseLowRes();
 		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replace("$", "\\$");
 		if(this.app.terminal.equals("tilix"))
 			command = command.replace("\\$", "\\\\$");//appears to want \\$ instead of just \$
@@ -85,7 +100,9 @@ public class LinuxBashExe extends TerminalExe{
 			this.app.getTitle(),
 			OTConstants.userDir.getPath(),
 			command,
-			String.valueOf(this.app.pause)
+			String.valueOf(this.app.pause),
+			hd,
+			lowRes
 		});
 		this.run(pb);
 	}
@@ -95,6 +112,8 @@ public class LinuxBashExe extends TerminalExe{
 	{
 		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replace("$", "\\$");
 		Profile p = this.app.getProfile();
+		String hd = p == null ? "" : p.getPauseMsg();
+		String lowRes = p == null ? "" : p.getPauseLowRes();
 		String trueColor = this.app.getBootTrueColor(p);
 		String platteColor = this.app.getBootPaletteColor(p);
 		List<String> li = new ArrayList<>();
@@ -106,6 +125,8 @@ public class LinuxBashExe extends TerminalExe{
 		li.add(OTConstants.userDir.getPath());
 		li.add(command);
 		li.add(String.valueOf(this.app.pause));
+		li.add(hd);
+		li.add(lowRes);
 		return li;
 	}
 

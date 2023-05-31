@@ -20,6 +20,8 @@ public class LinuxCmdTerminalExe extends LinuxBashExe {
 		String q = "'";
 		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replace("$", "\\$");
 		Profile p = this.app.getProfile();
+		String hd = p == null ? "" : p.getPauseMsg();
+		String lowRes = p == null ? "" : p.getPauseLowRes();
 		String trueColor = this.app.getBootTrueColor(p);
 		String platteColor = this.app.getBootPaletteColor(p);
 		ProcessBuilder pb = new ProcessBuilder(new String[]
@@ -28,7 +30,7 @@ public class LinuxCmdTerminalExe extends LinuxBashExe {
 			this.app.getLinuxExe(),
 			"bash " + q + this.shell.getPath() + q + " " +
 			q + trueColor + q + " " + q + platteColor + q + " " + q + this.app.getTitle() + q + " " + q + OTConstants.userDir.getPath() 
-			+ q + " " + q + command + q + " " + q + this.app.pause + q
+			+ q + " " + q + command + q + " " + q + this.app.pause + q + " " + q + hd + q + " " + q + lowRes + q
 		});
 		this.run(pb);
 	}

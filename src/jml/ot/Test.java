@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 import jml.ot.colors.AnsiColors;
+import jml.ot.colors.AnsiColors.TermColors;
 
 public class Test {
 
@@ -45,17 +46,18 @@ public class Test {
 				}
 				else if(TerminalUtil.isLinux())
 				{
-					return new Profile(Color.CYAN, Color.WHITE);
+					Profile p = new Profile(Color.CYAN, Color.WHITE);
+//					p.setPauseMsg("Program is exiting...");
+					String phd = AnsiColors.INSTANCE.formatColor(TermColors.TRUE_COLOR, Color.WHITE, Color.BLACK, "Program is Done Executing", false);
+					String plr = AnsiColors.INSTANCE.formatColor(TermColors.XTERM_256, Color.WHITE, Color.BLACK, "Program is Done Executing", false);
+					p.setPauseMsg(phd, plr);
+					return p;
 				}
 				return null;
 			}
 		};
 		app.appClass = app.getClass();
 		
-		if(TerminalUtil.isLinux())
-		{
-			app.terminal = "gnome-terminal";//set's the initial terminal the configuration overrides this from TerminalApp#getTerminalExe called by OpenTerminal#open
-		}
 //		app.pause = false;
 //		Profile p = app.getProfile();
 //		app.shouldLog = true;

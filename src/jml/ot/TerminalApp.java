@@ -24,7 +24,6 @@ import jml.ot.terminal.LinuxCmdTerminalExe;
 import jml.ot.terminal.MacBashExe;
 import jml.ot.terminal.PowerShellExe;
 import jml.ot.terminal.TerminalExe;
-import jml.ot.terminal.TildaTerminalExe;
 import jml.ot.terminal.ValaTerminalExe;
 import jml.ot.terminal.host.ConsoleHost;
 import jml.ot.terminal.host.WTHost;
@@ -186,7 +185,7 @@ public class TerminalApp {
 				case "guake":
 					return new GuakeTerminalExe(this);
 				case "tilda":
-					return new TildaTerminalExe(this);
+					return new LinuxCmdTerminalExe(this);
 				case "sakura":
 					return new LinuxCmdTerminalExe(this);
 				case "kgx":
@@ -322,7 +321,8 @@ public class TerminalApp {
 		public Color bg;
 		public Color fg;
 		public String ansiFormat;
-		public String pauseMsg = OTConstants.pauseMsg;
+		protected String pauseMsg = "";//truecolor pause message
+		protected String pauseLowResMsg = "";//xterm-256 or ansi4bit colored string
 		public String wtTab;//WT Tab color
 		public String wtScheme;//WT color scheme
 		public boolean wtFullScreen;
@@ -372,13 +372,29 @@ public class TerminalApp {
 			p.mac_profilePath = pp;
 			return p;
 		}
-
-		/**
-		 * @return a non-null Pause Message String
-		 */
-		public String getPauseMsg() 
+		
+		public void setPauseMsg(String pause)
+		{
+			Assert.is(!pause.contains(AnsiColors.ESC), "Not for use of colored pause messages! Use Profile#setPause(String hdPause, String lowResPause) instead");
+			this.pauseMsg = pause;
+			this.pauseLowResMsg = "";//when colors are not enabled don't duplicate the pause message to the shell making the commands longer
+		}
+		
+		public void setPauseMsg(String hdPause, String lowResPause)
+		{
+			Assert.is(hdPause.contains(AnsiColors.ESC) ? lowResPause.contains(AnsiColors.ESC) : !lowResPause.contains(AnsiColors.ESC), "Color MisMatch! It's inteded the pause message be the same just computed with different ColorModes");
+			this.pauseMsg = hdPause;
+			this.pauseLowResMsg = lowResPause;
+		}
+		
+		public String getPauseMsg()
 		{
 			return this.pauseMsg;
+		}
+		
+		public String getPauseLowRes()
+		{
+			return this.pauseLowResMsg;
 		}
 	}
 

@@ -8,7 +8,7 @@ public class Assert {
 	/**
 	 * if you don't want Assertion errors you can disable them in memory but just know this is like creating Objects with illegal argument exceptions and hoping nothing crashes
 	 */
-	private static volatile boolean isActive = System.getProperty("disableAssert") == null;
+	private static volatile boolean isActive = System.getProperty("noAssertions") == null;
 	
 	public static void is(boolean b, String e)
 	{
