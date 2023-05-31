@@ -413,6 +413,24 @@ public class TerminalApp {
 	{
 		return p == null ? "" : this.colors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.XTERM_256, p.bg, p.fg, p.ansiFormat, false);
 	}
+	
+	/**
+	 * use this for the colored pause option as we cannot assume the color mode is always true color. 
+	 * this is used mostly for the colored pause via the shell
+	 */
+	public String formatPauseColor(Color bg, Color fg, String s)
+	{
+		return this.colors.formatColor(TermColors.TRUE_COLOR, bg, fg, s, true);
+	}
+	
+	/**
+	 * use this for the colored pause low res option as we cannot assume the color mode is always xterm-256 / ansi4bit. 
+	 * this is used mostly for the colored pause via the shell
+	 */
+	public String formatPauseLowResColor(Color bg, Color fg, String s)
+	{
+		return this.colors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.XTERM_256, bg, fg, s, true);
+	}
 
 	public PrintStream createBootLogger()
 	{
