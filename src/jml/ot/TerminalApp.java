@@ -420,7 +420,7 @@ public class TerminalApp {
 	 */
 	public String formatPauseColor(Color bg, Color fg, String s)
 	{
-		return this.colors.formatColor(TermColors.TRUE_COLOR, bg, fg, s, true);
+		return this.colors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.TRUE_COLOR, bg, fg, s, true);
 	}
 	
 	/**
