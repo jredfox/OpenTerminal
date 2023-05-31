@@ -1,2 +1,5 @@
-update all shell and java pause to allow custom pause msg
+mac bash pause
+linux pause
+install guake on ubuntu and test
+install not tested terminals such as alacritty,lilyterm,wterm
 cleanup PipeManager code

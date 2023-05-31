@@ -23,7 +23,9 @@ public class PowerShellExe extends TerminalExe {
 	public void run() 
 	{
 		String q = TerminalUtil.getQuote();
-		String colors = this.app.getBootTrueColor(this.app.getProfile()).replace(";", "$");
+		Profile p = this.app.getProfile();
+		String colors = this.app.getBootTrueColor(p).replace(";", "$");
+		String pmsg = p == null ? "" : p.getPauseMsg();
 		ProcessBuilder pb = new ProcessBuilder(new String[]
 		{
 			"powershell",
@@ -43,6 +45,7 @@ public class PowerShellExe extends TerminalExe {
 			q + this.getJVMFlags() + " " + OTConstants.args.replaceAll(q, "'").replace(";", "$") + q,
 			"-pause",
 			q + this.app.pause + q,
+			q + pmsg + q
 		});
 		this.run(pb);
 	}
@@ -54,6 +57,7 @@ public class PowerShellExe extends TerminalExe {
 		String q2 = "'";
 		Profile p = this.app.getProfile();
 		String colors = this.app.getBootTrueColor(p).replace(";", "$");
+		String pmsg = p == null ? "" : p.getPauseMsg();
 		List<String> cmd = new ArrayList<>();
 		cmd.add("powershell");
 		cmd.add("-ExecutionPolicy");
@@ -70,6 +74,7 @@ public class PowerShellExe extends TerminalExe {
 		cmd.add(q + this.getJVMFlags() + " " + OTConstants.args.replaceAll(q, q2).replace(";", "$") + q);
 		cmd.add("-pause");
 		cmd.add(q + this.app.pause + q);
+		cmd.add(q + pmsg + q);
 		return cmd;
 	}
 	
@@ -84,7 +89,8 @@ public class PowerShellExe extends TerminalExe {
                     + "[Parameter(Mandatory = $true)] $title,\n"
                     + "[Parameter(Mandatory = $true)] $java_home,\n"
                     + "[Parameter(Mandatory = $true)] $java_args,\n"
-                    + "[Parameter(Mandatory = $true)] $pause\n"
+                    + "[Parameter(Mandatory = $true)] $pause,\n"
+                    + "[Parameter(Mandatory = $true)] $pmsg\n"
                     + ")\n"
                     + "$colors = $colors.Replace(\"$\", \";\")\n"
                     + "$clear = \"[H[2J[3J\"\n"
@@ -95,7 +101,11 @@ public class PowerShellExe extends TerminalExe {
                     + "Start-Process -Wait -NoNewWindow $java_home -ArgumentList $java_args\n"
                     + "if($pause -eq \"true\")\n"
                     + "{\n"
-                    + "    [Console]::Out.Write(\"Press ENTER to continue...\")\n"
+                    + "    if ([string]::IsNullOrEmpty($pmsg))\n"
+                    + "    {\n"
+                    + "        $pmsg = \"Press ENTER to continue...\"\n"
+                    + "    }\n"
+                    + "    [Console]::Out.Write($pmsg)\n"
                     + "    Read-Host\n"
                     + "}");
             this.makeShell(li);
@@ -114,9 +124,10 @@ public class PowerShellExe extends TerminalExe {
                     + "[Parameter(Mandatory = $true)] $title,\n"
                     + "[Parameter(Mandatory = $true)] $java_home,\n"
                     + "[Parameter(Mandatory = $true)] $java_args,\n"
-                    + "[Parameter(Mandatory = $true)] $pause\n"
+                    + "[Parameter(Mandatory = $true)] $pause,\n"
+                    + "[Parameter(Mandatory = $true)] $pmsg\n"
                     + ")\n"
-                    + "start-process powershell -ArgumentList '-ExecutionPolicy', 'Bypass', '-File', \"\"\"$boot\"\"\", '-colors', \"\"\"$colors\"\"\", '-title', \"\"\"$title\"\"\", '-java_home', \"\"\"$java_home\"\"\", '-java_args', \"\"\"$java_args\"\"\", '-pause', \"\"\"$pause\"\"\"");
+                    + "start-process powershell -ArgumentList '-ExecutionPolicy', 'Bypass', '-File', \"\"\"$boot\"\"\", '-colors', \"\"\"$colors\"\"\", '-title', \"\"\"$title\"\"\", '-java_home', \"\"\"$java_home\"\"\", '-java_args', \"\"\"$java_args\"\"\", '-pause', \"\"\"$pause\"\"\", '-pmsg', \"\"\"$pmsg\"\"\"");
             this.makeShell(list, start_ps);
         }
     }

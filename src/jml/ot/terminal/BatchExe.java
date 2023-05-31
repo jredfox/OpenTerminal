@@ -61,6 +61,7 @@ public class BatchExe extends TerminalExe {
 		String q = TerminalUtil.getQuote();
 		Profile profile = this.app.getProfile();
 		String colors = this.app.getBootTrueColor(profile).replace(";", "$");//the character "$" is actually illegal in batch file params " " but somehow it's fine with WT
+		String pmsg = profile != null ? profile.getPauseMsg() : "";
 		List<String> cmd = new ArrayList<>();
 		cmd.add("cmd");
 		cmd.add(TerminalUtil.getExeAndClose());
@@ -70,6 +71,7 @@ public class BatchExe extends TerminalExe {
 		cmd.add(q + this.app.getTitle() + q);
 		cmd.add(q + (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replaceAll("\"", ",").replace(";", "$") + q);
 		cmd.add(q + this.app.pause + q);
+		cmd.add(pmsg);
 		return cmd;
 	}
 

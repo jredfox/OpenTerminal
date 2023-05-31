@@ -28,14 +28,14 @@ public class OTMain {
 		if(!OTConstants.LAUNCHED)
 		{
 			TerminalApp app = args.length != 0 ? new TerminalApp(args[0], args[1], args[2], Boolean.parseBoolean(args[3]), Boolean.parseBoolean(args[4])) : new TerminalApp("ot", "Open Terminal", OTConstants.OTVERSION);
-			app.pause = false;
-			app.javaPause = true;
+//			app.pause = false;
+//			app.javaPause = true;
 			OpenTerminal.open(app);
 			app.manager.isRunning = false;
 		}
 		else
 		{
-			quickFix();
+			correctProps();
 			TerminalApp app = new TerminalApp(System.getProperty("ot.id"), "CLI CLient", OTConstants.OTVERSION);
 			app.loadSession();
 			app.startPipeManager();
@@ -63,10 +63,9 @@ public class OTMain {
 	/**
 	 * convert all ot.* "@" to "$" from {@link System#getProperties()}
 	 */
-	public static void quickFix() 
+	public static void correctProps() 
 	{
 		Set<String> qf = new HashSet<>(5);
-		
 		for(Entry<Object, Object> s : System.getProperties().entrySet())
 		{
 			if(s.getKey().toString().startsWith("ot.") && s.getValue().toString().contains("@"))
@@ -74,7 +73,6 @@ public class OTMain {
 				qf.add((String) s.getKey());
 			}
 		}
-		
 		for(String q : qf)
 		{
 			System.out.println("QF Patching:\t" + q);//TODO: remove before release
