@@ -21,7 +21,7 @@ public class LinuxCmdTerminalExe extends LinuxBashExe {
 		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replace("$", "\\$");
 		Profile p = this.app.getProfile();
 		String hd = p == null ? "" : p.getPauseMsg();
-		String lowRes = p == null ? "" : p.getPauseLowRes();
+		String lowRes = p == null ? "" : p.getPauseLowResMsg();
 		String trueColor = this.app.getBootTrueColor(p);
 		String platteColor = this.app.getBootPaletteColor(p);
 		ProcessBuilder pb = new ProcessBuilder(new String[]

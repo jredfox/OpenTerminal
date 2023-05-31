@@ -41,7 +41,10 @@ public class Test {
 //					p.bg = Color.GRAY;
 //					p.fg = Color.GREEN;
 //					p.pauseMsg = "TEST";
-//					p.pauseMsg = AnsiColors.INSTANCE.formatColor(Color.GREEN, Color.WHITE, "PROGRAM is Exiting:", false);
+//					p.pauseMsg = AnsiColors.INSTANCE.formsatColor(Color.GREEN, Color.WHITE, "PROGRAM is Exiting:", false);
+//					p.setPauseMsg("E");
+//					p.setPauseMsg(this.formatPauseColor(Color.BLUE, Color.BLACK, "Exiting"), this.formatPauseLowResColor(Color.BLUE, Color.BLACK, "Exiting"));
+					this.setPauseMsg(Color.yellow, Color.green, "Exiting the savanah", p);
 					return p;
 				}
 				else if(TerminalUtil.isLinux())

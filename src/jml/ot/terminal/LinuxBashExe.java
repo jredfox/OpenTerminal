@@ -77,7 +77,7 @@ public class LinuxBashExe extends TerminalExe{
 	{
 		Profile p = this.app.getProfile();
 		String hd = p == null ? "" : p.getPauseMsg();
-		String lowRes = p == null ? "" : p.getPauseLowRes();
+		String lowRes = p == null ? "" : p.getPauseLowResMsg();
 		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replace("$", "\\$");
 		if(this.app.terminal.equals("tilix"))
 			command = command.replace("\\$", "\\\\$");//appears to want \\$ instead of just \$
@@ -113,7 +113,7 @@ public class LinuxBashExe extends TerminalExe{
 		String command = (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replace("$", "\\$");
 		Profile p = this.app.getProfile();
 		String hd = p == null ? "" : p.getPauseMsg();
-		String lowRes = p == null ? "" : p.getPauseLowRes();
+		String lowRes = p == null ? "" : p.getPauseLowResMsg();
 		String trueColor = this.app.getBootTrueColor(p);
 		String platteColor = this.app.getBootPaletteColor(p);
 		List<String> li = new ArrayList<>();

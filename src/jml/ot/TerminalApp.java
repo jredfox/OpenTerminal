@@ -377,7 +377,7 @@ public class TerminalApp {
 		{
 			Assert.is(!pause.contains(AnsiColors.ESC), "Not for use of colored pause messages! Use Profile#setPause(String hdPause, String lowResPause) instead");
 			this.pauseMsg = pause;
-			this.pauseLowResMsg = "";//when colors are not enabled don't duplicate the pause message to the shell making the commands longer
+			this.pauseLowResMsg = pause;
 		}
 		
 		public void setPauseMsg(String hdPause, String lowResPause)
@@ -392,7 +392,7 @@ public class TerminalApp {
 			return this.pauseMsg;
 		}
 		
-		public String getPauseLowRes()
+		public String getPauseLowResMsg()
 		{
 			return this.pauseLowResMsg;
 		}
@@ -430,6 +430,11 @@ public class TerminalApp {
 	public String formatPauseLowResColor(Color bg, Color fg, String s)
 	{
 		return this.colors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.XTERM_256, bg, fg, s, true);
+	}
+	
+	public void setPauseMsg(Color bg, Color fg, String msg, Profile p)
+	{
+		p.setPauseMsg(this.formatPauseColor(bg, fg, msg), this.formatPauseLowResColor(bg, fg, msg));
 	}
 
 	public PrintStream createBootLogger()
