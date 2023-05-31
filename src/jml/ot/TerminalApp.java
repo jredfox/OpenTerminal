@@ -275,6 +275,8 @@ public class TerminalApp {
 		if(!TerminalUtil.isExeValid(this.terminal))
 		{
 			this.terminal = TerminalUtil.getTerminal();
+			if(this.terminal == null && this.canLogBoot)
+				this.bootLogger.println("Unable to find terminal:" + System.getProperty("os.name") + " report to https://github.com/jredfox/OpenTerminal/issues");
 			cfg.set("terminal", this.terminal);
 		}
 		if(!this.conHost.isEmpty() && !TerminalUtil.isExeValid(this.conHost))
@@ -365,8 +367,8 @@ public class TerminalApp {
 		public static Profile newMac(String prid, String pp)
 		{
 			Profile p = new Profile();
-			p.mac_profileName = prid;
 			p.mac_profileId = prid;
+			p.mac_profileName = prid;
 			p.mac_profilePath = pp;
 			return p;
 		}

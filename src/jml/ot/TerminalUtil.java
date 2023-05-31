@@ -33,13 +33,15 @@ public class TerminalUtil {
 	
 	public static List<String> linux_terminals = JavaUtil.asArray(new String[]
 	{
-		"alacritty",//TODO: confirm working
+		"gnome-terminal",//most common terminals first
+		"xfce4-terminal",
+		"xterm",
+		"alacritty",
 		"aterm",
 		"cool-retro-term",
 		"deepin-terminal",
 		"Eterm",
 		"foot",
-		"gnome-terminal",
 		"gnome-terminal.wrapper",
 		"guake",
 		"kitty",
@@ -55,9 +57,9 @@ public class TerminalUtil {
 		"pangoterm",
 		"pterm",
 		"roxterm",
-		"rxvt",
-		"rxvt-unicode",
-		"rxvt-xpm",
+		"rxvt",//rxvt-ml
+		"rxvt-unicode",//rxvt-ml
+		"rxvt-xpm",//sudo apt install rxvt 
 		"rxvt-xterm",
 		"sakura",
 		"st",
@@ -69,16 +71,14 @@ public class TerminalUtil {
 		"termit",
 		"tilda",
 		"tilix",
-		"urxvt",
-		"urxvtc",
-		"urxvtcd",
+		"urxvt",//rxvt-unicode-256color
+		"urxvtc",//rxvt-unicode-256color
+		"urxvtcd",//rxvt-unicode-256color
 		"uxterm",
 		"vala-terminal",
 		"wterm",
-		"xfce4-terminal",
 		"xfce4-terminal.wrapper",
 		"xiterm+thai",
-		"xterm",
 		"xvt"
 	});
 	
@@ -96,7 +96,7 @@ public class TerminalUtil {
 		for(List<String> arr : TerminalUtil.getTerminals())
 		{
 			if(arr == terms)
-				continue;
+				continue;//skip already looked at array
 			for(String cmd : arr)
 			{
 				if(findExe(cmd) != null)
@@ -105,7 +105,6 @@ public class TerminalUtil {
 				}
 			}
 		}
-		System.err.println("Unable to find terminal:" + System.getProperty("os.name") + " report to https://github.com/jredfox/OpenTerminal/issues");
 		return null;
 	}
 	
