@@ -497,7 +497,6 @@ public class TerminalApp {
 		if(p != null)
 		{
 			this.colors.setReset(p.bg, p.fg, p.ansiFormat, true);
-			//colored error stream starts here
 			if(p.hasColoredErr)
 				System.setErr(new ColoredPrintStream(p.bgErr, p.fgErr, p.ansiFormatErr, this.colors, System.err));
 		}
@@ -514,7 +513,7 @@ public class TerminalApp {
 		IOUtils.close(reader);
 		if(mode == null)
 		{
-			mode = TerminalUtil.isWindowsTerm(this.terminal) ? "truecolor" : "xterm-256";
+			mode = this.ANSI4BIT ? "ansi4bit" : (TerminalUtil.isWindowsTerm(this.terminal) ? "truecolor" : "xterm-256");
 			this.logBoot("CRITICAL Unable to Obtain Color mode Asumming ColorMode:" + mode);
 			System.err.println("CRITICAL Unable to Obtain Color mode Asumming ColorMode:" + mode);
 		}
