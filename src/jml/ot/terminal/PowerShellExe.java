@@ -57,7 +57,7 @@ public class PowerShellExe extends TerminalExe {
 		String q2 = "'";
 		Profile p = this.app.getProfile();
 		String colors = this.app.getBootTrueColor(p).replace(";", "$");
-		String pmsg = p == null ? "" : p.getPauseMsg();
+		String pmsg = p == null ? "" : p.getPauseMsg().replace(";", "$");
 		List<String> cmd = new ArrayList<>();
 		cmd.add("powershell");
 		cmd.add("-ExecutionPolicy");
