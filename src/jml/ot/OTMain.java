@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import jml.ot.colors.AnsiColors;
-import jredfox.common.utils.JREUtil;
 
 public class OTMain {
 	
@@ -36,7 +35,7 @@ public class OTMain {
 		}
 		else
 		{
-			System.exit(-1);
+//			System.exit(-1);
 			correctProps();
 			TerminalApp app = new TerminalApp(System.getProperty("ot.id"), "CLI CLient", OTConstants.OTVERSION);
 			app.loadSession();
@@ -44,11 +43,11 @@ public class OTMain {
 			app.sendColors();
 			boolean hostIsAlive = true;
 //			System.out.println("OTMAIN:" + System.getProperty("ot.app"));
-//			while(hostIsAlive)
-//			{
-//////				//TODO:PID keep alive check here
-//			}
-			JREUtil.sleep(3000);
+			while(hostIsAlive)
+			{
+////				//TODO:PID keep alive check here
+			}
+//			JREUtil.sleep(3000);
 			
 			//ensure final printlines happen before shutting down the client
 			app.manager.isRunning = false;//TODO: shutdown the thread

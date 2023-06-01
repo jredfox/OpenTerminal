@@ -7,12 +7,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import jredfox.common.utils.Assert;
 import jredfox.common.utils.JREUtil;
 
 /**
  * PipedInputStream is a class to treat a File like it's a regular Pipe(NonNamed
- * or Named) as it hangs when read() is called and there is no more data
+ * or Named) as it hangs when read() is called when there is no more data
  * If you use BufferedReader Scanner or BufferedInputStream you must have a new line feed for every input received
  * @author jredfox
  */
@@ -25,29 +24,24 @@ public class PipeInputStream extends FileInputStream
 	/**
 	 * how many MS before a timeout occurs. -1 means it never timesout.
 	 */
-	protected long timeout = -1;
+	public long timeout = -1;
 	/**
 	 * send a msg if any to the outputstream provided that you are awaiting input from this stream
 	 */
 	public String signal;
-	public OutputStream out;
-
-	public PipeInputStream(File file) throws FileNotFoundException
-	{
-		this(file, PipeManager.REQUEST_INPUT, System.out);
-	}
+	public PrintStream out;
 
 	public PipeInputStream(File file, String signal, PrintStream out) throws FileNotFoundException
 	{
 		this(file, signal, out, 50);
 	}
 
-	public PipeInputStream(File file, String signal, PrintStream out, long s) throws FileNotFoundException 
+	public PipeInputStream(File file, String signal, PrintStream out, long sleep) throws FileNotFoundException 
 	{
 		super(file);
 		this.signal = signal;
 		this.out = out;
-		this.sleep = s;
+		this.sleep = sleep;
 	}
 
 	/**
@@ -130,23 +124,12 @@ public class PipeInputStream extends FileInputStream
 	/**
 	 * signal the IPC other process that you are waiting for input
 	 */
+	@SuppressWarnings("resource")
 	public void signal() throws IOException
 	{
-		if(this.out instanceof PrintStream)
-			((PrintStream)this.out).print(this.signal);
-		else
-			this.out.write(this.signal.getBytes());
-		this.out.flush();
-	}
-	
-	public long getTimeOut()
-	{
-		return this.timeout;
-	}
-	
-	public void setTimeOut(long time)
-	{
-		Assert.is(time != 0);
-		this.timeout = time;
+		OutputStream o = this.out == null ? System.out : this.out;//dynamically grab's System.out in case it gets replaced in the future otherwise used fixed outputstream
+		if(o instanceof PrintStream)
+			((PrintStream)o).print(this.signal);
+		o.flush();
 	}
 }

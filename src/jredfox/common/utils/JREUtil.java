@@ -205,6 +205,8 @@ public class JREUtil {
 	 */
 	public static void sleep(long time, boolean noInterupt)
 	{
+		if(time < 0)
+			return;//don't sleep if it's disabled 0ms does cause some sleeping delay but not quite 1ms.
 		long startMs = System.currentTimeMillis();
 		try 
 		{

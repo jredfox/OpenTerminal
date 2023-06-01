@@ -1,88 +1,73 @@
 package jml.ipc.pipes;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
-
-import jredfox.common.file.FileUtils;
-import jredfox.common.io.IOUtils;
-import jredfox.common.utils.JREUtil;
 
 /**
  * A standard PipeManager used to configure STD, ERR, and IN from server to client. The STD & ERR will only display the output and the IN will only gather input.
  * if you need more then this simply override the loadPipes() method
  * @author jredfox
  */
-public class PipeManager {
+public abstract class PipeManager {
 	
-	//pipe registry
+	//final vars
+	public static final String REQUEST_INPUT = "@<OT.IN>";
+	public static final int REQ_LEN = REQUEST_INPUT.length();
+	
 	public Map<String, Pipe> pipes = new HashMap<>();
+	public boolean isClient;
+	public boolean replaceSYSO = true;
 	
 	//thread vars
 	public volatile boolean isRunning;
 	public volatile boolean isTicking = true;
 	public Thread ticker;
 	
-	public boolean useWrappedIn;
-	public File noREQFile = null;
-	private BufferedReader noREQReader = null;
-	public boolean isClient;
-	public File dirPipes;
-	public static final String REQUEST_INPUT = "@<OT.IN>";
-	public static final int REQ_LEN = REQUEST_INPUT.length();
-	
 	public PipeManager()
 	{
 		
 	}
 	
-	public void register(Pipe p)
+	public PipeManager(boolean client, boolean replaceSYSO)
 	{
-		this.pipes.put(p.id, p);
+		this.isClient = client;
+		this.replaceSYSO = replaceSYSO;
 	}
 	
-	/**
-	 * assumes the client has already sent the input
-	 */
-	public String getInputNoREQ(long timeout) throws IOException
+	public void register(Pipe... ps)
 	{
-		if(this.noREQReader == null)
-			this.noREQReader = IOUtils.getReader(this.noREQFile);
-		String input = this.noREQReader.readLine();
-		boolean tm = timeout > -1;
-		long ms = tm ? System.currentTimeMillis() : 0;//do not call system.currentms as it's laggy when not needed
-		while(input == null)
-		{
-			if(tm && (System.currentTimeMillis()-ms) > timeout)
-				break;
-			input = this.noREQReader.readLine();
-			JREUtil.sleep(1);
-		}
-		return input;
+		for(Pipe p : ps)
+			this.pipes.put(p.id, p);
 	}
 	
-	public PrintStream noReQPrinter;
-	public void printNoREQ(String s)
+	public <T extends Pipe> Pipe get(String id)
 	{
-		if(!this.isClient)
-			throw new IllegalArgumentException("");
-		if(this.noReQPrinter == null)
+		return this.pipes.get(id);
+	}
+	
+	public void start()
+	{
+		this.ticker = new Thread()
 		{
-			try {
-				this.noReQPrinter = new PrintStream(new FileOutputStream(this.noREQFile), true);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			@Override
+			public void start()
+			{
+				PipeManager.this.isRunning = true;
+				PipeManager.this.loadPipes();
+				super.start();
 			}
-		}
-		this.noReQPrinter.println(s);
+			
+			@Override
+			public void run()
+			{
+				do
+				{
+					PipeManager.this.tick();
+				}
+				while(PipeManager.this.isRunning);
+			}
+		};
+		this.ticker.start();
 	}
 	
 	public void tick()
@@ -106,160 +91,9 @@ public class PipeManager {
 		this.isTicking = false;
 	}
 	
-	public void start()
-	{
-		this.ticker = new Thread()
-		{
-			@Override
-			public void start()
-			{
-				PipeManager.this.isRunning = true;
-				super.start();
-			}
-			
-			@Override
-			public void run()
-			{
-				do
-				{
-					PipeManager.this.tick();
-				}
-				while(PipeManager.this.isRunning);
-			}
-		};
-		this.ticker.start();
-	}
-	
-	public void loadPipes(File dirPipes, File log, boolean client, boolean replaceSYSO)
-	{
-		this.dirPipes = dirPipes;
-		this.isClient = client;
-		this.noREQFile = new File(dirPipes, "ot-NOREQ.txt");
-		File std = log != null ? log : new File(dirPipes, "ot-out.txt");
-		
-		//client side
-		if(client)
-		{
-			//write all data from System#in to the the server
-			PipeServer server_in = new PipeServer("ot.in", new File(dirPipes, "ot-in.txt"))
-			{
-				@Override
-				public void tick() throws IOException 
-				{
-					
-				}
-			};
-			Pipe client_out = new PipeClient("ot.out", std)
-			{
-				@Override
-				public void tick() throws IOException 
-				{
-					int c = 0;//flush counter
-					
-					//ignore flags
-					String m = "";
-					int sindex = 0;
-					
-					int b = this.getIn().read();
-					while(b != -1)
-					{
-						if(PipeManager.REQUEST_INPUT.charAt(sindex) == (char)b)
-						{
-							m += (char)b;
-							sindex++;
-							if(m.equals(PipeManager.REQUEST_INPUT))
-							{
-								System.out.flush();//ensure it flushes to display before gathering the input
-								Scanner scanner = new Scanner(System.in);
-								String input = scanner.nextLine();
-								server_in.getOut().println(input);
-								sindex = 0;//reset data
-								m = "";
-							}
-							b = in.read();//ensure read increments
-							continue;
-						}
-						else
-						{
-							if(!m.isEmpty())
-								System.out.write(m.getBytes());//write the characters to the output that we confirmed the ignore string wasn't there
-							sindex = 0;//reset data
-							m = "";
-						}
-						
-						//do the actual copying from in to out
-						System.out.write(b);
-						b = in.read();
-						
-						//auto flush every 4,000 bytes
-						c++;
-						if(c >= 4000)
-						{
-							System.out.flush();
-							c = 0;
-						}
-					}
-					//ensure it flushes even without any newline and it's a printstream
-					System.out.flush();
-				}
-			};
-			this.register(client_out, server_in);
-		}
-		//server side
-		else
-		{
-			FileUtils.create(this.noREQFile);
-			PipeServer server_out = new PipeServer("ot.out", std)
-			{
-				@Override
-				public void tick() 
-				{
-					
-				}
-			};
-			//fetch input from the CLI
-			PipeClient client_in = new PipeClient("ot.in", new File(dirPipes, "ot-in.txt"))
-			{
-				@Override
-				public void tick()
-				{
-					
-				}
-				
-				@Override
-				public InputStream getIn()
-				{
-					try
-					{
-						if(this.in == null)
-							this.in = new PipeInputStream(this.file);
-					}
-					catch(Exception e)
-					{
-						e.printStackTrace();
-					}
-					return this.in;
-				}
-			};
-			
-			this.register(server_out, client_in);
-			if(replaceSYSO)
-			{
-				//don't replace SYSO if we are logging with IPC TYPE file to prevent too much I/O on the disk
-				if(log == null)
-				{
-					server_out.replaceSYSO(true);//replace syso both streams to the same file to prevent de-sync
-					server_out.replaceSYSO(false);
-				}
-				client_in.replaceSYSO(this.useWrappedIn);
-			}
-		}
-	}
-
-	public void register(Pipe... ps)
-	{
-		for(Pipe p : ps)
-			this.pipes.put(p.id, p);
-	}
+	/**
+	 * Load all your IPC Pipes here
+	 */
+	public abstract void loadPipes();
 
 }

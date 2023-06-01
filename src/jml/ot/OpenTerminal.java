@@ -8,6 +8,7 @@ public class OpenTerminal {
 	
 	public static void open(TerminalApp app)
 	{
+		 long ms = System.currentTimeMillis();
 		 PrintStream boot = app.createBootLogger();
 		 if(app.canLogBoot && boot == null)
 		 {
@@ -49,6 +50,7 @@ public class OpenTerminal {
 				console.run();
 			else
 				app.getTerminalExe().run();
+			app.logBoot("boot took:" + (System.currentTimeMillis()-ms));
 			app.loadColors();//sync colors here
 		}
 		catch(Throwable t)

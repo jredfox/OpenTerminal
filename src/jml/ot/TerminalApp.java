@@ -1,6 +1,7 @@
 package jml.ot;
 
 import java.awt.Color;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -13,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import jml.ipc.pipes.FilePipeManager;
+import jml.ipc.pipes.PipeInputStream;
 import jml.ipc.pipes.PipeManager;
 import jml.ipc.pipes.WrappedPrintStream;
 import jml.ot.colors.AnsiColors;
@@ -28,6 +31,7 @@ import jml.ot.terminal.ValaTerminalExe;
 import jml.ot.terminal.host.ConsoleHost;
 import jml.ot.terminal.host.WTHost;
 import jredfox.common.config.MapConfig;
+import jredfox.common.file.FileUtils;
 import jredfox.common.io.IOUtils;
 import jredfox.common.utils.Assert;
 import jredfox.common.utils.FileUtil;
@@ -214,7 +218,6 @@ public class TerminalApp {
 		this.loadSession();
 		this.enableLoggers();
 		this.startPipeManager();
-//		System.out.println("Started CLI Session on:" + this.session);
 	}
 
 	public void loadSession()
@@ -230,11 +233,9 @@ public class TerminalApp {
 	/**
 	 * called during boot to setup the IPC PipeManager
 	 */
-	public void startPipeManager() 
+	public void startPipeManager()
 	{
-		File l = this.shouldLog ? this.getLogger() : null;
-		this.manager = new PipeManager();
-		this.manager.loadPipes(this.session, l, OTConstants.LAUNCHED, this.replaceSYSO);
+		this.manager = new FilePipeManager(OTConstants.LAUNCHED, this.replaceSYSO, this.session, this.shouldLog ? this.getLogger() : null);
 		this.manager.start();
 		if(OTConstants.LAUNCHED)
 			this.sendColors();
@@ -457,9 +458,27 @@ public class TerminalApp {
 		return null;
 	}
 
+	/**
+	 * retrieve session Color ENV from CLI client. 
+	 * We don't need a constant Client to Server IPC Pipe so the client just sends a file
+	 */
 	public void loadColors() throws IOException 
 	{
-		String mode = this.manager.getInputNoREQ(-1);//no timeout by default this trusts the CLI but users can set it to a timeout for security reason
+		long ms = System.currentTimeMillis();
+		File noREQ = new File(this.session, "ot-noREQ.txt");
+		FileUtils.create(noREQ);
+		PipeInputStream pipedIn = new PipeInputStream(noREQ, null, null, 1L);
+		pipedIn.timeout = 15000L;//Set the timeout to 15s
+		BufferedReader reader = IOUtils.getReader(pipedIn);
+		String mode = reader.readLine();
+		IOUtils.close(reader);
+		if(mode == null)
+		{
+			this.logBoot("CRITICAL Unable to Obtain Color mode Asumming TrueColor!");
+			System.err.println("CRITICAL Unable to Obtain Color mode Asumming TrueColor!");
+			mode = TerminalUtil.isWindows() ? "truecolor" : "xterm-256";
+		}
+		this.logBoot("found color in:" + (System.currentTimeMillis()-ms) + " COLOR ENV:" + mode);
 		this.colors.setColorMode(mode.equalsIgnoreCase("nullnull") ? (this.ANSI4BIT ? "ansi4bit" : "truecolor") : mode);
 		Profile p = this.getProfile();
 		if(p != null)
@@ -467,12 +486,12 @@ public class TerminalApp {
 	}
 	
 	/**
-	 * on CLI Client Side sending to Host Server Side
+	 * on CLI Client Side sending to Host Server Side ENV variables such as colors
 	 */
 	public void sendColors()
 	{
 		String col = System.getenv("TERM") + System.getenv("COLORTERM");
-		IOUtils.saveFileLines(Arrays.asList(col), this.manager.noREQFile , true);
+		IOUtils.saveFileLines(Arrays.asList(col), new File(this.session, "ot-noREQ.txt") , true);
 	}
 
 	/**

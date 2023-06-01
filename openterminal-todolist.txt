@@ -1,4 +1,3 @@
-cleanup PipeManager code
 colored error streams
 re-add wrapped args
 PID checker on both server and client to see if they close

@@ -1,2 +1,1 @@
 fix wt color issues
-fix pause msg bg color bug
