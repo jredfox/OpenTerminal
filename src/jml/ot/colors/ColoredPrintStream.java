@@ -37,7 +37,7 @@ public class ColoredPrintStream extends WrappedPrintStream {
 
 	public ColoredPrintStream(String cs, AnsiColors col, PrintStream old) 
 	{
-		super(old, new NullOutputStream());
+		super(old, new NullOutputStream(), true);
 		this.setColors(cs, col);
 	}
 	
