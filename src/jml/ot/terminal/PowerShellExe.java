@@ -105,7 +105,7 @@ public class PowerShellExe extends TerminalExe {
                     + "    {\n"
                     + "        $pmsg = \"Press ENTER to continue...\"\n"
                     + "    }\n"
-                    + "    $pmsg = $pmsg + $colors\n"
+                    + "    $pmsg = $pmsg.Replace(\"$\", \";\") + $colors\n"
                     + "    [Console]::Out.Write($pmsg)\n"
                     + "    Read-Host\n"
                     + "}");

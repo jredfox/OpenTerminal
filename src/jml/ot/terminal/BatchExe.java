@@ -9,10 +9,10 @@ import jml.ot.OTConstants;
 import jml.ot.TerminalApp;
 import jml.ot.TerminalApp.Profile;
 import jml.ot.TerminalUtil;
-import jml.ot.colors.AnsiColors;
 
 public class BatchExe extends TerminalExe {
 
+	public File wtShell = new File(OTConstants.boot, "boot-wt.bat");
 	public BatchExe(TerminalApp app) 
 	{
 		super(app, new File(OTConstants.boot, "boot.bat"));
@@ -67,7 +67,7 @@ public class BatchExe extends TerminalExe {
 		cmd.add("cmd");
 		cmd.add(TerminalUtil.getExeAndClose());
 		cmd.add("call");
-		cmd.add(q + this.shell.getPath() + q);//path to the boot shell
+		cmd.add(q + this.wtShell.getPath() + q);//path to the safe boot shell for Windows BUGGY terminal
 		cmd.add(profile != null && profile.bg != null ? q + colors + q : "");
 		cmd.add(q + this.app.getTitle() + q);
 		cmd.add(q + (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replaceAll("\"", ",").replace(";", "$") + q);
@@ -104,6 +104,32 @@ public class BatchExe extends TerminalExe {
                     + "exit 0 ::Work around from a command prompt bug");
             this.makeShell(li);
         }
+        if (!this.wtShell.exists()) 
+        {
+            List<String> li = new ArrayList<>();
+            li.add("@Echo off\n"
+                    + "set c=%~1%\n"
+                    + "set c=%c:$=;%\n"
+                    + "IF NOT \"%c%\" == \"\" (\n"
+                    + "  echo=%c%\n"
+                    + ")\n"
+                    + "cls ::Update the background color\n"
+                    + "title %~2%\n"
+                    + "set boot=%~3%\n"
+                    + "set boot=%boot:,=^\"% ::RE-MAP the boot command to double quotes\n"
+                    + "set boot=%boot:$=;\"% ::Work around for WT\n"
+                    + "set boot=%boot:@=$%\n"
+                    + "call %boot%\n"
+                    + "set pmsg=%~5%\n"
+                    + "set pmsg=%pmsg:$=;%\n"
+                    + "IF \"%pmsg%\" == \"\" set pmsg=Press ENTER to continue...\n"
+                    + "set pmsg=%pmsg%%c%\n"
+                    + "IF \"%~4%\" == \"true\" (\n"
+                    + "set /p DUMMY=%pmsg%\n"
+                    + ")\n"
+                    + "exit 0 ::Work around from a command prompt bug");
+            this.makeShell(li, this.wtShell);
+        }
     }
 
 	@Override
@@ -116,6 +142,7 @@ public class BatchExe extends TerminalExe {
 	public void cleanup() 
 	{
 		this.shell.delete();
+		this.wtShell.delete();
 	}
 
 	@Override
