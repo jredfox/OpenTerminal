@@ -70,7 +70,7 @@ public abstract class PipeServer extends Pipe implements Closeable {
 	@Override
 	public void replaceSYSO(boolean std)
 	{
-		PrintStream out = new WrappedPrintStream((std ? System.out : System.err), this.getOut());
+		PrintStream out = new WrappedPrintStream((std ? System.out : System.err), this.getOut(), true);
 		if(std)
 			System.setOut(out);
 		else

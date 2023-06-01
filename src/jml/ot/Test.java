@@ -75,9 +75,11 @@ public class Test {
 //		app.pause = false;
 		OpenTerminal.open(app);
 		((ColoredPrintStream)System.err).override = true;
+		System.out.println("hello");
 		System.err.println("TESTING ERR");
 		System.err.printf("Hello %s!", "World");
 		System.err.append(null, 0, 1);
+		System.out.println("goodby");
 		System.exit(0);
 //		System.out.println("Starting CLI:" + app.appClass);
 		
