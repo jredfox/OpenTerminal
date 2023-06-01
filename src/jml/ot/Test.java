@@ -39,8 +39,8 @@ public class Test {
 					Profile p = Profile.newMac("jredfox.openterminal.purpleCollege", "resources/jml/ot/mac/college.terminal");
 //					Profile p = Profile.newMac("Red Sands");
 //					Profile p  = new Profile();
-//					p.bg = Color.GRAY;
-//					p.fg = Color.GREEN;
+					p.bg = Color.GRAY;
+					p.fg = Color.GREEN;
 //					p.pauseMsg = "TEST";
 //					p.pauseMsg = AnsiColors.INSTANCE.formsatColor(Color.GREEN, Color.WHITE, "PROGRAM is Exiting:", false);
 //					p.setPauseMsg("E");
