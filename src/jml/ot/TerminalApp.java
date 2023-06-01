@@ -56,6 +56,7 @@ public class TerminalApp {
 	public String conHost = "";
 	public List<String> linuxCmdsExe = new ArrayList<>(0);//configurable list to use LinuxCmdExe instead of LinuxBash or another
 	public Map<String, String> linuxFlags = new HashMap<>(0);//override linux new window flags in case you have an updated or outdated version then is currently supported
+	private MapConfig colorterms;
 	protected Profile profile;
 	/**
 	 * changing this to true will make you use 4 bit ANSI colors instead of xterm256 or true colors
@@ -306,6 +307,10 @@ public class TerminalApp {
 			this.linuxFlags.put(arr[0].trim(), arr[1].trim());
 		}
 		cfg.save();
+		
+		File cfgterms = new File(OTConstants.configs, "colorterms.cfg");
+		this.colorterms = new MapConfig(cfgterms);
+		this.colorterms.load();//skips load if cfg doesn't exist
 	}
 
 	/**
@@ -465,6 +470,31 @@ public class TerminalApp {
 	public void loadColors() throws IOException 
 	{
 		long ms = System.currentTimeMillis();
+		String mode = this.colorterms.get(this.terminal, null);
+		boolean save = false;
+		if(mode == null)
+		{
+			mode = this.getTermColors();
+			save = mode != null;
+		}
+		this.logBoot("Get CLI Color in:" + (System.currentTimeMillis()-ms) + " COLOR ENV:" + mode);
+		this.colors.setColorMode(mode.equalsIgnoreCase("nullnull") ? (this.ANSI4BIT ? "ansi4bit" : "truecolor") : mode);
+		if(save)
+		{
+			if(!this.colorterms.file.exists())
+				FileUtils.create(this.colorterms.file);
+			PrintStream cp = new PrintStream(new FileOutputStream(this.colorterms.file, true), true);
+			cp.println("Str:" + this.terminal + "=\"" + this.colors.colorMode + "\"");
+			IOUtils.close(cp);
+			System.out.println("saved:" + this.terminal + "=" + this.colors.colorMode);
+		}
+		Profile p = this.getProfile();
+		if(p != null)
+			this.colors.setReset(p.bg, p.fg, p.ansiFormat, true);
+	}
+
+	public String getTermColors() throws IOException 
+	{
 		File noREQ = new File(this.session, "ot-noREQ.txt");
 		FileUtils.create(noREQ);
 		PipeInputStream pipedIn = new PipeInputStream(noREQ, null, null, 1L);
@@ -474,17 +504,13 @@ public class TerminalApp {
 		IOUtils.close(reader);
 		if(mode == null)
 		{
-			this.logBoot("CRITICAL Unable to Obtain Color mode Asumming ColorMode!");
-			System.err.println("CRITICAL Unable to Obtain Color mode Asumming ColorMode!");
-			mode = TerminalUtil.isWindows() ? "truecolor" : "xterm-256";
+			mode = TerminalUtil.isWindowsTerm(this.terminal) ? "truecolor" : "xterm-256";
+			this.logBoot("CRITICAL Unable to Obtain Color mode Asumming ColorMode:" + mode);
+			System.err.println("CRITICAL Unable to Obtain Color mode Asumming ColorMode:" + mode);
 		}
-		this.logBoot("Get CLI Color in:" + (System.currentTimeMillis()-ms) + " COLOR ENV:" + mode);
-		this.colors.setColorMode(mode.equalsIgnoreCase("nullnull") ? (this.ANSI4BIT ? "ansi4bit" : "truecolor") : mode);
-		Profile p = this.getProfile();
-		if(p != null)
-			this.colors.setReset(p.bg, p.fg, p.ansiFormat, true);
+		return mode;
 	}
-	
+
 	/**
 	 * on CLI Client Side sending to Host Server Side ENV variables such as colors
 	 */

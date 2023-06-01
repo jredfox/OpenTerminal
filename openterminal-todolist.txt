@@ -11,7 +11,7 @@ singleton(don't boot if one has already been launched)
 progress bar API??? set progress and have a charcter that later turns green
 passwords??
 re-fix can't boot with eclipse's JAR IN JAR
-wt profiling
+profiling
 fullscreen
 
 ot.p #shell script pause overrides TerminalApp#pause

@@ -35,12 +35,12 @@ public class OTMain {
 		}
 		else
 		{
-			System.exit(-1);
 			correctProps();
 			TerminalApp app = new TerminalApp(System.getProperty("ot.id"), "CLI CLient", OTConstants.OTVERSION);
 			app.loadSession();
 			app.startPipeManager();
 			app.sendColors();
+			System.exit(-1);
 			boolean hostIsAlive = true;
 //			System.out.println("OTMAIN:" + System.getProperty("ot.app"));
 			while(hostIsAlive)
