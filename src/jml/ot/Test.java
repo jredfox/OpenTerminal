@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import jml.ot.colors.AnsiColors;
 import jml.ot.colors.AnsiColors.TermColors;
+import jml.ot.colors.ColoredPrintStream;
 
 public class Test {
 
@@ -30,6 +31,12 @@ public class Test {
 					//colored pause message
 //					p.pauseMsg = AnsiColors.INSTANCE.formatColor(Color.GREEN, Color.WHITE, "PROGRAM is Exiting:", false);
 					this.setPauseMsg(Color.ORANGE, Color.WHITE, "Done", p);
+					
+					//start colored error test
+					p.hasColoredErr = true;
+					p.bgErr = Color.ORANGE;
+					p.fgErr = Color.BLACK;
+//					p.ansiFormatErr = AnsiColors.UNDERLINE;
 					return p;
 //					return null;
 				}
@@ -67,7 +74,11 @@ public class Test {
 //		app.shouldLog = true;
 //		app.pause = false;
 		OpenTerminal.open(app);
-		
+		((ColoredPrintStream)System.err).override = true;
+		System.err.println("TESTING ERR");
+		System.err.printf("Hello %s!", "World");
+		System.err.append(null, 0, 1);
+		System.exit(0);
 //		System.out.println("Starting CLI:" + app.appClass);
 		
 		//begin testing

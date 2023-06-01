@@ -20,6 +20,7 @@ import jml.ipc.pipes.PipeManager;
 import jml.ipc.pipes.WrappedPrintStream;
 import jml.ot.colors.AnsiColors;
 import jml.ot.colors.AnsiColors.TermColors;
+import jml.ot.colors.ColoredPrintStream;
 import jml.ot.terminal.BatchExe;
 import jml.ot.terminal.GuakeTerminalExe;
 import jml.ot.terminal.LinuxBashExe;
@@ -99,7 +100,7 @@ public class TerminalApp {
 	/**
 	 * set this field if you require custom logic on the CLI client side running it must have a valid default contructor
 	 */
-	public Class<? extends TerminalApp> appClass = TerminalApp.class;//TODO: make this null by default after debugging
+	public Class<? extends TerminalApp> appClass = null;
 	
 	public TerminalApp(String id, String name, String version)
 	{
@@ -329,6 +330,10 @@ public class TerminalApp {
 		public String ansiFormat;
 		protected String pauseMsg = "";//truecolor pause message
 		protected String pauseLowResMsg = "";//xterm-256 or ansi4bit colored string
+		public boolean hasColoredErr;
+		public Color bgErr;
+		public Color fgErr;
+		public String ansiFormatErr;
 		public String wtTab;//WT Tab color
 		public String wtScheme;//WT color scheme
 		public boolean wtFullScreen;
@@ -339,6 +344,7 @@ public class TerminalApp {
 		public String mac_profileName = "";
 		/**
 		 * make sure you set this unique to your application so it doesn't conflict with another custom terminal profile
+		 * mac profile files must start with oti.(yourid).profile as the title name
 		 */
 		public String mac_profileId = "";
 		/**
@@ -489,7 +495,12 @@ public class TerminalApp {
 		}
 		Profile p = this.getProfile();
 		if(p != null)
+		{
 			this.colors.setReset(p.bg, p.fg, p.ansiFormat, true);
+			//colored error stream starts here
+			if(p.hasColoredErr)
+				System.setErr(new ColoredPrintStream(p.bgErr, p.fgErr, p.ansiFormatErr, this.colors, System.err));
+		}
 	}
 
 	public String getTermColors() throws IOException 

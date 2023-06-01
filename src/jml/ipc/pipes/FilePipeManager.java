@@ -129,7 +129,7 @@ public class FilePipeManager extends PipeManager {
 			if(this.replaceSYSO)
 			{
 				//don't replace SYSO if we are logging with IPC TYPE file to prevent too much I/O on the disk
-				if(log == null)
+				if(this.log == null)
 				{
 					server_out.replaceSYSO(true);//replace syso both streams to the same file to prevent de-sync
 					server_out.replaceSYSO(false);
