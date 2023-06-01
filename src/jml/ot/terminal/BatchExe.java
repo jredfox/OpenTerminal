@@ -36,7 +36,7 @@ public class BatchExe extends TerminalExe {
 				"\"\"",//app name doesn't work with the batch boot shell for some reason
 				"call",
 				q + this.shell.getPath() + q,//path to the boot shell
-				profile != null && profile.bg != null ? q + colors + q : q + "" + q,//color
+				profile != null && profile.bg != null ? q + colors + q : q + " " + q,//leave the space here it's to prevent command call bug
 				q + this.app.getTitle() + q,
 				q + (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replaceAll("\"", ",") + q,
 				q + this.app.pause + q,
@@ -68,11 +68,11 @@ public class BatchExe extends TerminalExe {
 		cmd.add(TerminalUtil.getExeAndClose());
 		cmd.add("call");
 		cmd.add(q + this.wtShell.getPath() + q);//path to the safe boot shell for Windows BUGGY terminal
-		cmd.add(profile != null && profile.bg != null ? q + colors + q : "");
+		cmd.add(q + (colors.isEmpty() ? " " : colors) + q);
 		cmd.add(q + this.app.getTitle() + q);
 		cmd.add(q + (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replaceAll("\"", ",").replace(";", "$") + q);
 		cmd.add(q + this.app.pause + q);
-		cmd.add(pmsg);
+		cmd.add(q + pmsg + q);
 		return cmd;
 	}
 
@@ -119,8 +119,8 @@ public class BatchExe extends TerminalExe {
                     + "set boot=%boot:@=$%\n"
                     + "call %boot%\n"
                     + "set pmsg=%~5%\n"
-                    + "set pmsg=%pmsg:$=;%\n"
                     + "IF \"%pmsg%\" == \"\" set pmsg=Press ENTER to continue...\n"
+                    + "set pmsg=%pmsg:$=;%\n"
                     + "set pmsg=%pmsg%%c%\n"
                     + "IF \"%~4%\" == \"true\" (\n"
                     + "set /p DUMMY=%pmsg%\n"

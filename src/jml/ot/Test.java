@@ -7,6 +7,7 @@ import java.util.Scanner;
 import jml.ot.colors.AnsiColors;
 import jml.ot.colors.AnsiColors.TermColors;
 import jml.ot.colors.ColoredPrintStream;
+import jredfox.common.utils.Assert;
 
 public class Test {
 

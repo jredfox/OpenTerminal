@@ -36,7 +36,7 @@ public class PowerShellExe extends TerminalExe {
 			"-boot",
 			q + this.shell + q,
 			"-colors",
-			q + colors + q,
+			q + (colors.isEmpty() ? "nuull" : colors) + q,
 			"-title",
 			q + this.app.getTitle() + q,
 			"-java_home",
@@ -45,7 +45,8 @@ public class PowerShellExe extends TerminalExe {
 			q + this.getJVMFlags() + " " + OTConstants.args.replaceAll(q, "'").replace(";", "$") + q,
 			"-pause",
 			q + this.app.pause + q,
-			q + pmsg + q
+			"-pmsg",
+			q + (pmsg.isEmpty() ? "nuull" : pmsg) + q
 		});
 		this.run(pb);
 	}
@@ -65,7 +66,7 @@ public class PowerShellExe extends TerminalExe {
 		cmd.add("-File");
 		cmd.add(q + this.shell + q);
 		cmd.add("-colors");
-		cmd.add(q + colors + q);
+		cmd.add(q + (colors.isEmpty() ? "nuull" : colors) + q);
 		cmd.add("-title");
 		cmd.add(q + this.app.getTitle() + q);
 		cmd.add("-java_home");
@@ -74,7 +75,8 @@ public class PowerShellExe extends TerminalExe {
 		cmd.add(q + this.getJVMFlags() + " " + OTConstants.args.replaceAll(q, q2).replace(";", "$") + q);
 		cmd.add("-pause");
 		cmd.add(q + this.app.pause + q);
-		cmd.add(q + pmsg + q);
+		cmd.add("-pmsg");
+		cmd.add(q + (pmsg.isEmpty() ? "nuull" : pmsg) + q);
 		return cmd;
 	}
 	
@@ -92,6 +94,10 @@ public class PowerShellExe extends TerminalExe {
                     + "[Parameter(Mandatory = $true)] $pause,\n"
                     + "[Parameter(Mandatory = $true)] $pmsg\n"
                     + ")\n"
+                    + "if($colors -eq \"nuull\")\n"
+                    + "{\n"
+                    + "   $colors = \"\"\n"
+                    + "}\n"
                     + "$colors = $colors.Replace(\"$\", \";\")\n"
                     + "$clear = \"[H[2J[3J\"\n"
                     + "[Console]::Out.Write($colors + $clear)\n"
@@ -100,7 +106,7 @@ public class PowerShellExe extends TerminalExe {
                     + "Start-Process -Wait -NoNewWindow $java_home -ArgumentList $java_args\n"
                     + "if($pause -eq \"true\")\n"
                     + "{\n"
-                    + "    if ([string]::IsNullOrEmpty($pmsg))\n"
+                    + "    if ($pmsg -eq \"nuull\")\n"
                     + "    {\n"
                     + "        $pmsg = \"Press ENTER to continue...\"\n"
                     + "    }\n"

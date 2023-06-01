@@ -43,10 +43,10 @@ public class OTMain {
 //			System.exit(-1);
 			boolean hostIsAlive = true;
 //			System.out.println("OTMAIN:" + System.getProperty("ot.app"));
-			while(hostIsAlive)
-			{
-////				//TODO:PID keep alive check here
-			}
+//			while(hostIsAlive)
+//			{
+//////				//TODO:PID keep alive check here
+//			}
 //			JREUtil.sleep(3000);
 			
 			//ensure final printlines happen before shutting down the client
