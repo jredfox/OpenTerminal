@@ -23,6 +23,9 @@ public class WTHost extends ConsoleHost {
 	@Override
 	public void run()
 	{
+		String err = "WT is buggy with batch set \\p %coloredVar%, powershell [Console]::Out.Write($coloredVar), and handling IF NOT batch statements cannot set a variable inside of it!";
+		this.app.bootLogger.println(err);
+		System.err.println(err);
 		TerminalExe term = this.app.getTerminalExe();
 		List<String> cmd = new ArrayList<>();
 		boolean isCmd = this.app.terminal.equals("cmd");
