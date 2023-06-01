@@ -280,5 +280,10 @@ public class TerminalUtil {
 		String s = System.getProperty(prop);
 		return s == null ? "" : s;
 	}
+	
+	public static boolean isWindowsTerm(String term) 
+	{
+		return windows_terminals.contains(term);
+	}
 
 }

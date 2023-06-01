@@ -474,11 +474,11 @@ public class TerminalApp {
 		IOUtils.close(reader);
 		if(mode == null)
 		{
-			this.logBoot("CRITICAL Unable to Obtain Color mode Asumming TrueColor!");
-			System.err.println("CRITICAL Unable to Obtain Color mode Asumming TrueColor!");
+			this.logBoot("CRITICAL Unable to Obtain Color mode Asumming ColorMode!");
+			System.err.println("CRITICAL Unable to Obtain Color mode Asumming ColorMode!");
 			mode = TerminalUtil.isWindows() ? "truecolor" : "xterm-256";
 		}
-		this.logBoot("found color in:" + (System.currentTimeMillis()-ms) + " COLOR ENV:" + mode);
+		this.logBoot("Get CLI Color in:" + (System.currentTimeMillis()-ms) + " COLOR ENV:" + mode);
 		this.colors.setColorMode(mode.equalsIgnoreCase("nullnull") ? (this.ANSI4BIT ? "ansi4bit" : "truecolor") : mode);
 		Profile p = this.getProfile();
 		if(p != null)
