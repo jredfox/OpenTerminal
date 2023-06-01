@@ -309,8 +309,7 @@ public class TerminalApp {
 		}
 		cfg.save();
 		
-		File cfgterms = new File(OTConstants.configs, "colorterms.cfg");
-		this.colorterms = new MapConfig(cfgterms);
+		this.colorterms = new MapConfig(new File(OTConstants.configs, "colorterms.cfg"));
 		this.colorterms.load();//skips load if cfg doesn't exist
 	}
 
@@ -487,6 +486,7 @@ public class TerminalApp {
 		this.colors.setColorMode(mode.equalsIgnoreCase("nullnull") ? (this.ANSI4BIT ? "ansi4bit" : "truecolor") : mode);
 		if(save)
 		{
+			this.colorterms.set(this.terminal, this.colors.colorMode);//just in case loadColors is called again
 			FileUtils.create(this.colorterms.file);
 			PrintStream cp = new PrintStream(new FileOutputStream(this.colorterms.file, true), true);
 			cp.println("Str:" + this.terminal + "=\"" + this.colors.colorMode + "\"");
