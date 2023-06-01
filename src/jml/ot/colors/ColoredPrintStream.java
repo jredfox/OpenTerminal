@@ -95,14 +95,6 @@ public class ColoredPrintStream extends WrappedPrintStream {
 		this.print(String.valueOf(i));
 	}
 	
-	@Override
-	public PrintStream append(CharSequence csq, int start, int end) 
-	{
-        CharSequence cs = (csq == null ? "null" : csq);
-        this.print(cs.subSequence(start, end).toString());
-        return this;
-	}
-	
 	public String prefix()
 	{
 		return (this.override ? this.c.getNonColoredReset() : this.c.getReset()) + this.cs;

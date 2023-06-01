@@ -85,4 +85,12 @@ public class WrappedPrintStream extends PrintStream {
 		super.write(buf, off, len);
 		this.old.write(buf, off, len);
 	}
+	
+	@Override
+	public PrintStream append(CharSequence csq, int start, int end) 
+	{
+        CharSequence cs = (csq == null ? "null" : csq);
+        this.print(cs.subSequence(start, end).toString());
+        return this;
+	}
 }
