@@ -1,1 +1,1 @@
-FIX no RESET for pause msg
+FIX no RESET for pause msg both on shell print and pause

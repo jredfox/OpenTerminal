@@ -399,11 +399,13 @@ public class TerminalApp {
 	}
 
 	/**
-	 * @return shell true color or if in ansi 4 bit or an empty string if the profile is null
+	 * get shell true color or if in ansi 4 bit or an empty string if the profile is null
 	 */
 	public String getBootTrueColor(Profile p)
 	{
-		return p == null ? "" : this.colors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.TRUE_COLOR, p.bg, p.fg, p.ansiFormat, false);
+		if(p == null)
+			return "";
+		return (p.ansiFormat == null ? "" : p.ansiFormat) + this.colors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.TRUE_COLOR, p.bg, p.fg, "", false);
 	}
 	
 	/**
@@ -411,7 +413,9 @@ public class TerminalApp {
 	 */
 	public String getBootPaletteColor(Profile p)
 	{
-		return p == null ? "" : this.colors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.XTERM_256, p.bg, p.fg, p.ansiFormat, false);
+		if(p == null)
+			return "";
+		return (p.ansiFormat == null ? "" : p.ansiFormat) + this.colors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.XTERM_256, p.bg, p.fg, "", false);
 	}
 	
 	/**
