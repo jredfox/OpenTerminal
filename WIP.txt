@@ -1,1 +1,2 @@
-FIX no RESET for pause msg both on shell print and pause
+fix wt color issues
+fix pause msg bg color bug

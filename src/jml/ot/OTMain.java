@@ -43,10 +43,10 @@ public class OTMain {
 			app.sendColors();
 			boolean hostIsAlive = true;
 //			System.out.println("OTMAIN:" + System.getProperty("ot.app"));
-//			while(hostIsAlive)
-//			{
-//////				//TODO:PID keep alive check here
-//			}
+			while(hostIsAlive)
+			{
+////				//TODO:PID keep alive check here
+			}
 			
 			//ensure final printlines happen before shutting down the client
 			app.manager.isRunning = false;//TODO: shutdown the thread
