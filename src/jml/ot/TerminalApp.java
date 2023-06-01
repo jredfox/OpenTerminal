@@ -464,7 +464,7 @@ public class TerminalApp {
 	}
 
 	/**
-	 * retrieve session Color ENV from CLI client. 
+	 * retrieve session Color ENV from CLI client
 	 * We don't need a constant Client to Server IPC Pipe so the client just sends a file
 	 */
 	public void loadColors() throws IOException 
@@ -475,18 +475,17 @@ public class TerminalApp {
 		if(mode == null)
 		{
 			mode = this.getTermColors();
-			save = mode != null;
+			save = true;
 		}
 		this.logBoot("Get CLI Color in:" + (System.currentTimeMillis()-ms) + " COLOR ENV:" + mode);
 		this.colors.setColorMode(mode.equalsIgnoreCase("nullnull") ? (this.ANSI4BIT ? "ansi4bit" : "truecolor") : mode);
 		if(save)
 		{
-			if(!this.colorterms.file.exists())
-				FileUtils.create(this.colorterms.file);
+			FileUtils.create(this.colorterms.file);
 			PrintStream cp = new PrintStream(new FileOutputStream(this.colorterms.file, true), true);
 			cp.println("Str:" + this.terminal + "=\"" + this.colors.colorMode + "\"");
 			IOUtils.close(cp);
-			System.out.println("saved:" + this.terminal + "=" + this.colors.colorMode);
+			this.logBoot("saved:" + this.terminal + "=" + this.colors.colorMode);
 		}
 		Profile p = this.getProfile();
 		if(p != null)
