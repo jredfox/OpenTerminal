@@ -65,6 +65,28 @@ public class AnsiColors {
 		TRUE_COLOR(),//RGB 24 bit standard colors with each color having 8 bits(0-255)
 		TRUE_COLOR_RGBA()//true color with transparency added currently no terminal supports this
 	}
+	
+	/**
+	 * switch the ANSI terminal mode from one mode to another
+	 */
+	public TermColors setColorMode(String mode)
+	{
+		mode = mode.toLowerCase();
+		TermColors colorMode = mode.equalsIgnoreCase("ansi4bit") ? TermColors.ANSI4BIT : (mode.contains("true") && mode.contains("color") || mode.contains("24") && mode.contains("bit")) ? TermColors.TRUE_COLOR : TermColors.XTERM_256;
+		this.setColorMode(colorMode);
+		return colorMode;
+	}
+	
+	/**
+	 * switch the ANSI terminal mode from one mode to another
+	 */
+	public void setColorMode(TermColors mode)
+	{
+		if(mode == null) 
+			return;
+		
+		this.colorMode = mode;
+	}
 
 	/**
 	 * get the reset ansi esq for the whole program. doing esq[0m hard coded will cause the entire app to be reset back to default formating no additional styling
@@ -96,52 +118,48 @@ public class AnsiColors {
 		  cls();//clear the screen to update the background colors. it's to avoid a bug of the background not updating every time it changes till the end of the line. it's an issue with every ANSI terminal out there
 	}
 
-	public void print(Color background, Color text, String str)
+	public void print(Color background, Color textColor, String str)
 	{
-		System.out.print(formatColor(background, text, str, true));
+		System.out.print(formatColor(background, textColor, str, true));
 	}
 	
-	public void println(Color background, Color text, String str)
+	public void print(ANSI4BitColor background, ANSI4BitColor textColor, String str)
 	{
-		System.out.println(formatColor(background, text, str, true));
+		System.out.print(this.formatANSI4BitColor(background, textColor, str, true));
 	}
 	
-	//TODO:add printlnAnsi4bit(Color background, Color text, String str))
-	
-	/**
-	 * supports xterm-16, xterm-256 and true colors
-	 */
-	public String formatColor(Color bg, Color text, String ansiEsc, boolean reset)
+	public void println(Color background, Color textColor, String str)
 	{
-		return formatColor(this.colorMode, bg, text, ansiEsc, reset);
+		this.print(background, textColor, str);
+		System.out.println();
 	}
 	
-	/**
-	 * switch the ANSI terminal mode from one mode to another
-	 */
-	public TermColors setColorMode(String mode)
+	public void println(ANSI4BitColor background, ANSI4BitColor textColor, String str)
 	{
-		mode = mode.toLowerCase();
-		TermColors colorMode = mode.equalsIgnoreCase("ansi4bit") ? TermColors.ANSI4BIT : (mode.contains("true") && mode.contains("color") || mode.contains("24") && mode.contains("bit")) ? TermColors.TRUE_COLOR : TermColors.XTERM_256;
-		this.setColorMode(colorMode);
-		return colorMode;
+		this.print(background, textColor, str);
+		System.out.println();
 	}
 	
 	/**
-	 * switch the ANSI terminal mode from one mode to another
+	 * supports ansi4bit, xterm-256 and true colors
 	 */
-	public void setColorMode(TermColors mode)
+	public String formatColor(Color bg, Color textColor, String ansiEsc)
 	{
-		if(mode == null) 
-			return;
-		
-		this.colorMode = mode;
+		return this.formatColor(bg, textColor, ansiEsc, true);
+	}
+	
+	/**
+	 * supports ansi4bit, xterm-256 and true colors
+	 */
+	public String formatColor(Color bg, Color textColor, String ansiEsc, boolean reset)
+	{
+		return formatColor(this.colorMode, bg, textColor, ansiEsc, reset);
 	}
 	
 	/**
 	 * supports xterm-16, xterm-256 and true colors
 	 */
-	public String formatColor(TermColors mode, Color bg, Color text, String ansiEsc, boolean reset)
+	public String formatColor(TermColors mode, Color bg, Color textColor, String ansiEsc, boolean reset)
 	{
 		Assert.is(mode != null, "AnsiColors#TermColor is null!");
 		String r = reset ? this.getReset() : "";
@@ -151,28 +169,28 @@ public class AnsiColors {
 			case TRUE_COLOR:
 			{
 				String b = bg == null ? "" : ESC + "[48;2;" + bg.getRed() + ";" + bg.getGreen() + ";" + bg.getBlue() + "m";
-				String f = text == null ? "" : ESC + "[38;2;" + text.getRed() + ";" + text.getGreen() + ";" + text.getBlue() + "m";
+				String f = textColor == null ? "" : ESC + "[38;2;" + textColor.getRed() + ";" + textColor.getGreen() + ";" + textColor.getBlue() + "m";
 				String a = ansiEsc == null ? "" : ansiEsc;
 				return b + f + a + r;
 			}
 			case XTERM_256:
 			{
 				String b = bg == null ? "" : ESC + "[48;5;" + pickerXterm256.pickColor(bg).code + "m";
-				String f = text == null ? "" : ESC + "[38;5;" + pickerXterm256.pickColor(text).code + "m";
+				String f = textColor == null ? "" : ESC + "[38;5;" + pickerXterm256.pickColor(textColor).code + "m";
 				String a = ansiEsc == null ? "" : ansiEsc;
 				return b + f + a + r;
 			}
 			case ANSI4BIT:
 			{
 				String b = bg == null ? "" : ESC + "[" + getANSI4BitColor((byte)pickerAnsi4Bit.pickColor(bg).code, true) + "m";
-				String f = text == null ? "" : ESC + "[" + getANSI4BitColor((byte)pickerAnsi4Bit.pickColor(text).code, false) + "m";
+				String f = textColor == null ? "" : ESC + "[" + getANSI4BitColor((byte)pickerAnsi4Bit.pickColor(textColor).code, false) + "m";
 				String a = ansiEsc == null ? "" : ansiEsc;
 				return b + f + a + r;
 			}
 			case TRUE_COLOR_RGBA:
 			{
 				String b = bg == null ? "" : ESC + "[48;0;" + bg.getRed() + ";" + bg.getGreen() + ";" + bg.getBlue() + ";" + bg.getAlpha() + "m";
-				String f = text == null ? "" : ESC + "[38;0;" + text.getRGB() + "m";
+				String f = textColor == null ? "" : ESC + "[38;0;" + textColor.getRGB() + "m";
 				String a = ansiEsc == null ? "" : ansiEsc;
 				return b + f + a + r;
 			}
@@ -182,13 +200,21 @@ public class AnsiColors {
 	}
 	
 	/**
-	 * format your ANSI4BITColor without lossy RGB conversions. this will garentee the color you specify displays as intended by the CLI / CLI's profile
+	 * format your ANSI4BITColor without lossy RGB conversions. this will guarantee the color you specify displays as intended by the CLI / CLI's profile
 	 */
-	public String formatANSI4BitColor(ANSI4BitColor bg, ANSI4BitColor text, String str, boolean reset)
+	public String formatANSI4BitColor(ANSI4BitColor bg, ANSI4BitColor textColor, String str)
+	{
+		return this.formatANSI4BitColor(bg, textColor, str, true);
+	}
+	
+	/**
+	 * format your ANSI4BITColor without lossy RGB conversions. this will guarantee the color you specify displays as intended by the CLI / CLI's profile
+	 */
+	public String formatANSI4BitColor(ANSI4BitColor bg, ANSI4BitColor textColor, String str, boolean reset)
 	{
 		String r = reset ? this.getReset() : "";
 		String b = bg == null ? "" : ESC + "[" + getANSI4BitColor((byte)bg.ordinal(), true) + "m";
-		String f = text == null ? "" : ESC + "[" + getANSI4BitColor((byte)text.ordinal(), false) + "m";
+		String f = textColor == null ? "" : ESC + "[" + getANSI4BitColor((byte)textColor.ordinal(), false) + "m";
 		String a = str == null ? "" : str;
 		return b + f + a + r;
 	}
@@ -210,8 +236,7 @@ public class AnsiColors {
 		BRIGHT_BLUE,
 		BRIGHT_MAGENTA,
 		BRIGHT_CYAN,
-		BRIGHT_WHITE,
-		NULL_COLOR()
+		BRIGHT_WHITE
 	}
 
 	/**
