@@ -506,12 +506,18 @@ public class TerminalApp {
 			this.colors.setColorMode(mode.equalsIgnoreCase("nullnull") ? TermColors.TRUE_COLOR.toString() : mode);//safe to assume true color as ansi4bit is never true here
 			if(save)
 			{
-				this.colorterms.set(this.terminal, this.colors.colorMode);//just in case loadColors is called again
-				FileUtils.create(this.colorterms.file);
-				PrintStream cp = new PrintStream(new FileOutputStream(this.colorterms.file, true), true);
-				cp.println("Str:" + this.terminal + "=\"" + mode + "\"");
-				IOUtils.close(cp);
-				this.logBoot("Saved:" + this.terminal + "=" + mode);
+				mode = mode.replace("\"", "").trim();
+				if(mode.isEmpty())
+					this.logBoot("CRITICAL ERR: Mode has returned an empty string cannot save!");
+				else
+				{
+					this.colorterms.set(this.terminal, this.colors.colorMode);//just in case loadColors is called again
+					FileUtils.create(this.colorterms.file);
+					PrintStream cp = new PrintStream(new FileOutputStream(this.colorterms.file, true), true);
+					cp.println("Str:" + this.terminal + "=\"" + mode + "\"");
+					IOUtils.close(cp);
+					this.logBoot("Saved:" + this.terminal + "=" + mode);
+				}
 			}
 		}
 		Profile p = this.getProfile();
