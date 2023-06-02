@@ -71,8 +71,10 @@ public class PipeInputStream extends FileInputStream
 	
 	/**
 	 * When true the I/O will stop blocking and return EOS(-1). 
-	 * It's fires directly before and after the sleep call
+	 * It's fires directly before and after the sleep call.
+	 * Override this if you need more then a timeout to determine when to stop BLOCKING I/O
 	 * @param after is true after the sleep call
+	 * @return true if it should stop BLOCKING I/O
 	 */
 	public boolean shouldWake(boolean after)
 	{
