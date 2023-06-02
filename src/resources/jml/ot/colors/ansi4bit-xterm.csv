@@ -1,0 +1,16 @@
+0,Black,0,0,0
+1,Red,205,0,0
+2,Green,0,205,0
+3,Yellow,205,205,0
+4,Blue,0,0,238
+5,Magenta,205,0,205
+6,Cyan,0,205,205
+7,White,229,229,229 
+8,Bright Black (Gray),127,127,127
+9,Bright Red,255,0,0
+10,Bright Green,0,255,0
+11,Bright Yellow,255,255,0
+12,Bright Blue,92,92,255
+13,Bright Magenta,255,0,255
+14,Bright Cyan,0,255,255
+15,Bright White,255,255,255

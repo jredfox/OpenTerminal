@@ -64,6 +64,10 @@ public class TerminalApp {
 	 * changing this to true will make you use 4 bit ANSI colors instead of xterm256 or true colors
 	 */
 	public boolean ANSI4BIT;
+	/**
+	 * the configurable palette string. resources/jml/ot/colors/*
+	 */
+	public String ansi4bitPalette = "";
 	public AnsiColors colors = new AnsiColors();
 	/**
 	 * when enabled it loggs boot errors and sanity reasons. The boot log only loogs the boot debug and not your program
@@ -261,6 +265,10 @@ public class TerminalApp {
 			String[] arr = f.split("=");
 			this.linuxFlags.put(arr[0].trim(), arr[1].trim());
 		}
+		
+		this.ansi4bitPalette = cfg.get("ansi4bitPalette", "");
+		if(this.ansi4bitPalette.trim().isEmpty())
+			this.ansi4bitPalette = "";
 		cfg.save();
 		
 		this.colorterms = new MapConfig(new File(OTConstants.configs, "colorterms.cfg"));
@@ -270,12 +278,14 @@ public class TerminalApp {
 	public void initPalettes()
 	{
 		String p = "";
-		if(TerminalUtil.isWindowsTerm(this.terminal))
+		if(!this.ansi4bitPalette.isEmpty())
+			p = this.ansi4bitPalette;//allow configured palette colors from the user
+		else if(TerminalUtil.isWindowsTerm(this.terminal))
 			p = "ansi4bit-windows-10.csv";
 		else if(TerminalUtil.isMacTerm(this.terminal))
 			p = "ansi4bit-terminal.app.csv";
 		else
-			p = "ans4bit-xterm.csv";//default to xterm 4-bit color palette
+			p = "ansi4bit-xterm.csv";//default to xterm 4-bit color palette
 		this.logBoot("ANSI 4-bit Color Palette:" + p);
 		this.colors.pickerAnsi4Bit = new Palette("resources/jml/ot/colors/" + p);
 	}

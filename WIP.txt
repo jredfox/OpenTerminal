@@ -1,1 +1,2 @@
-check on macOs and linux 4 bit colors
+re-verify color palette files of linux
+check linux color palettes
