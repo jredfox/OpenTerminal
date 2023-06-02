@@ -1,1 +1,2 @@
 check linux color palettes
+default color 39 FG and 49 BG
