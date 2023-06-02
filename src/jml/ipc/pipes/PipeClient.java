@@ -1,6 +1,5 @@
 package jml.ipc.pipes;
 
-import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,7 +11,6 @@ import jredfox.common.io.IOUtils;
 
 public abstract class PipeClient extends Pipe implements Closeable {
 
-	public BufferedReader reader;
 	public InputStream in;
 	
 	public PipeClient(String id)
@@ -28,13 +26,6 @@ public abstract class PipeClient extends Pipe implements Closeable {
 	public PipeClient(String id, URL u)
 	{
 		super(id, u);
-	}
-	
-	public BufferedReader getReader()
-	{
-		if(this.reader == null)
-			this.reader = IOUtils.getReader(this.createIn());
-		return this.reader;
 	}
 	
 	public InputStream getIn()
@@ -72,7 +63,6 @@ public abstract class PipeClient extends Pipe implements Closeable {
 	public void close() throws IOException
 	{
 		IOUtils.closeQuietly(this.in);
-		IOUtils.closeQuietly(this.reader);
 	}
 
 }

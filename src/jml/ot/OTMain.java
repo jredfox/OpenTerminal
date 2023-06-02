@@ -40,7 +40,7 @@ public class OTMain {
 			app.loadSession();
 			app.startPipeManager();
 			app.sendColors();
-//			System.exit(-1);
+			System.exit(-1);
 			boolean hostIsAlive = true;
 //			System.out.println("OTMAIN:" + System.getProperty("ot.app"));
 //			while(hostIsAlive)

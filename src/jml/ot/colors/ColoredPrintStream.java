@@ -17,7 +17,7 @@ public class ColoredPrintStream extends WrappedPrintStream {
 	/**
 	 * when true this will make the prefix reset 0m instead of 0m + STD's COLOR
 	 */
-	public boolean override;
+	public volatile boolean override;
 	
 	/**
 	 * bg, fg or ansi can be null safley

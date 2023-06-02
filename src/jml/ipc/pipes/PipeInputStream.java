@@ -56,10 +56,13 @@ public class PipeInputStream extends FileInputStream
 		 long ms = System.currentTimeMillis();
 		 while (b == -1)
 		 {
-			 b = super.read();
-			if(this.timeout > 0 && b == -1 && (System.currentTimeMillis()-ms > this.timeout))
-				return -1;//EOS due to DC
-			 JREUtil.sleep(this.sleep);
+			 b = super.read();//give it one last chance to not eos before sleeping or timeout
+			 if(b == -1)
+			 {
+				 if(this.timeout > 0 && (System.currentTimeMillis()-ms > this.timeout))
+					 return -1;//EOS due to DC
+				 JREUtil.sleep(this.sleep);
+			 }
 		 }
 		 return b;
 	}
@@ -81,10 +84,13 @@ public class PipeInputStream extends FileInputStream
 		long ms = System.currentTimeMillis();
 		while(bytes_read < 1)
 		{
-			bytes_read = read1(b, off, len);
-			if(this.timeout > 0 && bytes_read < 1 && (System.currentTimeMillis()-ms > this.timeout))
-				return -1;//EOS due to DC
-			JREUtil.sleep(this.sleep);
+			bytes_read = read1(b, off, len);//give it one last chance to not eos before dc or sleeping
+			if(bytes_read < 1)
+			{
+				if(this.timeout > 0 && (System.currentTimeMillis()-ms > this.timeout))
+					return -1;//EOS due to DC
+				JREUtil.sleep(this.sleep);
+			}
 		}
 		
 		return bytes_read;
