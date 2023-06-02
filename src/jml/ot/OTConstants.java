@@ -6,7 +6,7 @@ import jredfox.common.utils.JREUtil;
 
 public class OTConstants {
 	
-	public static final String OTVERSION = "alpha-1.0.1";
+	public static final String OTVERSION = "alpha-1.1.0";
 	public static final String illegals = "\"';:$@";
 	public static final String pauseMsg = "Press ENTER to continue...";
 	public static final File home = new File(TerminalUtil.getAppData().getAbsoluteFile(), "OpenTerminal");
