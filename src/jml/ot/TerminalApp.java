@@ -481,24 +481,31 @@ public class TerminalApp {
 	 */
 	public void loadColors() throws IOException 
 	{
-		long ms = System.currentTimeMillis();
-		String mode = this.colorterms.get(this.terminal, null);
-		boolean save = false;
-		if(mode == null)
+		if(this.ANSI4BIT)
 		{
-			mode = this.getTermColors();
-			save = true;
+			this.colors.setColorMode(TermColors.ANSI4BIT);//ignore cached and current CLI's data in this mode
 		}
-		this.logBoot("Get CLI Color in:" + (System.currentTimeMillis()-ms) + " COLOR ENV:" + mode);
-		this.colors.setColorMode(mode.equalsIgnoreCase("nullnull") ? this.getBootTermHD().toString() : mode);
-		if(save)
+		else
 		{
-			this.colorterms.set(this.terminal, this.colors.colorMode);//just in case loadColors is called again
-			FileUtils.create(this.colorterms.file);
-			PrintStream cp = new PrintStream(new FileOutputStream(this.colorterms.file, true), true);
-			cp.println("Str:" + this.terminal + "=\"" + this.colors.colorMode + "\"");
-			IOUtils.close(cp);
-			this.logBoot("saved:" + this.terminal + "=" + this.colors.colorMode);
+			long ms = System.currentTimeMillis();
+			String mode = this.colorterms.get(this.terminal, null);
+			boolean save = false;
+			if(mode == null)
+			{
+				mode = this.getTermColors();
+				save = true;
+			}
+			this.logBoot("Get CLI Color in:" + (System.currentTimeMillis()-ms) + " COLOR ENV:" + mode);
+			this.colors.setColorMode(mode.equalsIgnoreCase("nullnull") ? TermColors.TRUE_COLOR.toString() : mode);//safe to assume true color as ansi4bit is never true here
+			if(save)
+			{
+				this.colorterms.set(this.terminal, this.colors.colorMode);//just in case loadColors is called again
+				FileUtils.create(this.colorterms.file);
+				PrintStream cp = new PrintStream(new FileOutputStream(this.colorterms.file, true), true);
+				cp.println("Str:" + this.terminal + "=\"" + this.colors.colorMode + "\"");
+				IOUtils.close(cp);
+				this.logBoot("Saved:" + this.terminal + "=" + this.colors.colorMode);
+			}
 		}
 		Profile p = this.getProfile();
 		if(p != null)
@@ -507,6 +514,7 @@ public class TerminalApp {
 			if(p.hasColoredErr)
 				System.setErr(new ColoredPrintStream(p.bgErr, p.fgErr, p.ansiFormatErr, this.colors, System.err));
 		}
+		this.logBoot("TermColors:" + this.colors.colorMode + " CachedColor:" + this.colors.colors);
 	}
 
 	public String getTermColors() throws IOException 
@@ -520,7 +528,7 @@ public class TerminalApp {
 		IOUtils.close(reader);
 		if(mode == null)
 		{
-			mode = TerminalUtil.isWindowsTerm(this.terminal) ? this.getBootTermHD().toString() : this.getBootTermLowRes().toString();
+			mode = TerminalUtil.isWindowsTerm(this.terminal) ? TermColors.TRUE_COLOR.toString() : TermColors.XTERM_256.toString();//safe to assume as this never gets called when ansi4bit mode is enabled
 			this.logBoot("CRITICAL Unable to Obtain Color mode Asumming ColorMode:" + mode);
 			System.err.println("CRITICAL Unable to Obtain Color mode Asumming ColorMode:" + mode);
 		}
