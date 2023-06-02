@@ -59,12 +59,24 @@ public class PipeInputStream extends FileInputStream
 			 b = super.read();//give it one last chance to not eos before sleeping or timeout
 			 if(b == -1)
 			 {
-				 if(this.timeout > 0 && (System.currentTimeMillis()-ms > this.timeout))
+				 if(this.shouldWake(false) || this.timeout > 0 && (System.currentTimeMillis()-ms > this.timeout))
 					 return -1;//EOS due to DC
 				 JREUtil.sleep(this.sleep);
+				 if(this.shouldWake(true))
+					 return -1;
 			 }
 		 }
 		 return b;
+	}
+	
+	/**
+	 * When true the I/O will stop blocking and return EOS(-1). 
+	 * It's fires directly before and after the sleep call
+	 * @param after is true after the sleep call
+	 */
+	public boolean shouldWake(boolean after)
+	{
+		return false;
 	}
 
 	@Override
@@ -87,9 +99,11 @@ public class PipeInputStream extends FileInputStream
 			bytes_read = read1(b, off, len);//give it one last chance to not eos before dc or sleeping
 			if(bytes_read < 1)
 			{
-				if(this.timeout > 0 && (System.currentTimeMillis()-ms > this.timeout))
-					return -1;//EOS due to DC
+				if(this.shouldWake(false) || this.timeout > 0 && (System.currentTimeMillis()-ms > this.timeout))
+					return -1;//EOS due to shouldWake or DC
 				JREUtil.sleep(this.sleep);
+				if(this.shouldWake(true))
+					return -1;//EOS due to shouldWake
 			}
 		}
 		
