@@ -266,9 +266,7 @@ public class TerminalApp {
 			this.linuxFlags.put(arr[0].trim(), arr[1].trim());
 		}
 		
-		this.ansi4bitPalette = cfg.get("ansi4bitPalette", "");
-		if(this.ansi4bitPalette.trim().isEmpty())
-			this.ansi4bitPalette = "";
+		this.ansi4bitPalette = cfg.get("ansi4bitPalette", "").trim();
 		cfg.save();
 		
 		this.colorterms = new MapConfig(new File(OTConstants.configs, "colorterms.cfg"));
@@ -278,7 +276,8 @@ public class TerminalApp {
 	public void initPalettes()
 	{
 		String p = "";
-		if(!this.ansi4bitPalette.isEmpty())
+		String bp = "resources/jml/ot/colors/";
+		if(!this.ansi4bitPalette.isEmpty() && TerminalApp.class.getClassLoader().getResource(bp + this.ansi4bitPalette) != null)
 			p = this.ansi4bitPalette;//allow configured palette colors from the user
 		else if(TerminalUtil.isWindowsTerm(this.terminal))
 			p = "ansi4bit-windows-10.csv";
@@ -287,7 +286,7 @@ public class TerminalApp {
 		else
 			p = "ansi4bit-xterm.csv";//default to xterm 4-bit color palette
 		this.logBoot("ANSI 4-bit Color Palette:" + p);
-		this.colors.pickerAnsi4Bit = new Palette("resources/jml/ot/colors/" + p);
+		this.colors.pickerAnsi4Bit = new Palette(bp + p);
 	}
 	
 	public void loadSession()
@@ -529,8 +528,18 @@ public class TerminalApp {
 	
 	public void logBoot(String msg) 
 	{
+		this.logBoot(msg, true);
+	}
+	
+	public void logBoot(String msg, boolean ln) 
+	{
 		if(this.canLogBoot)
-			this.bootLogger.println(msg);
+		{
+			if(ln)
+				this.bootLogger.println(msg);
+			else
+				this.bootLogger.print(msg);
+		}
 	}
 
 	/**

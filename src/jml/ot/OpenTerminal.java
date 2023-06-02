@@ -55,9 +55,14 @@ public class OpenTerminal {
 		}
 		catch(Throwable t)
 		{
+			System.err.print("OpenTerminal boot has failed! ");
 			if(app.canLogBoot)//ensure the user didn't disable this via TerminalApp#load()
+			{
+				app.logBoot("OpenTerminal boot has failed! ", false);
 				t.printStackTrace(boot);
+			}
 			t.printStackTrace();
+			System.exit(-1);
 		}
 		finally
 		{
