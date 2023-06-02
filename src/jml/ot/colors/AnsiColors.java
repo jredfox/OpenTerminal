@@ -3,7 +3,7 @@ package jml.ot.colors;
 import java.awt.Color;
 
 import jml.ot.OTConstants;
-import jml.ot.TerminalUtil;
+import jredfox.common.utils.Assert;
 
 public class AnsiColors {
 	
@@ -49,7 +49,6 @@ public class AnsiColors {
 	public AnsiColors()
 	{
 		this.colors = "";
-		this.colorMode = setColorMode(TerminalUtil.getPropertySafely("ot.color.mode"));
 	}
 	
 	public AnsiColors(Color background, Color text, String ansiEsc, TermColors mode)
@@ -112,7 +111,7 @@ public class AnsiColors {
 	public TermColors setColorMode(String mode)
 	{
 		mode = mode.toLowerCase();
-		TermColors colorMode = mode.equals("ansi4bit") ? TermColors.ANSI4BIT : (mode.contains("true") && mode.contains("color") || mode.contains("24") && mode.contains("bit")) ? TermColors.TRUE_COLOR : TermColors.XTERM_256;
+		TermColors colorMode = mode.equalsIgnoreCase("ansi4bit") ? TermColors.ANSI4BIT : (mode.contains("true") && mode.contains("color") || mode.contains("24") && mode.contains("bit")) ? TermColors.TRUE_COLOR : TermColors.XTERM_256;
 		this.setColorMode(colorMode);
 		return colorMode;
 	}
@@ -133,12 +132,7 @@ public class AnsiColors {
 	 */
 	public String formatColor(TermColors mode, Color bg, Color text, String ansiEsc, boolean reset)
 	{
-		if(mode == null)
-		{
-			System.err.println("colorMode isn't set yet! You have to wait to fetch it from the terminal or set it manually and try again!");
-			return null;
-		}
-		
+		Assert.is(mode != null, "AnsiColors#TermColor is null!");
 		String r = reset ? this.getReset() : "";
 		
 		switch(mode)
@@ -230,8 +224,6 @@ public class AnsiColors {
 			{
 				if(cmd)
 					new ProcessBuilder(new String[]{"cmd", "/c", "echo | set /p dummyName=\"\""}).inheritIO().start().waitFor();
-//				else
-//					new ProcessBuilder(new String[]{"powershell", "/c", "Write-Output \"$null\""}).inheritIO().start().waitFor();
 			}
 			catch (Exception e){e.printStackTrace();}
 		}

@@ -287,8 +287,6 @@ public class TerminalApp {
 			cfg.set("conHost", this.conHost);
 		}
 		this.ANSI4BIT = cfg.get("ANSI-4bit-Colors", this.ANSI4BIT);
-		if(this.ANSI4BIT)
-			this.colors.setColorMode(TermColors.ANSI4BIT);
 		
 		String[] lcmds = cfg.get("linuxCmdExe", "").split(";");
 		for(String c : lcmds)
@@ -393,7 +391,6 @@ public class TerminalApp {
 		
 		public void setPauseMsg(String hdPause, String lowResPause)
 		{
-			Assert.is(hdPause.contains(AnsiColors.ESC) ? lowResPause.contains(AnsiColors.ESC) : !lowResPause.contains(AnsiColors.ESC), "Color MisMatch! It's inteded the pause message be the same just computed with different ColorModes");
 			this.pauseMsg = hdPause;
 			this.pauseLowResMsg = lowResPause;
 		}
@@ -408,6 +405,16 @@ public class TerminalApp {
 			return this.pauseLowResMsg;
 		}
 	}
+	
+	public TermColors getBootTermHD()
+	{
+		return this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.TRUE_COLOR;
+	}
+	
+	public TermColors getBootTermLowRes()
+	{
+		return this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.XTERM_256;
+	}
 
 	/**
 	 * get shell true color or if in ansi 4 bit or an empty string if the profile is null
@@ -416,7 +423,7 @@ public class TerminalApp {
 	{
 		if(p == null)
 			return "";
-		return (p.ansiFormat == null ? "" : p.ansiFormat) + this.colors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.TRUE_COLOR, p.bg, p.fg, "", false);
+		return (p.ansiFormat == null ? "" : p.ansiFormat) + this.colors.formatColor(this.getBootTermHD(), p.bg, p.fg, "", false);
 	}
 	
 	/**
@@ -426,30 +433,30 @@ public class TerminalApp {
 	{
 		if(p == null)
 			return "";
-		return (p.ansiFormat == null ? "" : p.ansiFormat) + this.colors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.XTERM_256, p.bg, p.fg, "", false);
+		return (p.ansiFormat == null ? "" : p.ansiFormat) + this.colors.formatColor(this.getBootTermLowRes(), p.bg, p.fg, "", false);
 	}
 	
 	/**
 	 * use this for the colored pause option as we cannot assume the color mode is always true color. 
 	 * this is used mostly for the colored pause via the shell
 	 */
-	public String formatPauseColor(Color bg, Color fg, String s)
+	public String formatColorHD(Color bg, Color fg, String s)
 	{
-		return this.colors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.TRUE_COLOR, bg, fg, s, true);
+		return this.colors.formatColor(this.getBootTermHD(), bg, fg, s, true);
 	}
 	
 	/**
 	 * use this for the colored pause low res option as we cannot assume the color mode is always xterm-256 / ansi4bit. 
 	 * this is used mostly for the colored pause via the shell
 	 */
-	public String formatPauseLowResColor(Color bg, Color fg, String s)
+	public String formatColorLowRes(Color bg, Color fg, String s)
 	{
-		return this.colors.formatColor(this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.XTERM_256, bg, fg, s, true);
+		return this.colors.formatColor(this.getBootTermLowRes(), bg, fg, s, true);
 	}
 	
 	public void setPauseMsg(Color bg, Color fg, String msg, Profile p)
 	{
-		p.setPauseMsg(this.formatPauseColor(bg, fg, msg), this.formatPauseLowResColor(bg, fg, msg));
+		p.setPauseMsg(this.formatColorHD(bg, fg, msg), this.formatColorLowRes(bg, fg, msg));
 	}
 
 	public PrintStream createBootLogger()
@@ -483,7 +490,7 @@ public class TerminalApp {
 			save = true;
 		}
 		this.logBoot("Get CLI Color in:" + (System.currentTimeMillis()-ms) + " COLOR ENV:" + mode);
-		this.colors.setColorMode(mode.equalsIgnoreCase("nullnull") ? (this.ANSI4BIT ? "ansi4bit" : "truecolor") : mode);
+		this.colors.setColorMode(mode.equalsIgnoreCase("nullnull") ? this.getBootTermHD().toString() : mode);
 		if(save)
 		{
 			this.colorterms.set(this.terminal, this.colors.colorMode);//just in case loadColors is called again
@@ -513,7 +520,7 @@ public class TerminalApp {
 		IOUtils.close(reader);
 		if(mode == null)
 		{
-			mode = this.ANSI4BIT ? "ansi4bit" : (TerminalUtil.isWindowsTerm(this.terminal) ? "truecolor" : "xterm-256");
+			mode = TerminalUtil.isWindowsTerm(this.terminal) ? this.getBootTermHD().toString() : this.getBootTermLowRes().toString();
 			this.logBoot("CRITICAL Unable to Obtain Color mode Asumming ColorMode:" + mode);
 			System.err.println("CRITICAL Unable to Obtain Color mode Asumming ColorMode:" + mode);
 		}

@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.Scanner;
 
-import jml.ot.TerminalApp.Profile;
 import jml.ot.colors.AnsiColors;
 import jml.ot.colors.AnsiColors.TermColors;
 import jml.ot.colors.ColoredPrintStream;
@@ -35,8 +34,8 @@ public class Test {
 					
 					//start colored error test
 					p.hasColoredErr = true;
-					p.bgErr = Color.ORANGE;
-					p.fgErr = Color.BLACK;
+					p.bgErr = Color.WHITE;
+					p.fgErr = Color.RED;
 //					p.ansiFormatErr = AnsiColors.UNDERLINE;
 					return p;
 //					return null;
@@ -81,6 +80,7 @@ public class Test {
 		System.err.printf("Hello %s!", "World");
 		System.err.append(null, 0, 1);
 		System.out.println("goodby");
+		System.out.println("COLORMODE:" + app.colors.colorMode);
 		System.exit(0);
 //		System.out.println("Starting CLI:" + app.appClass);
 		

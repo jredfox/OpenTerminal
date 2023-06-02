@@ -45,7 +45,7 @@ public class OTMain {
 //			System.out.println("OTMAIN:" + System.getProperty("ot.app"));
 //			while(hostIsAlive)
 //			{
-//////				//TODO:PID keep alive check here
+//				TODO:PID keep alive check here
 //			}
 //			JREUtil.sleep(3000);
 			
