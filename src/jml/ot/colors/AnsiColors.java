@@ -34,7 +34,8 @@ public class AnsiColors {
 	 */
 	public static final AnsiColors INSTANCE = new AnsiColors();
 	public static final Palette pickerXterm256 = new Palette("resources/jml/ot/colors/xterm-256.csv");
-	public static final Palette pickerAnsi4Bit = new Palette("resources/jml/ot/colors/ansi4bit.csv");
+	public static final Palette pickerWin4bit = new Palette("resources/jml/ot/colors/ansi4bit-windows-10.csv");
+	public Palette pickerAnsi4Bit = null;
 	
 	/**
 	 * the default color format of AnsiColors. change with {@link #setReset(Color, Color, boolean)}

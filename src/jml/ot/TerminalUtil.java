@@ -286,4 +286,9 @@ public class TerminalUtil {
 		return windows_terminals.contains(term);
 	}
 
+	public static boolean isMacTerm(String terminal) 
+	{
+		return mac_terminals.contains(terminal) || !terminal.endsWith(".app") && mac_terminals.contains(terminal + ".app");
+	}
+
 }
