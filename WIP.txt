@@ -1,2 +1,1 @@
 check linux color palettes
-investigate as to why bright yellow turns white

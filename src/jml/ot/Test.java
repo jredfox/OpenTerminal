@@ -80,8 +80,10 @@ public class Test {
 		app.colors.println(null, Color.YELLOW, "Yellow");
 		app.colors.println(null, Color.BLUE, "BLUE");
 		app.colors.println(null, Color.MAGENTA, "Magenta");
+		System.out.print("BEFORE TEXXT");
 		System.out.print(app.colors.getNonColoredReset());
-		app.colors.println(null, new Color(58,150,221), "Cyan");
+		app.colors.print(null, Color.CYAN, "Cyan");
+		System.out.println("AFTER TEXT");
 		app.colors.println(null, new Color(235,235,235), "White");
 		app.colors.println(null, Color.GRAY, "GREY");
 		app.colors.println(null, new Color(231, 70, 80), "Bright Red");

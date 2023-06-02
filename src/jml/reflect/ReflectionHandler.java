@@ -30,9 +30,9 @@ public class ReflectionHandler {
 	}
 	public static Field elementData = ReflectionHandler.getField(ArrayList.class, "elementData");
 	
-    public static Field getField(Class clazz, ObfString mcp)
+    public static Field getField(Class clazz, ObfString obf)
     {
-    	return getField(clazz, mcp.toString());
+    	return getField(clazz, obf.toString());
     }
 	
 	/**
@@ -61,9 +61,9 @@ public class ReflectionHandler {
         return null;
     }
 
-	public static Method getMethod(Class clazz, ObfString mcp)
+	public static Method getMethod(Class clazz, ObfString obf)
     {
-    	return getMethod(clazz, mcp.toString());
+    	return getMethod(clazz, obf.toString());
     }
     
     public static Method getMethod(Class clazz, String name, Class... params)

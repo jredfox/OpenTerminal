@@ -65,6 +65,7 @@ public abstract class TerminalExe {
 			e.printStackTrace();
 			if(this.app.canLogBoot)
 				e.printStackTrace(this.app.bootLogger);
+			e.printStackTrace();
 			this.cleanup();
 		}
 	}

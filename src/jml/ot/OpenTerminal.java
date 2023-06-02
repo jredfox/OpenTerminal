@@ -57,6 +57,7 @@ public class OpenTerminal {
 		{
 			if(app.canLogBoot)//ensure the user didn't disable this via TerminalApp#load()
 				t.printStackTrace(boot);
+			t.printStackTrace();
 		}
 		finally
 		{
