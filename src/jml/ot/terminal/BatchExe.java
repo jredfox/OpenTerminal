@@ -84,7 +84,7 @@ public class BatchExe extends TerminalExe {
             List<String> li = new ArrayList<>();
             li.add("@Echo off\n"
                     + "set c=%~1%\n"
-                    + "IF NOT \"%c%\" == \"\" (\n"
+                    + "IF NOT \"%c%\" == \" \" (\n"
                     + "  set c=%c:$=;%\n"
                     + "  echo=%c%\n"
                     + ")\n"
