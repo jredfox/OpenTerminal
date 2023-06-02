@@ -493,7 +493,14 @@ public class TerminalApp {
 			if(mode == null)
 			{
 				mode = this.getTermColors();
-				save = true;
+				if(mode == null)
+				{
+					mode = TerminalUtil.isWindowsTerm(this.terminal) ? TermColors.TRUE_COLOR.toString() : TermColors.XTERM_256.toString();//safe to assume as this never gets called when ansi4bit mode is enabled
+					this.logBoot("CRITICAL Unable to Obtain Color mode Asumming ColorMode:" + mode);
+					System.err.println("CRITICAL Unable to Obtain Color mode Asumming ColorMode:" + mode);
+				}
+				else
+					save = true;
 			}
 			this.logBoot("Get CLI Color in:" + (System.currentTimeMillis()-ms) + " COLOR ENV:" + mode);
 			this.colors.setColorMode(mode.equalsIgnoreCase("nullnull") ? TermColors.TRUE_COLOR.toString() : mode);//safe to assume true color as ansi4bit is never true here
@@ -526,12 +533,6 @@ public class TerminalApp {
 		BufferedReader reader = IOUtils.getReader(pipedIn);
 		String mode = reader.readLine();
 		IOUtils.close(reader);
-		if(mode == null)
-		{
-			mode = TerminalUtil.isWindowsTerm(this.terminal) ? TermColors.TRUE_COLOR.toString() : TermColors.XTERM_256.toString();//safe to assume as this never gets called when ansi4bit mode is enabled
-			this.logBoot("CRITICAL Unable to Obtain Color mode Asumming ColorMode:" + mode);
-			System.err.println("CRITICAL Unable to Obtain Color mode Asumming ColorMode:" + mode);
-		}
 		return mode;
 	}
 
