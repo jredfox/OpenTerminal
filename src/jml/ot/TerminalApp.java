@@ -222,52 +222,6 @@ public class TerminalApp {
 		this.startPipeManager();
 	}
 
-	public void loadSession()
-	{
-		this.session = OTConstants.LAUNCHED ? new File(OTConstants.tmp, System.getProperty("ot.s")) : JREUtil.getMSDir(OTConstants.tmp);
-		this.sessionName = this.session.getName();
-		
-		//cleanup previous sessions
-		if(!OTConstants.LAUNCHED)
-			IOUtils.deleteDirectory(this.session.getParentFile(), false);
-	}
-
-	/**
-	 * called during boot to setup the IPC PipeManager
-	 */
-	public void startPipeManager()
-	{
-		this.manager = new FilePipeManager(OTConstants.LAUNCHED, this.replaceSYSO, this.session, this.shouldLog ? this.getLogger() : null);
-		this.manager.start();
-		if(OTConstants.LAUNCHED)
-			this.sendColors();
-	}
-
-	public File getLogger() 
-	{
-		if(this.logger == null)
-			this.logger = new File(OTConstants.home, "logs/" + this.id + "/log-" + this.sessionName + ".txt");
-		return this.logger;
-	}
-
-	public void enableLoggers()
-	{
-		if(this.shouldLog)
-		{
-			try
-			{
-				File log = this.getLogger();
-				FileUtil.create(log);
-				System.setOut(new WrappedPrintStream(System.out, log));
-				System.setErr(new WrappedPrintStream(System.err, log));
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-	}
-
 	public void loadConfig() 
 	{
 		MapConfig cfg = new MapConfig(new File(OTConstants.configs, this.id + ".cfg"));
@@ -310,14 +264,78 @@ public class TerminalApp {
 		this.colorterms = new MapConfig(new File(OTConstants.configs, "colorterms.cfg"));
 		this.colorterms.load();//skips load if cfg doesn't exist
 	}
-
-	/**
-	 * execute the command in the terminal UI TerminalApp configurations override
-	 */
-	public String getLinuxExe()
+	
+	public void loadSession()
 	{
-		String cflag = this.linuxFlags.get(this.terminal);
-		return cflag != null ? cflag : TerminalUtil.getLinuxExe(this.terminal);
+		this.session = OTConstants.LAUNCHED ? new File(OTConstants.tmp, System.getProperty("ot.s")) : JREUtil.getMSDir(OTConstants.tmp);
+		this.sessionName = this.session.getName();
+		
+		//cleanup previous sessions
+		if(!OTConstants.LAUNCHED)
+			IOUtils.deleteDirectory(this.session.getParentFile(), false);
+	}
+
+	public void enableLoggers()
+	{
+		if(this.shouldLog)
+		{
+			try
+			{
+				File log = this.getLogger();
+				FileUtil.create(log);
+				System.setOut(new WrappedPrintStream(System.out, log));
+				System.setErr(new WrappedPrintStream(System.err, log));
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public File getLogger() 
+	{
+		if(this.logger == null)
+			this.logger = new File(OTConstants.home, "logs/" + this.id + "/log-" + this.sessionName + ".txt");
+		return this.logger;
+	}
+	
+	/**
+	 * called during boot to setup the IPC PipeManager
+	 */
+	public void startPipeManager()
+	{
+		this.manager = new FilePipeManager(OTConstants.LAUNCHED, this.replaceSYSO, this.session, this.shouldLog ? this.getLogger() : null);
+		this.manager.start();
+		if(OTConstants.LAUNCHED)
+			this.sendColors();
+	}
+	
+	/**
+	 * used by {@link OTMain#main(String[])} at the end of the program on CLI client side to get the java pause
+	 * to override this behavior simply override {@link #appClass} to your TerminalApp class and then override this method
+	 */
+	public void pause() 
+	{
+		if(this.javaPause)
+		{
+			System.out.print(OTConstants.pauseMsg);
+			System.out.flush();//ensure it's written right away
+			new Scanner(System.in).nextLine();
+		}
+	}
+	
+	/**
+	 * fired once the CLI closes.
+	 */
+	public void closeCLIEvent()
+	{
+		//TODO:make it work with the PID isAlive() update
+		if(this.exitOnCLI)
+		{
+			System.out.println("Host process is closing due to CLI closing");
+			System.exit(0);
+		}
 	}
 	
 	public static class Profile
@@ -406,6 +424,15 @@ public class TerminalApp {
 		}
 	}
 	
+	/**
+	 * execute the command in the terminal UI TerminalApp configurations override
+	 */
+	public String getLinuxExe()
+	{
+		String cflag = this.linuxFlags.get(this.terminal);
+		return cflag != null ? cflag : TerminalUtil.getLinuxExe(this.terminal);
+	}
+	
 	public TermColors getBootTermHD()
 	{
 		return this.ANSI4BIT ? TermColors.ANSI4BIT : TermColors.TRUE_COLOR;
@@ -473,6 +500,12 @@ public class TerminalApp {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public void logBoot(String msg) 
+	{
+		if(this.canLogBoot)
+			this.bootLogger.println(msg);
 	}
 
 	/**
@@ -549,39 +582,6 @@ public class TerminalApp {
 	{
 		String col = System.getenv("TERM") + System.getenv("COLORTERM");
 		IOUtils.saveFileLines(Arrays.asList(col), new File(this.session, "ot-noREQ.txt") , true);
-	}
-
-	/**
-	 * used by {@link OTMain#main(String[])} at the end of the program on CLI client side to get the java pause
-	 * to override this behavior simply override {@link #appClass} to your TerminalApp class and then override this method
-	 */
-	public void pause() 
-	{
-		if(this.javaPause)
-		{
-			System.out.print(OTConstants.pauseMsg);
-			System.out.flush();//ensure it's written right away
-			new Scanner(System.in).nextLine();
-		}
-	}
-
-	public void logBoot(String msg) 
-	{
-		if(this.canLogBoot)
-			this.bootLogger.println(msg);
-	}
-	
-	/**
-	 * fired once the CLI closes.
-	 */
-	public void closeCLIEvent()
-	{
-		//TODO:make it work with the PID isAlive() update
-		if(this.exitOnCLI)
-		{
-			System.out.println("Host process is closing due to CLI closing");
-			System.exit(0);
-		}
 	}
 
 }
