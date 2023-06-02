@@ -1,16 +1,16 @@
 0,Black,0,0,0
-1,Red,194,54,33
-2,Green,37,188,36
-3,Yellow,173,173,39
-4,Blue,73,46,225
-5,Magenta,211,56,211
-6,Cyan,51,187,200
-7,White,203,204,205
-8,Bright Black (Gray),129,131,131
-9,Bright Red,252,57,31
-10,Bright Green,49,231,34
-11,Bright Yellow,234,236,35
-12,Bright Blue,88,51,255
-13,Bright Magenta,249,53,248
-14,Bright Cyan,20,240,240
-15,Bright White,233,235,235
+1,Red,153,0,0
+2,Green,0,166,0
+3,Yellow,153,153,0
+4,Blue,0,0,178
+5,Magenta,178,0,178
+6,Cyan,0,166,178
+7,White,191,191,191
+8,Bright Black (Gray),102,102,102
+9,Bright Red,230,0,0
+10,Bright Green,0,217,0
+11,Bright Yellow,230,230,0
+12,Bright Blue,0,0,255
+13,Bright Magenta,230,0,230
+14,Bright Cyan,0,230,230
+15,Bright White,230,230,230
