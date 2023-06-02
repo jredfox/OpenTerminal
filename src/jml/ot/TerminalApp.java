@@ -509,9 +509,9 @@ public class TerminalApp {
 				this.colorterms.set(this.terminal, this.colors.colorMode);//just in case loadColors is called again
 				FileUtils.create(this.colorterms.file);
 				PrintStream cp = new PrintStream(new FileOutputStream(this.colorterms.file, true), true);
-				cp.println("Str:" + this.terminal + "=\"" + this.colors.colorMode + "\"");
+				cp.println("Str:" + this.terminal + "=\"" + mode + "\"");
 				IOUtils.close(cp);
-				this.logBoot("Saved:" + this.terminal + "=" + this.colors.colorMode);
+				this.logBoot("Saved:" + this.terminal + "=" + mode);
 			}
 		}
 		Profile p = this.getProfile();
