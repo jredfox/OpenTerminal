@@ -98,6 +98,8 @@ public class AnsiColors {
 		System.out.println(formatColor(background, text, str, true));
 	}
 	
+	//TODO:add printlnAnsi4bit(Color background, Color text, String str))
+	
 	/**
 	 * supports xterm-16, xterm-256 and true colors
 	 */
