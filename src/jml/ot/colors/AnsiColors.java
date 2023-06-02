@@ -57,6 +57,14 @@ public class AnsiColors {
 		this.setReset(background, text, ansiEsc, false);
 		this.setColorMode(mode);
 	}
+	
+	public static enum TermColors
+	{
+		ANSI4BIT(),//16 different colors for lazy coders/ scripters not knowing RGB
+		XTERM_256(),//one byte colors (0-255) legacy
+		TRUE_COLOR(),//RGB 24 bit standard colors with each color having 8 bits(0-255)
+		TRUE_COLOR_RGBA()//true color with transparency added currently no terminal supports this
+	}
 
 	/**
 	 * get the reset ansi esq for the whole program. doing esq[0m hard coded will cause the entire app to be reset back to default formating no additional styling
@@ -172,6 +180,39 @@ public class AnsiColors {
 				return null;
 		}
 	}
+	
+	/**
+	 * format your ANSI4BITColor without lossy RGB conversions. this will garentee the color you specify displays as intended by the CLI / CLI's profile
+	 */
+	public String formatANSI4BitColor(ANSI4BitColor bg, ANSI4BitColor text, String str, boolean reset)
+	{
+		String r = reset ? this.getReset() : "";
+		String b = bg == null ? "" : ESC + "[" + getANSI4BitColor((byte)bg.ordinal(), true) + "m";
+		String f = text == null ? "" : ESC + "[" + getANSI4BitColor((byte)text.ordinal(), false) + "m";
+		String a = str == null ? "" : str;
+		return b + f + a + r;
+	}
+	
+	public enum ANSI4BitColor
+	{
+		BLACK,
+		RED,
+		GREEN,
+		YELLOW,
+		BLUE,
+		MAGENTA,
+		CYAN,
+		WHITE,
+		BRIGHT_BLACK_GREY(),
+		BRIGHT_RED,
+		BRIGHT_GREEN,
+		BRIGHT_YELLOW,
+		BRIGHT_BLUE,
+		BRIGHT_MAGENTA,
+		BRIGHT_CYAN,
+		BRIGHT_WHITE,
+		NULL_COLOR()
+	}
 
 	/**
 	 * @param code 0-15 4bit color
@@ -190,14 +231,6 @@ public class AnsiColors {
 	public static String formatEsc(int code)
 	{
 		return ESC + "[" + code + "m";
-	}
-	
-	public static enum TermColors
-	{
-		ANSI4BIT(),//16 different colors for lazy coders/ scripters not knowing RGB
-		XTERM_256(),//one byte colors (0-255) legacy
-		TRUE_COLOR(),//RGB 24 bit standard colors with each color having 8 bits(0-255)
-		TRUE_COLOR_RGBA()//true color with transparency added currently no terminal supports this
 	}
 	
 	/**
