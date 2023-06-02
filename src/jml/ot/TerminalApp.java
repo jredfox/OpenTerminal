@@ -537,20 +537,23 @@ public class TerminalApp {
 			}
 			this.logBoot("Get CLI Color in:" + (System.currentTimeMillis()-ms) + " COLOR ENV:" + mode);
 			this.colors.setColorMode(mode.equalsIgnoreCase("nullnull") ? TermColors.TRUE_COLOR.toString() : mode);//safe to assume true color as ansi4bit is never true here
+			
+			//sanity check before saving. AnsiColors#setColorMode handles improper strings and will set the mode to XTERM-256
+			mode = mode.replace("\"", "").trim();
+			if(mode.isEmpty())
+			{
+				this.logBoot("CRITICAL ERR: Mode has returned an empty string cannot save!");
+				save = false;
+			}
+			
 			if(save)
 			{
-				mode = mode.replace("\"", "").trim();
-				if(mode.isEmpty())
-					this.logBoot("CRITICAL ERR: Mode has returned an empty string cannot save!");
-				else
-				{
-					this.colorterms.set(this.terminal, this.colors.colorMode);//just in case loadColors is called again
-					FileUtils.create(this.colorterms.file);
-					PrintStream cp = new PrintStream(new FileOutputStream(this.colorterms.file, true), true);
-					cp.println("Str:" + this.terminal + "=\"" + mode + "\"");
-					IOUtils.close(cp);
-					this.logBoot("Saved:" + this.terminal + "=" + mode);
-				}
+				this.colorterms.set(this.terminal, this.colors.colorMode);//just in case loadColors is called again
+				FileUtils.create(this.colorterms.file);
+				PrintStream cp = new PrintStream(new FileOutputStream(this.colorterms.file, true), true);
+				cp.println("Str:" + this.terminal + "=\"" + mode + "\"");
+				IOUtils.close(cp);
+				this.logBoot("Saved:" + this.terminal + "=" + mode);
 			}
 		}
 		Profile p = this.getProfile();
