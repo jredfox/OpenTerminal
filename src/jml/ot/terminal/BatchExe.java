@@ -36,7 +36,7 @@ public class BatchExe extends TerminalExe {
 				"\"\"",//app name doesn't work with the batch boot shell for some reason
 				"call",
 				q + this.shell.getPath() + q,//path to the boot shell
-				profile != null && profile.bg != null ? q + colors + q : q + " " + q,//leave the space here it's to prevent command call bug
+				q + (colors.isEmpty() ? " " : colors) + q,//leave the space here it's to prevent command call bug
 				q + this.app.getTitle() + q,
 				q + (OTConstants.java_home + " " + this.getJVMFlags() + " " + OTConstants.args).replaceAll("\"", ",") + q,
 				q + this.app.pause + q,
