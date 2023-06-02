@@ -218,23 +218,10 @@ public class TerminalApp {
 	public void load()
 	{
 		this.loadConfig();
-		this.loadPalettes();
+		this.initPalettes();
 		this.loadSession();
 		this.enableLoggers();
 		this.startPipeManager();
-	}
-
-	public void loadPalettes()
-	{
-		String p = "";
-		if(TerminalUtil.isWindowsTerm(this.terminal))
-			p = "ansi4bit-windows-10.csv";
-		else if(TerminalUtil.isMacTerm(this.terminal))
-			p = "ansi4bit-terminal.app.csv";
-		else
-			p = "ans4bit-xterm.csv";//default to xterm 4-bit color palette
-		this.logBoot("ANSI 4-bit Color Palette:" + p);
-		this.colors.pickerAnsi4Bit = new Palette("resources/jml/ot/colors/" + p);
 	}
 
 	public void loadConfig() 
@@ -278,6 +265,19 @@ public class TerminalApp {
 		
 		this.colorterms = new MapConfig(new File(OTConstants.configs, "colorterms.cfg"));
 		this.colorterms.load();//skips load if cfg doesn't exist
+	}
+	
+	public void initPalettes()
+	{
+		String p = "";
+		if(TerminalUtil.isWindowsTerm(this.terminal))
+			p = "ansi4bit-windows-10.csv";
+		else if(TerminalUtil.isMacTerm(this.terminal))
+			p = "ansi4bit-terminal.app.csv";
+		else
+			p = "ans4bit-xterm.csv";//default to xterm 4-bit color palette
+		this.logBoot("ANSI 4-bit Color Palette:" + p);
+		this.colors.pickerAnsi4Bit = new Palette("resources/jml/ot/colors/" + p);
 	}
 	
 	public void loadSession()

@@ -30,7 +30,7 @@ public class AnsiColors {
 	public static final String OVERLINE = ESC + "[53m";
 	/**
 	 * the AnsiColor instance used to be a static utility if your un-interested in using multiple instances
-	 * NOTE: this doesn't sync with terminals you create if your wanting custom {@link #colors} formats or using the right {@link #colorMode} you have to sync it manually
+	 * NOTE: this instance doesn't sync with your TerminalApp's colors. Therefore the colormode, color, and ansi4bit color palette will be unknown
 	 */
 	public static final AnsiColors INSTANCE = new AnsiColors();
 	public static final Palette pickerXterm256 = new Palette("resources/jml/ot/colors/xterm-256.csv");

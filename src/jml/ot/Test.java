@@ -74,14 +74,29 @@ public class Test {
 //		app.shouldLog = true;
 //		app.pause = false;
 		OpenTerminal.open(app);
-		((ColoredPrintStream)System.err).override = true;
-		System.out.println("hello");
-		System.err.println("TESTING ERR");
-		System.err.printf("Hello %s!", "World");
-		System.err.append(null, 0, 1);
-		System.out.println("goodby");
-		System.out.println("COLORMODE:" + app.colors.colorMode);
-		System.exit(0);
+		app.colors.println(null, Color.BLACK, "BLACK");
+		app.colors.println(null, Color.RED, "RED");
+		app.colors.println(null, Color.GREEN, "Green");
+		app.colors.println(null, Color.YELLOW, "Yellow");
+		app.colors.println(null, Color.MAGENTA, "Magenta");
+		app.colors.println(null, Color.CYAN, "Cyan");
+		app.colors.println(null, Color.WHITE, "White");
+		app.colors.println(null, Color.GRAY, "GREY");
+		app.colors.println(null, new Color(231, 70, 80), "Bright Red");
+		app.colors.println(null, new Color(22,198,12), "Bright Green");
+		app.colors.println(null, new Color(249,241,165), "Bright Yellow");
+		app.colors.println(null, new Color(59,120,255), "Bright Blue");
+		app.colors.println(null, new Color(180,0,158), "Bright Magenta");
+		app.colors.println(null, new Color(97,214,214), "Bright Cyan");
+		app.colors.println(null, new Color(242,242,242), "Bright White");
+//		((ColoredPrintStream)System.err).override = true;
+//		System.out.println("hello");
+//		System.err.println("TESTING ERR");
+//		System.err.printf("Hello %s!", "World");
+//		System.err.append(null, 0, 1);
+//		System.out.println("goodby");
+//		System.out.println("COLORMODE:" + app.colors.colorMode);
+//		System.exit(0);
 //		System.out.println("Starting CLI:" + app.appClass);
 		
 		//begin testing

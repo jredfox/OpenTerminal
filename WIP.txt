@@ -1,1 +1,1 @@
-checkout why ansi4bit returns green for RGB Cyan
+check on macOs and linux 4 bit colors
