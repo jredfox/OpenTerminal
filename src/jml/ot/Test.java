@@ -7,7 +7,6 @@ import java.util.Scanner;
 import jml.ot.colors.AnsiColors;
 import jml.ot.colors.AnsiColors.ANSI4BitColor;
 import jml.ot.colors.AnsiColors.TermColors;
-import jml.ot.colors.ColoredPrintStream;
 
 public class Test {
 
@@ -91,7 +90,7 @@ public class Test {
 		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_MAGENTA, ANSI4BitColor.BRIGHT_MAGENTA.name(), true));
 		System.out.println(app.colors.getNonColoredReset() + app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_CYAN, ANSI4BitColor.BRIGHT_CYAN.name(), true));
 		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_WHITE, ANSI4BitColor.BRIGHT_WHITE.name(), true));
-		
+		System.exit(0);
 		
 //		app.colors.println(null, Color.BLACK, "BLACK");
 //		app.colors.println(null, Color.RED, "RED");

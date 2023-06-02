@@ -120,12 +120,12 @@ public class AnsiColors {
 
 	public void print(Color background, Color textColor, String str)
 	{
-		System.out.print(formatColor(background, textColor, str, true));
+		System.out.print(formatColor(background, textColor, str));
 	}
 	
 	public void print(ANSI4BitColor background, ANSI4BitColor textColor, String str)
 	{
-		System.out.print(this.formatANSI4BitColor(background, textColor, str, true));
+		System.out.print(this.formatANSI4BitColor(background, textColor, str));
 	}
 	
 	public void println(Color background, Color textColor, String str)
