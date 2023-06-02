@@ -19,6 +19,16 @@ public class AnsiColors {
 	public static final String HIDE = ESC + "[8m";
 	public static final String STRIKETHROUGH = ESC + "[9m";
 	public static final String UNDERLINE_DOUBLE = ESC + "[21m";
+	public static final String DEFAULT_FG = ESC + "[39";
+	public static final String DEFAULT_BG = ESC + "[49";
+	/**
+	 * use this color when formatting or printing to use the CLI's(Terminal's) default Text Color
+	 */
+	public static final Color COLOR_DEFAULT_FG = new Color(0,0,0);
+	/**
+	 * use this color when formatting or printing to use the CLI's(Terminal's) default Background Color
+	 */
+	public static final Color COLOR_DEFAULT_BG = new Color(0,0,0);
 	/**
 	 * not supported in windows
 	 */
@@ -168,29 +178,29 @@ public class AnsiColors {
 		{
 			case TRUE_COLOR:
 			{
-				String b = bg == null ? "" : ESC + "[48;2;" + bg.getRed() + ";" + bg.getGreen() + ";" + bg.getBlue() + "m";
-				String f = textColor == null ? "" : ESC + "[38;2;" + textColor.getRed() + ";" + textColor.getGreen() + ";" + textColor.getBlue() + "m";
+				String b = bg == null ? "" : bg == COLOR_DEFAULT_BG ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), true) + "m" : ESC + "[48;2;" + bg.getRed() + ";" + bg.getGreen() + ";" + bg.getBlue() + "m";
+				String f = textColor == null ? "" : textColor == COLOR_DEFAULT_FG ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), false) + "m" : ESC + "[38;2;" + textColor.getRed() + ";" + textColor.getGreen() + ";" + textColor.getBlue() + "m";
 				String a = ansiEsc == null ? "" : ansiEsc;
 				return b + f + a + r;
 			}
 			case XTERM_256:
 			{
-				String b = bg == null ? "" : ESC + "[48;5;" + pickerXterm256.pickColor(bg).code + "m";
-				String f = textColor == null ? "" : ESC + "[38;5;" + pickerXterm256.pickColor(textColor).code + "m";
+				String b = bg == null ? "" : bg == COLOR_DEFAULT_BG ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), true) + "m" : ESC + "[48;5;" + pickerXterm256.pickColor(bg).code + "m";
+				String f = textColor == null ? "" : textColor == COLOR_DEFAULT_FG ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), false) + "m" : ESC + "[38;5;" + pickerXterm256.pickColor(textColor).code + "m";
 				String a = ansiEsc == null ? "" : ansiEsc;
 				return b + f + a + r;
 			}
 			case ANSI4BIT:
 			{
-				String b = bg == null ? "" : ESC + "[" + getANSI4BitColor((byte)pickerAnsi4Bit.pickColor(bg).code, true) + "m";
-				String f = textColor == null ? "" : ESC + "[" + getANSI4BitColor((byte)pickerAnsi4Bit.pickColor(textColor).code, false) + "m";
+				String b = bg == null ? "" : bg == COLOR_DEFAULT_BG ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), true) + "m" : ESC + "[" + getANSI4BitColor((byte)pickerAnsi4Bit.pickColor(bg).code, true) + "m";
+				String f = textColor == null ? "" : textColor == COLOR_DEFAULT_FG ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), false) + "m" : ESC + "[" + getANSI4BitColor((byte)pickerAnsi4Bit.pickColor(textColor).code, false) + "m";
 				String a = ansiEsc == null ? "" : ansiEsc;
 				return b + f + a + r;
 			}
 			case TRUE_COLOR_RGBA:
 			{
-				String b = bg == null ? "" : ESC + "[48;0;" + bg.getRed() + ";" + bg.getGreen() + ";" + bg.getBlue() + ";" + bg.getAlpha() + "m";
-				String f = textColor == null ? "" : ESC + "[38;0;" + textColor.getRGB() + "m";
+				String b = bg == null ? "" : bg == COLOR_DEFAULT_BG ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), true) + "m" : ESC + "[48;0;" + bg.getRed() + ";" + bg.getGreen() + ";" + bg.getBlue() + ";" + bg.getAlpha() + "m";
+				String f = textColor == null ? "" : textColor == COLOR_DEFAULT_FG ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), false) + "m" : ESC + "[38;0;" + textColor.getRGB() + "m";
 				String a = ansiEsc == null ? "" : ansiEsc;
 				return b + f + a + r;
 			}
@@ -229,23 +239,26 @@ public class AnsiColors {
 		MAGENTA,
 		CYAN,
 		WHITE,
-		BRIGHT_BLACK_GREY(),
+		BRIGHT_BLACK_GREY,
 		BRIGHT_RED,
 		BRIGHT_GREEN,
 		BRIGHT_YELLOW,
 		BRIGHT_BLUE,
 		BRIGHT_MAGENTA,
 		BRIGHT_CYAN,
-		BRIGHT_WHITE
+		BRIGHT_WHITE,
+		DEFAULT_COLOR
 	}
 
 	/**
-	 * @param code 0-15 4bit color
+	 * @param code 0-15 4bit color or 16 for default color
 	 * @param background(boolean)
 	 * @return the actual ANSI ESC code you need to use for that specific 4 bit color
 	 */
 	public static int getANSI4BitColor(byte code, boolean bg)
 	{
+		if(code > 15)
+			return bg ? 49 : 39;//if code is 16 return default color vars
 		int bgAdd = bg ? 10 : 0;//the variable to add to the some of the color code background is +10
 		return code + (code < 8 ? 30 : 82) + bgAdd;//+30 as the offset ansi index. starting at the 8th code it has to switch to the next start of ANSI colors
 	}
