@@ -16,6 +16,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class IOUtils {
@@ -117,7 +118,7 @@ public class IOUtils {
 	 */
 	public static List<String> getFileLines(File f)
 	{
-		return getFileLines(getReader(f));
+		return f.exists() ? getFileLines(getReader(f)) : Collections.emptyList();
 	}
 	
 	public static List<String> getFileLines(String input) 

@@ -60,7 +60,6 @@ public class TerminalApp {
 	public String conHost = "";
 	public List<String> linuxCmdsExe = new ArrayList<>(0);//configurable list to use LinuxCmdExe instead of LinuxBash or another
 	public Map<String, String> linuxFlags = new HashMap<>(0);//override linux new window flags in case you have an updated or outdated version then is currently supported
-	private MapConfig colorterms;
 	protected Profile profile;
 	/**
 	 * changing this to true will make you use 4 bit ANSI colors instead of xterm256 or true colors
@@ -243,8 +242,7 @@ public class TerminalApp {
 		if(!TerminalUtil.isExeValid(this.terminal))
 		{
 			this.terminal = TerminalUtil.getTerminal();
-			if(this.terminal == null && this.canLogBoot)
-				this.bootLogger.println("Unable to find terminal:" + System.getProperty("os.name") + " report to https://github.com/jredfox/OpenTerminal/issues");
+			Assert.is(this.terminal != null, "Unable to find terminal:" + System.getProperty("os.name") + " report to https://github.com/jredfox/OpenTerminal/issues");
 			cfg.set("terminal", this.terminal);
 		}
 		if(!this.conHost.isEmpty() && !TerminalUtil.isExeValid(this.conHost))
@@ -275,9 +273,6 @@ public class TerminalApp {
 		this.ansi4bitPalette = cfg.get("ansi4bitPalette", "").trim();
 		this.syncColorModeThread = cfg.get("syncColorModeThread", this.syncColorModeThread);
 		cfg.save();
-		
-		this.colorterms = new MapConfig(new File(OTConstants.configs, "colorterms.cfg"));
-		this.colorterms.load();//skips load if cfg doesn't exist
 	}
 	
 	public void initPalettes()
@@ -555,15 +550,18 @@ public class TerminalApp {
 	 */
 	public void loadColors() throws IOException 
 	{
+		boolean check = false;
+		String mode = null;
 		if(this.ANSI4BIT)
 		{
 			this.colors.setColorMode(TermColors.ANSI4BIT);//ignore cached and current CLI's data in this mode
 		}
 		else
 		{
+			List<String> tl = IOUtils.getFileLines(new File(OTConstants.home, "cache/" + this.terminal + ".dat"));
+			mode = tl.isEmpty() ? "" : tl.get(0).trim();
 			long ms = System.currentTimeMillis();
-			String mode = this.colorterms.get(this.terminal, null);
-			if(mode == null)
+			if(mode.isEmpty())
 			{
 				mode = this.getTermColors();
 				if(mode == null)
@@ -574,12 +572,14 @@ public class TerminalApp {
 				}
 				else
 				{
-					this.logBoot("Saving:" + this.terminal + "=\"" + mode + "\"");
+					this.logBoot("Saving:" + this.terminal + ":" + this.colors.getColorMode(mode));
 					this.updateColorModeCache(mode);
 				}
 			}
 			else
-				this.startTermColorThread(mode);
+			{
+				check = true;
+			}
 			this.logBoot("Get CLI Color in:" + (System.currentTimeMillis()-ms) + " COLOR ENV:" + mode);
 			this.colors.setColorMode(mode);//safe to assume true color as ansi4bit is never true here
 		}
@@ -590,6 +590,8 @@ public class TerminalApp {
 			if(p.hasColoredErr)
 				System.setErr(new ColoredPrintStream(p.bgErr, p.fgErr, p.ansiFormatErr, this.colors, System.err));
 		}
+		if(check)
+			this.startTermColorThread(mode);//TODO move to end
 		this.logBoot("TermColors:" + this.colors.colorMode + " CachedColor:" + this.colors.colors);
 	}
 
@@ -607,7 +609,7 @@ public class TerminalApp {
 				try
 				{
 					String newMode = TerminalApp.this.getTermColors();
-					if(newMode != null && !mode.equals(newMode))
+					if(TerminalApp.this.colors.getColorMode(mode) != TerminalApp.this.colors.getColorMode(newMode))
 					{
 						TerminalApp.this.updateColorModeCache(newMode);
 						//update the server & CLI to the new color mode
@@ -630,12 +632,7 @@ public class TerminalApp {
 	
 	public void updateColorModeCache(String mode) throws FileNotFoundException 
 	{
-		FileUtils.create(this.colorterms.file);
-		FileInputStream lock = new FileInputStream(this.colorterms.file);//this creates a blocking to other processes while we read and write
-		this.colorterms.load();//re-parse values to ensure no conflict before saving
-		this.colorterms.set(this.terminal, mode);
-		this.colorterms.save();
-		IOUtils.close(lock);
+		IOUtils.saveFileLines(Arrays.asList(this.colors.getColorMode(mode).toString()), new File(OTConstants.home, "cache/" + this.terminal + ".dat"), true);
 	}
 
 	public String getTermColors() throws IOException 
