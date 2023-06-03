@@ -105,6 +105,10 @@ public class TerminalApp {
 	 */
 	public boolean exitOnCLI;
 	/**
+	 * when true if a terminal $COLORTERM$TERM string changes it will sync these changes live without reboot
+	 */
+	protected boolean syncColorModeThread = true;
+	/**
 	 * set this field if you require custom logic on the CLI client side running it must have a valid default contructor
 	 */
 	public Class<? extends TerminalApp> appClass = null;
@@ -269,6 +273,7 @@ public class TerminalApp {
 		}
 		
 		this.ansi4bitPalette = cfg.get("ansi4bitPalette", "").trim();
+		this.syncColorModeThread = cfg.get("syncColorModeThread", this.syncColorModeThread);
 		cfg.save();
 		
 		this.colorterms = new MapConfig(new File(OTConstants.configs, "colorterms.cfg"));
@@ -605,10 +610,13 @@ public class TerminalApp {
 					if(newMode != null && !mode.equals(newMode))
 					{
 						TerminalApp.this.updateColorModeCache(newMode);
-						//update the server to the new color mode
-						TerminalApp.this.colors.updateColorMode(newMode, false);
-						System.out.print("\033[H\033[2J");//clear line feed without deleting them
-						System.out.println("AnsiColors Updated: $TERMCOLOR:" + TerminalApp.this.terminal + " to:" + TerminalApp.this.colors.colorMode);
+						//update the server & CLI to the new color mode
+						if(TerminalApp.this.syncColorModeThread)
+						{
+							TerminalApp.this.colors.updateColorMode(newMode, false);
+							System.out.print("\033[H\033[2J");//clear line feed without deleting them
+							System.out.println("AnsiColors Updated: $TERMCOLOR:" + TerminalApp.this.terminal + " to:" + TerminalApp.this.colors.colorMode);
+						}
 					}
 				}
 				catch(Throwable t)
