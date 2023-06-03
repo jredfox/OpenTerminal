@@ -1,2 +1,1 @@
-check default colors all color modes
 check linux color palettes

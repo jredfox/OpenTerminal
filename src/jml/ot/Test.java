@@ -88,7 +88,7 @@ public class Test {
 		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_YELLOW, ANSI4BitColor.BRIGHT_YELLOW.name(), true));
 		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_BLUE, ANSI4BitColor.BRIGHT_BLUE.name(), true));
 		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_MAGENTA, ANSI4BitColor.BRIGHT_MAGENTA.name(), true));
-		System.out.println(app.colors.getNonColoredReset() + app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_CYAN, ANSI4BitColor.BRIGHT_CYAN.name(), true));
+		System.out.println(app.colors.getHardReset() + app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_CYAN, ANSI4BitColor.BRIGHT_CYAN.name(), true));
 		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_WHITE, ANSI4BitColor.BRIGHT_WHITE.name(), true));
 		
 		System.out.println(app.colors.formatANSI4BitColor(ANSI4BitColor.BLACK, null, ANSI4BitColor.BLACK.name(), true));
@@ -105,7 +105,7 @@ public class Test {
 		System.out.println(app.colors.formatANSI4BitColor(ANSI4BitColor.BRIGHT_YELLOW, null,ANSI4BitColor.BRIGHT_YELLOW.name(), true));
 		System.out.println(app.colors.formatANSI4BitColor(ANSI4BitColor.BRIGHT_BLUE, null,ANSI4BitColor.BRIGHT_BLUE.name(), true));
 		System.out.println(app.colors.formatANSI4BitColor(ANSI4BitColor.BRIGHT_MAGENTA, null,ANSI4BitColor.BRIGHT_MAGENTA.name(), true));
-		System.out.println(app.colors.getNonColoredReset() + app.colors.formatANSI4BitColor(ANSI4BitColor.BRIGHT_CYAN, null, ANSI4BitColor.BRIGHT_CYAN.name(), true));
+		System.out.println(app.colors.getHardReset() + app.colors.formatANSI4BitColor(ANSI4BitColor.BRIGHT_CYAN, null, ANSI4BitColor.BRIGHT_CYAN.name(), true));
 		System.out.println(app.colors.formatANSI4BitColor(ANSI4BitColor.BRIGHT_WHITE, null, ANSI4BitColor.BRIGHT_WHITE.name(), true));
 		System.out.println(app.colors.formatANSI4BitColor(ANSI4BitColor.GREEN, ANSI4BitColor.BRIGHT_YELLOW, "GREEN AND YELLOW", false) + " " + AnsiColors.formatEsc(49) + AnsiColors.formatEsc(39) + "Im DEFAULT BACKGROUND" + app.colors.getReset());
 		System.exit(0);

@@ -97,7 +97,7 @@ public class ColoredPrintStream extends WrappedPrintStream {
 	
 	public String prefix()
 	{
-		return (this.override ? this.c.getNonColoredReset() : this.c.getReset()) + this.cs;
+		return (this.override ? this.c.getHardReset() : this.c.getReset()) + this.cs;
 	}
 
 	/**

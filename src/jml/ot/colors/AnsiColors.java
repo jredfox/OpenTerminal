@@ -24,11 +24,7 @@ public class AnsiColors {
 	/**
 	 * use this color when formatting or printing to use the CLI's(Terminal's) default Text Color
 	 */
-	public static final Color COLOR_DEFAULT_FG = new Color(0,0,0);
-	/**
-	 * use this color when formatting or printing to use the CLI's(Terminal's) default Background Color
-	 */
-	public static final Color COLOR_DEFAULT_BG = new Color(0,0,0);
+	public static final Color COLOR_DEFAULT = new Color(0,0,0);
 	/**
 	 * not supported in windows
 	 */
@@ -38,14 +34,14 @@ public class AnsiColors {
 	 */
 	public static final String ENCIRCLED = ESC + "[52m";
 	public static final String OVERLINE = ESC + "[53m";
+	public static final Palette pickerXterm256 = new Palette("resources/jml/ot/colors/xterm-256.csv");
+	public static final Palette pickerWin4Bit = new Palette("resources/jml/ot/colors/ansi4bit-windows-10.csv");
+	public Palette pickerAnsi4Bit = null;
 	/**
 	 * the AnsiColor instance used to be a static utility if your un-interested in using multiple instances
 	 * NOTE: this instance doesn't sync with your TerminalApp's colors. Therefore the colormode, color, and ansi4bit color palette will be unknown
 	 */
 	public static final AnsiColors INSTANCE = new AnsiColors();
-	public static final Palette pickerXterm256 = new Palette("resources/jml/ot/colors/xterm-256.csv");
-	public static final Palette pickerWin4bit = new Palette("resources/jml/ot/colors/ansi4bit-windows-10.csv");
-	public Palette pickerAnsi4Bit = null;
 	
 	/**
 	 * the default color format of AnsiColors. change with {@link #setReset(Color, Color, boolean)}
@@ -60,6 +56,7 @@ public class AnsiColors {
 	public AnsiColors()
 	{
 		this.colors = "";
+		this.pickerAnsi4Bit = pickerWin4Bit;
 	}
 	
 	public AnsiColors(Color background, Color text, String ansiEsc, TermColors mode)
@@ -70,7 +67,7 @@ public class AnsiColors {
 	
 	public static enum TermColors
 	{
-		ANSI4BIT(),//16 different colors for lazy coders/ scripters not knowing RGB
+		ANSI4BIT(),//16 different colors for dinosaur graphics cards or lazy scripters
 		XTERM_256(),//one byte colors (0-255) legacy
 		TRUE_COLOR(),//RGB 24 bit standard colors with each color having 8 bits(0-255)
 		TRUE_COLOR_RGBA()//true color with transparency added currently no terminal supports this
@@ -82,7 +79,7 @@ public class AnsiColors {
 	public TermColors setColorMode(String mode)
 	{
 		mode = mode.toLowerCase();
-		TermColors colorMode = mode.equalsIgnoreCase("ansi4bit") ? TermColors.ANSI4BIT : (mode.contains("true") && mode.contains("color") || mode.contains("24") && mode.contains("bit")) ? TermColors.TRUE_COLOR : TermColors.XTERM_256;
+		TermColors colorMode = mode.equals("ansi4bit") ? TermColors.ANSI4BIT : (mode.contains("true") && mode.contains("color") || mode.contains("24") && mode.contains("bit")) ? TermColors.TRUE_COLOR : TermColors.XTERM_256;
 		this.setColorMode(colorMode);
 		return colorMode;
 	}
@@ -103,34 +100,32 @@ public class AnsiColors {
 	 */
 	public String getReset()
 	{
-		return RESET + colors;
+		return RESET + this.colors;
 	}
 	
 	/**
 	 * this will return the default ansi escape reset sequence without the colors this will override the entire console app's settings if used
 	 */
-	public String getNonColoredReset()
+	public String getHardReset()
 	{
 		return RESET;
 	}
 	
 	public void setReset(Color background, Color text, boolean cls)
 	{
-		setReset(background, text, "", cls);
+		this.setReset(background, text, "", cls);
 	}
 	
 	public void setReset(Color background, Color text, String ansiEsc, boolean cls)
 	{
-		this.colors = formatColor(background, text, ansiEsc, false);
-		System.out.print(getReset());
+		this.colors = this.formatColor(background, text, ansiEsc, false);
+		System.out.print(this.getReset() + (cls ? getCls() : ""));//in order for terminals to update the background and ansi text effects the screen has to be cleared
 		System.out.flush(); //ensure the color is set to the terminal before clearing the screen
-		if(cls)
-		  cls();//clear the screen to update the background colors. it's to avoid a bug of the background not updating every time it changes till the end of the line. it's an issue with every ANSI terminal out there
 	}
 
 	public void print(Color background, Color textColor, String str)
 	{
-		System.out.print(formatColor(background, textColor, str));
+		System.out.print(this.formatColor(background, textColor, str));
 	}
 	
 	public void print(ANSI4BitColor background, ANSI4BitColor textColor, String str)
@@ -178,29 +173,29 @@ public class AnsiColors {
 		{
 			case TRUE_COLOR:
 			{
-				String b = bg == null ? "" : bg == COLOR_DEFAULT_BG ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), true) + "m" : ESC + "[48;2;" + bg.getRed() + ";" + bg.getGreen() + ";" + bg.getBlue() + "m";
-				String f = textColor == null ? "" : textColor == COLOR_DEFAULT_FG ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), false) + "m" : ESC + "[38;2;" + textColor.getRed() + ";" + textColor.getGreen() + ";" + textColor.getBlue() + "m";
+				String b = bg == null ? "" : bg == COLOR_DEFAULT ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), true) + "m" : ESC + "[48;2;" + bg.getRed() + ";" + bg.getGreen() + ";" + bg.getBlue() + "m";
+				String f = textColor == null ? "" : textColor == COLOR_DEFAULT ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), false) + "m" : ESC + "[38;2;" + textColor.getRed() + ";" + textColor.getGreen() + ";" + textColor.getBlue() + "m";
 				String a = ansiEsc == null ? "" : ansiEsc;
 				return b + f + a + r;
 			}
 			case XTERM_256:
 			{
-				String b = bg == null ? "" : bg == COLOR_DEFAULT_BG ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), true) + "m" : ESC + "[48;5;" + pickerXterm256.pickColor(bg).code + "m";
-				String f = textColor == null ? "" : textColor == COLOR_DEFAULT_FG ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), false) + "m" : ESC + "[38;5;" + pickerXterm256.pickColor(textColor).code + "m";
+				String b = bg == null ? "" : bg == COLOR_DEFAULT ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), true) + "m" : ESC + "[48;5;" + pickerXterm256.pickColor(bg).code + "m";
+				String f = textColor == null ? "" : textColor == COLOR_DEFAULT ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), false) + "m" : ESC + "[38;5;" + pickerXterm256.pickColor(textColor).code + "m";
 				String a = ansiEsc == null ? "" : ansiEsc;
 				return b + f + a + r;
 			}
 			case ANSI4BIT:
 			{
-				String b = bg == null ? "" : bg == COLOR_DEFAULT_BG ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), true) + "m" : ESC + "[" + getANSI4BitColor((byte)pickerAnsi4Bit.pickColor(bg).code, true) + "m";
-				String f = textColor == null ? "" : textColor == COLOR_DEFAULT_FG ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), false) + "m" : ESC + "[" + getANSI4BitColor((byte)pickerAnsi4Bit.pickColor(textColor).code, false) + "m";
+				String b = bg == null ? "" : bg == COLOR_DEFAULT ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), true) + "m" : ESC + "[" + getANSI4BitColor((byte)pickerAnsi4Bit.pickColor(bg).code, true) + "m";
+				String f = textColor == null ? "" : textColor == COLOR_DEFAULT ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), false) + "m" : ESC + "[" + getANSI4BitColor((byte)pickerAnsi4Bit.pickColor(textColor).code, false) + "m";
 				String a = ansiEsc == null ? "" : ansiEsc;
 				return b + f + a + r;
 			}
 			case TRUE_COLOR_RGBA:
 			{
-				String b = bg == null ? "" : bg == COLOR_DEFAULT_BG ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), true) + "m" : ESC + "[48;0;" + bg.getRed() + ";" + bg.getGreen() + ";" + bg.getBlue() + ";" + bg.getAlpha() + "m";
-				String f = textColor == null ? "" : textColor == COLOR_DEFAULT_FG ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), false) + "m" : ESC + "[38;0;" + textColor.getRGB() + "m";
+				String b = bg == null ? "" : bg == COLOR_DEFAULT ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), true) + "m" : ESC + "[48;0;" + bg.getRed() + ";" + bg.getGreen() + ";" + bg.getBlue() + ";" + bg.getAlpha() + "m";
+				String f = textColor == null ? "" : textColor == COLOR_DEFAULT ? ESC + "[" + getANSI4BitColor((byte)ANSI4BitColor.DEFAULT_COLOR.ordinal(), false) + "m" : ESC + "[38;0;" + textColor.getRGB() + "m";
 				String a = ansiEsc == null ? "" : ansiEsc;
 				return b + f + a + r;
 			}
@@ -277,7 +272,7 @@ public class AnsiColors {
 	/**
 	 * clear screen using ANSI escape codes
 	 */
-	public static void cls() 
+	public static void cls()
 	{
 	    System.out.print(getCls());
 	    System.out.flush();

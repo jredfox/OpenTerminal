@@ -2,37 +2,22 @@ package jml.ot;
 
 import java.awt.Color;
 
-import jml.ot.colors.Palette;
+import jml.ot.colors.AnsiColors;
+import jml.ot.colors.AnsiColors.TermColors;
 
 public class Debug {
 
 	public static void main(String[] args)
 	{
-//		Color c = new Color(249,241,135);
-//		System.out.println(c);
-//		System.out.println(new Palette("resources/jml/ot/colors/ansi4bit-terminal.app.csv").pickColor(c));
-	}
-	
-	public static Object getType(Object obj)
-	{
-		Object o = new Object();
-		if(obj instanceof Byte)
-			return o;
-		else if(obj instanceof Short)
-			return o;
-		else if(obj instanceof Integer)
-			return o;
-		else if(obj instanceof Long)
-			return o;
-		else if(obj instanceof Float)
-			return o;
-		else if(obj instanceof Double)
-			return o;
-		else if(obj instanceof Boolean)
-			return o;
-		else if(obj instanceof String)
-			return o;
-		return null;
+		System.out.println(AnsiColors.INSTANCE.formatColor(TermColors.ANSI4BIT, Color.BLACK, Color.WHITE, "", false));
+		System.out.println(AnsiColors.INSTANCE.formatColor(TermColors.ANSI4BIT, AnsiColors.COLOR_DEFAULT, AnsiColors.COLOR_DEFAULT, "", false));
+		System.out.println();
+		System.out.println(AnsiColors.INSTANCE.formatColor(TermColors.XTERM_256, Color.BLACK, Color.WHITE, "", false));
+		System.out.println(AnsiColors.INSTANCE.formatColor(TermColors.XTERM_256, AnsiColors.COLOR_DEFAULT, Color.WHITE, "", false));
+		System.out.println();
+		System.out.println(AnsiColors.INSTANCE.formatColor(TermColors.TRUE_COLOR, Color.BLACK, Color.WHITE, "", false));
+		System.out.println(AnsiColors.INSTANCE.formatColor(TermColors.TRUE_COLOR, AnsiColors.COLOR_DEFAULT, Color.WHITE, "", false));
+
 	}
 	
 }
