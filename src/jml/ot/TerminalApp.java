@@ -284,7 +284,7 @@ public class TerminalApp {
 		else if(TerminalUtil.isMacTerm(this.terminal))
 			p = "ansi4bit-terminal.app.csv";
 		else
-			p = "ansi4bit-xterm.csv";//default to xterm 4-bit color palette
+			p = "ansi4bit-gnome-tango.csv";//default to tango as it's linux's default
 		this.logBoot("ANSI 4-bit Color Palette:" + p);
 		this.colors.pickerAnsi4Bit = new Palette(bp + p);
 	}
