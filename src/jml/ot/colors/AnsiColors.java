@@ -171,7 +171,7 @@ public class AnsiColors {
 	 */
 	public String formatColor(TermColors mode, Color bg, Color textColor, String ansiEsc, boolean reset)
 	{
-		Assert.is(mode != null, "AnsiColors#TermColor is null!");
+		Assert.is(mode != null, "AnsiColors#colorMode is null!");
 		String r = reset ? this.getReset() : "";
 		
 		switch(mode)
@@ -239,7 +239,10 @@ public class AnsiColors {
 		MAGENTA,
 		CYAN,
 		WHITE,
-		BRIGHT_BLACK_GREY,
+		/**
+		 * grey in most terminal's color palettes but could also be a brighter(lighter) black
+		 */
+		BRIGHT_BLACK,
 		BRIGHT_RED,
 		BRIGHT_GREEN,
 		BRIGHT_YELLOW,

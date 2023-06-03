@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import jredfox.common.io.IOUtils;
+import jredfox.common.utils.Assert;
 import jredfox.common.utils.JavaUtil;
 
 /**
@@ -63,6 +64,7 @@ public class MapConfig {
 	
 	public void set(String key, Object value)
 	{
+		Assert.is(this.getType(value) != null);
 		list.put(key, value);
 	}
 	

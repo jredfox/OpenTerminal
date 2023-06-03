@@ -1,5 +1,6 @@
 re-add wrapped args
 PID checker on both server and client to see if they close
+debug inputstreams and terminal app when two or more CLI's replace SYSO
 
 create SocketPipes(pipes over the network from a socket)
 create SharedPipes (localhost pipes)
