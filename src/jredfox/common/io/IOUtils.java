@@ -207,4 +207,16 @@ public class IOUtils {
 	    		System.err.println("unable to delete file:" + file);
 	}
 
+	public static FileInputStream getFileInputStream(File file)
+	{
+		try
+		{
+			return new FileInputStream(file);
+		}
+		catch(FileNotFoundException e)
+		{
+			return null;
+		}
+	}
+
 }

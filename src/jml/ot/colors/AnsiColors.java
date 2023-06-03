@@ -42,16 +42,17 @@ public class AnsiColors {
 	 * NOTE: this instance doesn't sync with your TerminalApp's colors. Therefore the colormode, color, and ansi4bit color palette will be unknown
 	 */
 	public static final AnsiColors INSTANCE = new AnsiColors();
-	
-	/**
-	 * the default color format of AnsiColors. change with {@link #setReset(Color, Color, boolean)}
-	 */
-	public String colors;
-	
 	/**
 	 * XTERM COLOR MODE. Change it with {@link #setColorMode(TermColors)}. The terminal once spawned should tell you what color mode it supports
 	 */
 	public TermColors colorMode;
+	/**
+	 * the default color format of AnsiColors. change with {@link #setReset(Color, Color, boolean)}
+	 */
+	public String colors;
+	protected Color currentBg;
+	protected Color currentFg;
+	protected String currentAnsiEsc;
 	
 	public AnsiColors()
 	{
@@ -76,23 +77,47 @@ public class AnsiColors {
 	/**
 	 * switch the ANSI terminal mode from one mode to another
 	 */
-	public TermColors setColorMode(String mode)
-	{
-		mode = mode.toLowerCase();
-		TermColors colorMode = mode.equals("ansi4bit") ? TermColors.ANSI4BIT : (mode.contains("true") && mode.contains("color") || mode.contains("24") && mode.contains("bit")) ? TermColors.TRUE_COLOR : TermColors.XTERM_256;
-		this.setColorMode(colorMode);
-		return colorMode;
-	}
-	
-	/**
-	 * switch the ANSI terminal mode from one mode to another
-	 */
 	public void setColorMode(TermColors mode)
 	{
 		if(mode == null) 
 			return;
 		
 		this.colorMode = mode;
+	}
+	
+	/**
+	 * switch the ANSI terminal mode from one mode to another
+	 */
+	public void setColorMode(String mode)
+	{
+		this.setColorMode(this.getColorMode(mode));
+	}
+	
+	/**
+	 * get's a color mode from string. Assumes XTERM-256 if not specified
+	 */
+	public TermColors getColorMode(String mode) 
+	{
+		mode = mode.toLowerCase();
+		TermColors colorMode = mode.equals("ansi4bit") ? TermColors.ANSI4BIT : (mode.equalsIgnoreCase("nullnull") || mode.contains("true") && mode.contains("color") || mode.contains("24") && mode.contains("bit")) ? TermColors.TRUE_COLOR : TermColors.XTERM_256;
+		return colorMode;
+	}
+	
+	/**
+	 * sets the color mode and syncs {@link #colors} to the new format from {@link #currentBg} {@link #currentFg} {@link #currentAnsiEsc} values
+	 */
+	public void updateColorMode(String newMode, boolean cls)
+	{
+		this.updateMode(this.getColorMode(newMode), cls);
+	}
+	
+	/**
+	 * sets the color mode and syncs {@link #colors} to the new format from {@link #currentBg} {@link #currentFg} {@link #currentAnsiEsc} values
+	 */
+	public void updateMode(TermColors newMode, boolean cls)
+	{
+		this.setColorMode(newMode);
+		this.setReset(this.currentBg, this.currentFg, this.currentAnsiEsc, cls);
 	}
 
 	/**
@@ -121,6 +146,10 @@ public class AnsiColors {
 		this.colors = this.formatColor(background, text, ansiEsc, false);
 		System.out.print(this.getReset() + (cls ? getCls() : ""));//in order for terminals to update the background and ansi text effects the screen has to be cleared
 		System.out.flush(); //ensure the color is set to the terminal before clearing the screen
+		//preserve original values in case the color mode changes again
+		this.currentBg = background;
+		this.currentFg = text;
+		this.currentAnsiEsc = ansiEsc;
 	}
 
 	public void print(Color background, Color textColor, String str)

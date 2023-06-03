@@ -3,9 +3,11 @@ package jml.ot;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -285,8 +287,8 @@ public class TerminalApp {
 			p = "ansi4bit-terminal.app.csv";
 		else
 			p = "ansi4bit-gnome-tango.csv";//default to tango as it's linux's default
-		this.logBoot("ANSI 4-bit Color Palette:" + p);
 		this.colors.pickerAnsi4Bit = new Palette(bp + p);
+		this.logBoot("ANSI 4-bit Color Palette:" + bp + p);
 	}
 	
 	public void loadSession()
@@ -556,7 +558,6 @@ public class TerminalApp {
 		{
 			long ms = System.currentTimeMillis();
 			String mode = this.colorterms.get(this.terminal, null);
-			boolean save = false;
 			if(mode == null)
 			{
 				mode = this.getTermColors();
@@ -567,28 +568,15 @@ public class TerminalApp {
 					System.err.println("CRITICAL Unable to Obtain Color mode Asumming ColorMode:" + mode);
 				}
 				else
-					save = true;
+				{
+					this.logBoot("Saving:" + this.terminal + "=\"" + mode + "\"");
+					this.updateColorModeCache(mode);
+				}
 			}
+			else
+				this.startTermColorThread(mode);
 			this.logBoot("Get CLI Color in:" + (System.currentTimeMillis()-ms) + " COLOR ENV:" + mode);
-			this.colors.setColorMode(mode.equalsIgnoreCase("nullnull") ? TermColors.TRUE_COLOR.toString() : mode);//safe to assume true color as ansi4bit is never true here
-			
-			//sanity check before saving. AnsiColors#setColorMode handles improper strings and will set the mode to XTERM-256
-			mode = mode.replace("\"", "").trim();
-			if(mode.isEmpty())
-			{
-				this.logBoot("CRITICAL ERR: Mode has returned an empty string cannot save!");
-				save = false;
-			}
-			
-			if(save)
-			{
-				this.colorterms.set(this.terminal, this.colors.colorMode.toString());//just in case loadColors is called again
-				FileUtils.create(this.colorterms.file);
-				PrintStream cp = new PrintStream(new FileOutputStream(this.colorterms.file, true), true);
-				cp.println("Str:" + this.terminal + "=\"" + mode + "\"");
-				IOUtils.close(cp);
-				this.logBoot("Saved:" + this.terminal + "=\"" + mode + "\"");
-			}
+			this.colors.setColorMode(mode);//safe to assume true color as ansi4bit is never true here
 		}
 		Profile p = this.getProfile();
 		if(p != null)
@@ -598,6 +586,48 @@ public class TerminalApp {
 				System.setErr(new ColoredPrintStream(p.bgErr, p.fgErr, p.ansiFormatErr, this.colors, System.err));
 		}
 		this.logBoot("TermColors:" + this.colors.colorMode + " CachedColor:" + this.colors.colors);
+	}
+
+	/**
+	 * check the CLI's $TERMCOLOR $TERM for an update desynced from the main thread
+	 */
+	public void startTermColorThread(String mode) throws IOException 
+	{
+		this.logBoot("Starting $TERMCOLOR check from CLI on desynced thread");
+		Thread t = new Thread()
+		{
+			@Override
+			public void run()
+			{
+				try
+				{
+					String newMode = TerminalApp.this.getTermColors();
+					if(newMode != null && !mode.equals(newMode))
+					{
+						TerminalApp.this.updateColorModeCache(newMode);
+						//update the server to the new color mode
+						TerminalApp.this.colors.updateColorMode(newMode, false);
+						System.out.print("\033[H\033[2J");//clear line feed without deleting them
+						System.out.println("AnsiColors Updated: $TERMCOLOR:" + TerminalApp.this.terminal + " to:" + TerminalApp.this.colors.colorMode);
+					}
+				}
+				catch(Throwable t)
+				{
+					t.printStackTrace();
+				}
+			}
+		};
+		t.start();
+	}
+	
+	public void updateColorModeCache(String mode) throws FileNotFoundException 
+	{
+		FileUtils.create(this.colorterms.file);
+		FileInputStream lock = new FileInputStream(this.colorterms.file);//this creates a blocking to other processes while we read and write
+		this.colorterms.load();//re-parse values to ensure no conflict before saving
+		this.colorterms.set(this.terminal, mode);
+		this.colorterms.save();
+		IOUtils.close(lock);
 	}
 
 	public String getTermColors() throws IOException 
