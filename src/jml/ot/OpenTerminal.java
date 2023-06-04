@@ -80,9 +80,10 @@ public class OpenTerminal {
 		open(app);
 		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
-		if(initArgs.length == 0 || initArgs[0] == null || initArgs[0].isEmpty())
+		boolean newArgs = initArgs.length == 0 || initArgs[0] == null || initArgs[0].isEmpty();
+		if(newArgs)
 			System.out.print(msg);
-		return initArgs.length == 0 ? TerminalUtil.parseCommand(scanner.nextLine()) : initArgs;
+		return newArgs ? TerminalUtil.parseCommand(scanner.nextLine()) : initArgs;
 	}
 
 }
