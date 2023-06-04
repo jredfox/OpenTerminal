@@ -302,6 +302,7 @@ public class TerminalUtil {
 		List<String> arr = new ArrayList<>();
 		StringBuilder b = new StringBuilder();
 		boolean q = false;
+		boolean hadQ = false;
 		char startQ = 'Z';
 		char slash = '\\';
 		char q1 = '"';
@@ -330,6 +331,7 @@ public class TerminalUtil {
 					i++;//skips current loop and the next quote
 					continue;
 				}
+				hadQ = true;
 				q = !q;
 				startQ = q ? c : 'Z';
 				continue;
@@ -339,10 +341,11 @@ public class TerminalUtil {
 			if(!q && c == ' ')
 			{
 				String bs = b.toString();
-				if(!bs.isEmpty())
+				if(!bs.isEmpty() || hadQ)
 				{
 					arr.add(bs);
 					b = new StringBuilder();
+					hadQ = false;
 				}
 				continue;
 			}
@@ -352,8 +355,11 @@ public class TerminalUtil {
 		}
 		//add the last arg
 		String l = b.toString();
-		if(!l.isEmpty())
+		if(!l.isEmpty() || hadQ)
+		{
 			arr.add(l);
+			hadQ = false;
+		}
 		return arr.isEmpty() ? new String[0] : arr.toArray(new String[0]);
 	}
 
