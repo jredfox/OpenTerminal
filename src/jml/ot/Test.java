@@ -75,7 +75,7 @@ public class Test {
 //		app.shouldLog = true;
 //		app.pause = false;
 		OpenTerminal.open(app);
-//		JREUtil.sleep(500);
+		JREUtil.sleep(500);
 //		app.colors.println(null, Color.BLACK, "BLACK");
 		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BLACK, ANSI4BitColor.BLACK.name(), true));
 		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.RED, ANSI4BitColor.RED.name(), true));

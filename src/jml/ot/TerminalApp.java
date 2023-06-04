@@ -104,9 +104,14 @@ public class TerminalApp {
 	 */
 	public boolean exitOnCLI;
 	/**
-	 * when true if a terminal $COLORTERM$TERM string changes it will sync these changes live without reboot
+	 * Config option. When true if a terminal $COLORTERM$TERM string changes it will sync these changes live without reboot
 	 */
 	protected boolean syncColorModeThread = true;
+	/**
+	 * Config option {@link #loadConfig()}
+	 */
+	public String cachedColorTerm;
+	protected boolean ANSI4BitDatFlag = false;
 	/**
 	 * set this field if you require custom logic on the CLI client side running it must have a valid default contructor
 	 */
@@ -187,9 +192,7 @@ public class TerminalApp {
 				this.bootLogger.println("Powershell has some bugs especially in windows 10 and is not recommended for your application's default! The Start-Process command may have different bugs in different versions and not boot the CLI");
 				return new PowerShellExe(this);
 			case "Terminal.app":
-			{
 				return new MacBashExe(this);
-			}
 		}
 		if(TerminalUtil.linux_terminals.contains(this.terminal))
 		{
@@ -273,6 +276,16 @@ public class TerminalApp {
 		this.ansi4bitPalette = cfg.get("ansi4bitPalette", "").trim();
 		this.syncColorModeThread = cfg.get("syncColorModeThread", this.syncColorModeThread);
 		cfg.save();
+		
+		//get the cachedColorTerm from the terminal.dat file if it exists
+		List<String> tl = IOUtils.getFileLines(new File(OTConstants.home, "cache/" + this.terminal + ".dat"));
+		this.cachedColorTerm = tl.isEmpty() ? "" : tl.get(0).trim();
+		if(this.colors.getColorMode(this.cachedColorTerm) == TermColors.ANSI4BIT)
+		{
+			System.out.println("setting ansi4bit to true from loadConfig()");
+			this.ANSI4BIT = true;
+			this.ANSI4BitDatFlag = true;
+		}
 	}
 	
 	public void initPalettes()
@@ -551,22 +564,21 @@ public class TerminalApp {
 	public void loadColors() throws IOException 
 	{
 		boolean check = false;
-		String mode = null;
+		String mode = this.cachedColorTerm;
 		if(this.ANSI4BIT)
 		{
 			this.colors.setColorMode(TermColors.ANSI4BIT);//ignore cached and current CLI's data in this mode
+			check = this.ANSI4BitDatFlag;//only perform check if the ansi4bitcolor mode wasn't true from the user config
 		}
 		else
 		{
-			List<String> tl = IOUtils.getFileLines(new File(OTConstants.home, "cache/" + this.terminal + ".dat"));
-			mode = tl.isEmpty() ? "" : tl.get(0).trim();
 			long ms = System.currentTimeMillis();
 			if(mode.isEmpty())
 			{
 				mode = this.getTermColors();
 				if(mode == null)
 				{
-					mode = TerminalUtil.isWindowsTerm(this.terminal) ? TermColors.TRUE_COLOR.toString() : TermColors.XTERM_256.toString();//safe to assume as this never gets called when ansi4bit mode is enabled
+					mode = TerminalUtil.isWindowsTerm(this.terminal) ? TermColors.TRUE_COLOR.toString() : TermColors.XTERM_256.toString();//safe to assume for most terminals xterm-256 as the fallout
 					this.logBoot("CRITICAL Unable to Obtain Color mode Asumming ColorMode:" + mode);
 					System.err.println("CRITICAL Unable to Obtain Color mode Asumming ColorMode:" + mode);
 				}
@@ -578,7 +590,7 @@ public class TerminalApp {
 			}
 			else
 			{
-				check = true;
+				check = true;//don't re-check colors from the color thread if it's already fetched
 			}
 			this.logBoot("Get CLI Color in:" + (System.currentTimeMillis()-ms) + " COLOR ENV:" + mode);
 			this.colors.setColorMode(mode);//safe to assume true color as ansi4bit is never true here
@@ -608,16 +620,17 @@ public class TerminalApp {
 			{
 				try
 				{
-					String newMode = TerminalApp.this.getTermColors();
-					if(TerminalApp.this.colors.getColorMode(mode) != TerminalApp.this.colors.getColorMode(newMode))
+					TermColors oldMode = TerminalApp.this.colors.getColorMode(mode);
+					TermColors newMode = TerminalApp.this.colors.getColorMode(TerminalApp.this.getTermColors());
+					if(oldMode != newMode)
 					{
-						TerminalApp.this.updateColorModeCache(newMode);
+						TerminalApp.this.updateColorModeCache(newMode.toString());
 						//update the server & CLI to the new color mode
 						if(TerminalApp.this.syncColorModeThread)
 						{
 							TerminalApp.this.colors.updateColorMode(newMode, false);
 							System.out.print("\033[H\033[2J");//clear line feed without deleting them
-							System.out.println("AnsiColors Updated: $TERMCOLOR:" + TerminalApp.this.terminal + " to:" + TerminalApp.this.colors.colorMode);
+							System.out.println("AnsiColors Updated: $TERMCOLOR:" + TerminalApp.this.terminal + " from:" + oldMode + " to:" + TerminalApp.this.colors.colorMode);
 						}
 					}
 				}

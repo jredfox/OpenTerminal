@@ -1,0 +1,6 @@
+<MSG>"arg1" "arg2"...
+\ = escape
+\\ = backslash
+' or " = quotes
+"" or '' = escaped quote
+\" or \' = escaped quote

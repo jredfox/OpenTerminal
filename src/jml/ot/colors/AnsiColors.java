@@ -108,13 +108,13 @@ public class AnsiColors {
 	 */
 	public void updateColorMode(String newMode, boolean cls)
 	{
-		this.updateMode(this.getColorMode(newMode), cls);
+		this.updateColorMode(this.getColorMode(newMode), cls);
 	}
 	
 	/**
 	 * sets the color mode and syncs {@link #colors} to the new format from {@link #currentBg} {@link #currentFg} {@link #currentAnsiEsc} values
 	 */
-	public void updateMode(TermColors newMode, boolean cls)
+	public void updateColorMode(TermColors newMode, boolean cls)
 	{
 		this.setColorMode(newMode);
 		this.setReset(this.currentBg, this.currentFg, this.currentAnsiEsc, cls);
