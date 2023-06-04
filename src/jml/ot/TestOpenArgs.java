@@ -1,7 +1,4 @@
-package jml.ipc.pipes;
-
-import jml.ot.OpenTerminal;
-import jml.ot.TerminalApp;
+package jml.ot;
 
 public class TestOpenArgs {
 	
@@ -10,7 +7,7 @@ public class TestOpenArgs {
 		args = OpenTerminal.openWithArgs(new TerminalApp("test_open_args", "TEST OPEN ARGS", ""), "Enter A Command:", args);
 		int i = 0;
 		for(String s : args)
-			System.out.println("arg" + i++ + ":" + s);
+			System.out.println("arg" + i++ + ":\"" + s + "\"");
 		System.exit(0);
 	}
 
