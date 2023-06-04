@@ -252,6 +252,7 @@ public class TerminalApp {
 			cfg.set("conHost", this.conHost);
 		}
 		this.ANSI4BIT = cfg.get("ANSI-4bit-Colors", this.ANSI4BIT);
+		this.ANSI4BitDatFlag = !this.ANSI4BIT;
 		
 		String[] lcmds = cfg.get("linuxCmdExe", "").split(";");
 		for(String c : lcmds)
@@ -282,7 +283,6 @@ public class TerminalApp {
 		{
 			System.out.println("setting ansi4bit to true from loadConfig()");
 			this.ANSI4BIT = true;
-			this.ANSI4BitDatFlag = true;
 		}
 	}
 	
