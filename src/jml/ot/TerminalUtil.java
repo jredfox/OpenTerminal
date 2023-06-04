@@ -389,6 +389,8 @@ public class TerminalUtil {
 					continue;
 				}
 				hadQ = true;
+				if(q && next != ' ')
+					b.append(c);
 				q = !q;
 				startQ = q ? c : 'Z';
 				continue;

@@ -83,7 +83,7 @@ public class OpenTerminal {
 		boolean newArgs = initArgs.length == 0 || initArgs[0] == null || initArgs[0].isEmpty();
 		if(newArgs)
 			System.out.print(msg);
-		return newArgs ? TerminalUtil.parseCommandLoosely(scanner.nextLine()) : initArgs;
+		return newArgs ? TerminalUtil.parseCommand(scanner.nextLine()) : initArgs;
 	}
 
 }
