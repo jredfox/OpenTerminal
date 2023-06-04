@@ -3,11 +3,9 @@ package jml.ot;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -106,11 +104,11 @@ public class TerminalApp {
 	/**
 	 * Config option. When true if a terminal $COLORTERM$TERM string changes it will sync these changes live without reboot
 	 */
-	protected boolean syncColorModeThread = true;
+	public boolean syncColorModeThread = true;
 	/**
-	 * Config option {@link #loadConfig()}
+	 * populated from terminal.dat on {@link #loadConfig()}
 	 */
-	public String cachedColorTerm;
+	protected String cachedColorTerm;
 	protected boolean ANSI4BitDatFlag = false;
 	/**
 	 * set this field if you require custom logic on the CLI client side running it must have a valid default contructor
