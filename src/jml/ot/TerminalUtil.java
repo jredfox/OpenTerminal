@@ -1,6 +1,7 @@
 package jml.ot;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import jredfox.common.utils.FileUtil;
@@ -289,6 +290,71 @@ public class TerminalUtil {
 	public static boolean isMacTerm(String terminal) 
 	{
 		return mac_terminals.contains(terminal) || !terminal.endsWith(".app") && mac_terminals.contains(terminal + ".app");
+	}
+	
+	/**
+	 * parse a command and turn it into arguments with escape sequencing supported
+	 * \\ \" \' "" ''
+	 */
+	public static String[] parseCommand(String cmd)
+	{
+		cmd = cmd.trim();
+		List<String> arr = new ArrayList<>();
+		StringBuilder b = new StringBuilder();
+		boolean q = false;
+		char startQ = 'Z';
+		char slash = '\\';
+		char q1 = '"';
+		char q2 = '\'';
+		char[] chars = cmd.toCharArray();
+		char c = '.';
+		char next = 'Z';
+		for(int i=0; i < chars.length; i++)
+		{
+			c = chars[i];
+			next = i+1 < chars.length ? chars[i+1] : 'Z';
+			if(c == '\\' && (next == slash || next == q1 || next == q2))
+			{
+				b.append(next);
+				i++;
+				continue;
+			}
+			
+			//set the quote boolean to preserve spacing
+			if(!q && (c == q1 || c == q2) || q && c == startQ)
+			{
+				//escape the double quotes after the variable has started
+				if(q && c == next)
+				{
+					b.append(c);
+					i++;//skips current loop and the next quote
+					continue;
+				}
+				q = !q;
+				startQ = q ? c : 'Z';
+				continue;
+			}
+			
+			//new variable detected
+			if(!q && c == ' ')
+			{
+				String bs = b.toString();
+				if(!bs.isEmpty())
+				{
+					arr.add(bs);
+					b = new StringBuilder();
+				}
+				continue;
+			}
+			
+			//append the characters
+			b.append(c);
+		}
+		//add the last arg
+		String l = b.toString();
+		if(!l.isEmpty())
+			arr.add(l);
+		return arr.isEmpty() ? new String[0] : arr.toArray(new String[0]);
 	}
 
 }

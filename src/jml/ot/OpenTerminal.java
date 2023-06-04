@@ -1,6 +1,7 @@
 package jml.ot;
 
 import java.io.PrintStream;
+import java.util.Scanner;
 
 import jml.ot.terminal.host.ConsoleHost;
 
@@ -68,6 +69,20 @@ public class OpenTerminal {
 		{
 			boot.close();
 		}
+	}
+	
+	/**
+	 * open your TerminalApp and grab args before executing your main(String[] args)
+	 * @return the new arguments
+	 */
+	public static String[] openWithArgs(TerminalApp app, String msg, String[] initArgs)
+	{
+		open(app);
+		@SuppressWarnings("resource")
+		Scanner scanner = new Scanner(System.in);
+		if(initArgs.length == 0 || initArgs[0] == null || initArgs[0].isEmpty())
+			System.out.print(msg);
+		return initArgs.length == 0 ? TerminalUtil.parseCommand(scanner.nextLine()) : initArgs;
 	}
 
 }
