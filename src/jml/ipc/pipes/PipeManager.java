@@ -21,6 +21,7 @@ public abstract class PipeManager {
 	//thread vars
 	public volatile boolean isRunning;
 	public volatile boolean isTicking = true;
+	public boolean hasErr;
 	public Thread ticker;
 	
 	public PipeManager()
@@ -84,7 +85,7 @@ public abstract class PipeManager {
 				System.err.println("Error while ticking pipe:" + p.id + ("\nisHost:" + !this.isClient) + "\nisPipeServer:" + (p instanceof PipeServer));
 				t.printStackTrace();
 				this.isRunning = false;
-				System.exit(-1);//Crash the App an error occurred while ticking
+				this.hasErr = true;
 			}
 			//TODO: check PID's is alive here based on if is host or CLI and then stop this thread
 		}

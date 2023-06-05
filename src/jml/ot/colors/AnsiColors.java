@@ -57,6 +57,7 @@ public class AnsiColors {
 	public AnsiColors()
 	{
 		this.colors = "";
+		this.colorMode = TermColors.TRUE_COLOR;
 		this.pickerAnsi4Bit = pickerWin4Bit;
 	}
 	
@@ -318,13 +319,11 @@ public class AnsiColors {
 	public static void enableCmdColors()
 	{
 		String prop = System.getProperty("ot.w");
-		if(OTConstants.LAUNCHED && prop != null)
+		if(prop != null)
 		{
-			boolean cmd = prop.equals("true");
 			try
 			{
-				if(cmd)
-					new ProcessBuilder(new String[]{"cmd", "/c", "echo | set /p dummyName=\"\""}).inheritIO().start().waitFor();
+				new ProcessBuilder(new String[]{"cmd", "/c", "<nul set /p dummyName=\"\""}).inheritIO().start().waitFor();
 			}
 			catch (Exception e){e.printStackTrace();}
 		}

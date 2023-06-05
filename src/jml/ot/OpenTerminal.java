@@ -3,6 +3,8 @@ package jml.ot;
 import java.io.PrintStream;
 import java.util.Scanner;
 
+import jml.ot.colors.AnsiColors;
+import jml.ot.colors.AnsiColors.TermColors;
 import jml.ot.terminal.host.ConsoleHost;
 
 public class OpenTerminal {
@@ -30,21 +32,22 @@ public class OpenTerminal {
 		}
 		else if(System.console() != null && !app.force)
 		{
-			app.logBoot("Console is non-null while forcing a new window isn't enabled!");
-			System.err.println("Console is non-null while forcing a new window isn't enabled!");
+			app.logBoot("Console is already opened. Loading TerminalApp with IPC disabled");
+			app.load(false);
 			boot.close();
 			return;
 		}
 		else if(System.getProperty("ot.bg") != null || System.getProperty("ot.background") != null)
 		{
 			app.logBoot("Running in the background...");//don't printstream only log it
+			app.load(false);
 			boot.close();
 			return;
 		}
 		
 		try
 		{
-			app.load();
+			app.load(true);
 			app.logBoot("TerminalApp Session Started On:\t" + app.session);
 			ConsoleHost console = app.getConsoleHost();
 			if(console != null)
@@ -70,7 +73,7 @@ public class OpenTerminal {
 			boot.close();
 		}
 	}
-	
+
 	/**
 	 * open your TerminalApp and grab args before executing your main(String[] args)
 	 * @return the new arguments

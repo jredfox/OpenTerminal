@@ -16,7 +16,7 @@ public class Test {
 		TerminalApp app = new TerminalApp("test", "Test App", "1.0.0", false)
 		{
 			@Override
-			public Profile getProfile() 
+			public Profile getProfile()
 			{
 				if(TerminalUtil.isWindows())
 				{
@@ -70,14 +70,15 @@ public class Test {
 		};
 		app.appClass = app.getClass();
 		
+//		app.force = true;
 //		app.pause = false;
 //		Profile p = app.getProfile();
 //		app.shouldLog = true;
 //		app.pause = false;
 		OpenTerminal.open(app);
-		JREUtil.sleep(500);
+//		JREUtil.sleep(500);
 //		app.colors.println(null, Color.BLACK, "BLACK");
-		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BLACK, ANSI4BitColor.BLACK.name(), true));
+		System.out.println(app.colors.formatANSI4BitColor(ANSI4BitColor.WHITE, ANSI4BitColor.BLACK, ANSI4BitColor.BLACK.name(), true));
 		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.RED, ANSI4BitColor.RED.name(), true));
 		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.GREEN, ANSI4BitColor.GREEN.name(), true));
 		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.YELLOW, ANSI4BitColor.YELLOW.name(), true));
@@ -144,7 +145,6 @@ public class Test {
 		
 		//begin testing
 		System.out.println("COLORMODE:" + app.colors.colorMode);
-		
 		Scanner scanner = new Scanner(System.in);
 //		System.out.print("TEST:");
 //		System.out.println("TEST IN WAS:" + scanner.nextLine());
@@ -160,7 +160,8 @@ public class Test {
 //		app.colors.print(Color.BLACK, Color.green, "OLDE TESTE");
 		System.out.println(app.colors.formatColor(Color.RED, Color.WHITE, "server to client test...", true));
 //		System.out.println(app.colors.colors.replace(AnsiColors.ESC, "ESC"));
-		app.manager.isRunning = false;//TODO: remove once PID auto detection has been reached
+		if(app.manager != null)
+			app.manager.isRunning = false;//TODO: remove once PID auto detection has been reached
 	}
 	
 //	public static void printTest(AnsiColors colors)

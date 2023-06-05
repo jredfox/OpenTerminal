@@ -85,7 +85,7 @@ public class TerminalApp {
 	 */
 	public File logger;
 	/**
-	 * the IPC Pipe manager
+	 * the IPC Pipe manager.
 	 */
 	public PipeManager manager;
 	/**
@@ -225,13 +225,25 @@ public class TerminalApp {
 	/**
 	 * load the configurations for this terminal app
 	 */
-	public void load()
+	public void load(boolean ipc)
 	{
 		this.loadConfig();
 		this.initPalettes();
 		this.loadSession();
 		this.enableLoggers();
-		this.startPipeManager();
+		if(ipc)
+		{
+			this.startPipeManager();
+		}
+		else
+		{
+			this.colors.setColorMode(this.getColorsEnv());
+			if(TerminalUtil.isWindowsTerm(this.terminal))
+			{
+				System.setProperty("ot.w", "true");
+				AnsiColors.enableCmdColors();
+			}
+		}
 	}
 
 	public void loadConfig() 
@@ -663,8 +675,13 @@ public class TerminalApp {
 	 */
 	public void sendColors()
 	{
-		String col = System.getenv("TERM") + System.getenv("COLORTERM");
+		String col = this.getColorsEnv();
 		IOUtils.saveFileLines(Arrays.asList(col), new File(this.session, "ot-noREQ.txt") , true);
+	}
+
+	public String getColorsEnv() 
+	{
+		return System.getenv("TERM") + System.getenv("COLORTERM");
 	}
 
 }
