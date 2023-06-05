@@ -390,7 +390,7 @@ public class TerminalUtil {
 				}
 				hadQ = true;
 				if(q && next != ' ')
-					b.append(c);
+					continue;//skip invalid end of line quotes
 				q = !q;
 				startQ = q ? c : 'Z';
 				continue;
