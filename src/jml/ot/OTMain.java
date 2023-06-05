@@ -28,8 +28,8 @@ public class OTMain {
 		if(!OTConstants.LAUNCHED)
 		{
 			TerminalApp app = args.length != 0 ? new TerminalApp(args[0], args[1], args[2], Boolean.parseBoolean(args[3]), Boolean.parseBoolean(args[4])) : new TerminalApp("ot", "Open Terminal", OTConstants.OTVERSION);
-//			app.pause = false;
-//			app.javaPause = true;
+			app.pause = false;
+			app.javaPause = true;
 			OpenTerminal.open(app);
 			app.manager.isRunning = false;
 		}
@@ -37,12 +37,19 @@ public class OTMain {
 		{
 			correctProps();
 			TerminalApp app = new TerminalApp(System.getProperty("ot.id"), "CLI CLient", OTConstants.OTVERSION);
+			Runtime.getRuntime().addShutdownHook(
+			new Thread()
+			{
+				@Override
+				public void run()
+				{
+					app.pause();
+				}
+			});
 			app.loadSession();
 			app.startPipeManager();
 			app.sendColors();
-//			System.exit(-1);
 			boolean hostIsAlive = true;
-//			System.out.println("OTMAIN:" + System.getProperty("ot.app"));
 			while(hostIsAlive)
 			{
 //				TODO:PID keep alive check here
@@ -59,6 +66,7 @@ public class OTMain {
 			}
 			//pause the app
 			app.pause();
+			app.javaPause = false;
 		}
 	}
 

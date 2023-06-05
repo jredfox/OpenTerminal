@@ -7,7 +7,6 @@ import java.util.Scanner;
 import jml.ot.colors.AnsiColors;
 import jml.ot.colors.AnsiColors.ANSI4BitColor;
 import jml.ot.colors.AnsiColors.TermColors;
-import jredfox.common.utils.JREUtil;
 
 public class Test {
 
