@@ -10,11 +10,11 @@ public class Debug {
 	public static void main(String[] args)
 	{
 		TerminalApp app = new TerminalApp("APP", "APP TITLE", "");
-		app.pause = true;
-		app.softPause = true;
+		app.pause = false;
+		app.softPause = false;
 		OpenTerminal.open(app);
-//		System.out.println(AnsiColors.INSTANCE.formatColor(null, Color.GREEN, "hello world"));
-		JREUtil.sleep(5000);
+		System.out.println(AnsiColors.INSTANCE.formatColor(null, Color.GREEN, "hello world"));
+//		JREUtil.sleep(5000);
 	}
 	
 }
