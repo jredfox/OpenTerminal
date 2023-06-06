@@ -314,6 +314,14 @@ public class AnsiColors {
 	}
 	
 	/**
+	 * clear line feed update screen without deleting the line feed
+	 */
+	public static String getSoftCls()
+	{
+		return "\033[H\033[2J";
+	}
+	
+	/**
 	 * hack windows 10 conhost.exe and wt to enable colors straight from java
 	 */
 	public static void enableCmdColors()

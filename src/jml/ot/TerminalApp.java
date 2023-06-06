@@ -247,13 +247,29 @@ public class TerminalApp {
 			this.isShellDisabled = true;
 			try 
 			{
-				this.loadColors();
-			} 
+				if(System.console() != null)
+				{
+					this.loadColors();
+					this.applyProperties();
+				}
+			}
 			catch (IOException e)
 			{
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * apply properties when new CLI doesn't open like title and CLI profiles
+	 */
+	public void applyProperties() 
+	{
+		try
+		{
+			new ProcessBuilder(new String[]{this.terminal, TerminalUtil.getExeAndClose(this.terminal), "<nul set /p dt=]0;" + this.getTitle() + ""}).inheritIO().start().waitFor();
+		}
+		catch (Exception e){e.printStackTrace();}
 	}
 
 	public void loadConfig() 
@@ -665,7 +681,7 @@ public class TerminalApp {
 						if(TerminalApp.this.syncColorModeThread)
 						{
 							TerminalApp.this.colors.updateColorMode(newMode, false);
-							System.out.print("\033[H\033[2J");//clear line feed without deleting them
+							System.out.print(AnsiColors.getSoftCls());//clear line feed without deleting them
 							System.out.println("AnsiColors Updated: $TERMCOLOR:" + TerminalApp.this.terminal + " from:" + oldMode + " to:" + TerminalApp.this.colors.colorMode);
 						}
 					}

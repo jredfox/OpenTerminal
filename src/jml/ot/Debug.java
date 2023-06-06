@@ -3,6 +3,7 @@ package jml.ot;
 import java.awt.Color;
 
 import jml.ot.colors.AnsiColors;
+import jredfox.common.utils.JREUtil;
 
 public class Debug {
 
@@ -12,7 +13,8 @@ public class Debug {
 		app.pause = true;
 		app.softPause = true;
 		OpenTerminal.open(app);
-		System.out.println(AnsiColors.INSTANCE.formatColor(null, Color.GREEN, "hello world"));
+//		System.out.println(AnsiColors.INSTANCE.formatColor(null, Color.GREEN, "hello world"));
+		JREUtil.sleep(5000);
 	}
 	
 }

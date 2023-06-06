@@ -275,6 +275,11 @@ public class TerminalUtil {
 		}
 		return e;
 	}
+	
+	public static String getExeAndClose(String terminal)
+	{
+		return isLinux() ? getLinuxExe(terminal) : getExeAndClose();
+	}
 
 	public static String getPropertySafely(String prop) 
 	{

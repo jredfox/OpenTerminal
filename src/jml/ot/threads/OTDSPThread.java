@@ -1,6 +1,7 @@
 package jml.ot.threads;
 
 import jml.ot.TerminalApp;
+import jml.ot.colors.AnsiColors;
 
 public class OTDSPThread extends Thread {
 	
@@ -15,6 +16,9 @@ public class OTDSPThread extends Thread {
 	public void run()
 	{
 		this.app.pause(false);
+		//reset the console back to original profile settings
+		System.out.print(app.colors.getHardReset() + AnsiColors.getSoftCls());
+		System.out.flush();
 	}
 
 }
