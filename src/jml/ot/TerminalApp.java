@@ -368,6 +368,11 @@ public class TerminalApp {
 			this.sendColors();
 	}
 	
+	public void pause() 
+	{
+		this.pause(true);
+	}
+	
 	/**
 	 * Non Shell Pause in java that fires at {@link System#exit(int)} or at the end of {@link OTMain#main(String[])} on CLI client side
 	 */
@@ -402,8 +407,8 @@ public class TerminalApp {
 		public Color bg;
 		public Color fg;
 		public String ansiFormat;
-		protected String pauseMsg = "";//truecolor pause message
-		protected String pauseLowResMsg = "";//xterm-256 or ansi4bit colored string
+		protected String pauseMsg = OTConstants.pauseMsg;//truecolor pause message
+		protected String pauseLowResMsg = OTConstants.pauseMsg;//xterm-256 or ansi4bit colored string
 		public boolean hasColoredErr;
 		public Color bgErr;
 		public Color fgErr;
