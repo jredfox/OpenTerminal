@@ -12,6 +12,7 @@ re-fix can't boot with eclipse's JAR IN JAR
 profiling
 fullscreen
 
+have to specify the appid in override update ot.appId.property or ot.*.property for all TerminalApps
 ot.p #shell script pause overrides TerminalApp#pause
 ot.sp #softPause only pauses on java without catching system exit
 ot.c.app = terminal app class object to reconstruct
