@@ -49,19 +49,18 @@ public class OpenTerminal {
 			boot.close();
 			return;
 		}
+		//nullify output of forceCLI mode so the end user doesn't get confused on which window is which
+		else if(!hasNullified && System.console() != null && !OTConstants.LAUNCHED)
+		{
+			System.out.println("Launched:" + app.getTitle() + " Do Not close this window or it will close the app");
+			PrintStream nullified = new PrintStream(new NullOutputStream());
+			System.setOut(nullified);
+			System.setErr(nullified);
+			hasNullified = true;
+		}
 		
 		try
 		{
-			//nullify output of forceCLI mode so the end user doesn't get confused on which window is which
-			if(System.console() != null && !OTConstants.LAUNCHED && !hasNullified)
-			{
-				System.out.println("Launched:" + app.getTitle() + " Do Not close this window or it will close the app");
-				PrintStream nullified = new PrintStream(new NullOutputStream());
-				System.setOut(nullified);
-				System.setErr(nullified);
-				hasNullified = true;
-			}
-			
 			app.load(true);
 			app.logBoot("TerminalApp Session Started On:\t" + app.session);
 			ConsoleHost console = app.getConsoleHost();
