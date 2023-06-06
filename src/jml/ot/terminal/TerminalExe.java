@@ -43,7 +43,7 @@ public abstract class TerminalExe {
 	 */
 	public String getJVMFlags() 
 	{
-		return (this.app.javaPause ? "-Dot.jp " : "") + "-Dot.id=" + this.app.id + " -Dot.s=" + this.app.sessionName + (this.app.shouldLog ? " -Dot.log" : "") + (this.app.appClass == null ? "" : (" -Dot.app=" + this.app.appClass.getName().replace("$", "@")) );
+		return (this.app.softPause ? "-Dot.sp " : "") + "-Dot.id=" + this.app.id + " -Dot.s=" + this.app.sessionName + (this.app.shouldLog ? " -Dot.log" : "") + (this.app.appClass == null ? "" : (" -Dot.app=" + this.app.appClass.getName().replace("$", "@")) );
 	}
 	
 	/**

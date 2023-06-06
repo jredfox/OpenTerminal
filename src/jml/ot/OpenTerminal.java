@@ -3,9 +3,9 @@ package jml.ot;
 import java.io.PrintStream;
 import java.util.Scanner;
 
-import jml.ot.colors.AnsiColors;
-import jml.ot.colors.AnsiColors.TermColors;
 import jml.ot.terminal.host.ConsoleHost;
+import jml.ot.threads.OTDSPThread;
+import jml.ot.threads.OTSPThread;
 
 public class OpenTerminal {
 	
@@ -27,7 +27,7 @@ public class OpenTerminal {
 			app.logBoot("Running in the background...");//don't printstream only log it
 			app.load(false);
 			app.pause = false;//disable pauses we are running in the background
-			app.javaPause = false;
+			app.softPause = false;
 			boot.close();
 			return;
 		}
@@ -43,6 +43,7 @@ public class OpenTerminal {
 		{
 			app.logBoot("Console is already opened. Loading TerminalApp with IPC disabled");
 			app.load(false);
+			setPauseThread(app);
 			boot.close();
 			return;
 		}
@@ -74,6 +75,30 @@ public class OpenTerminal {
 		{
 			boot.close();
 		}
+	}
+
+	protected static OTDSPThread dp;
+	protected static OTSPThread sp;
+	protected static final Thread main = Thread.currentThread();
+	protected static void setPauseThread(TerminalApp app) 
+	{
+		//disabled shell pause
+		if(dp == null)
+		{
+			dp = new OTDSPThread(app);
+			Runtime.getRuntime().addShutdownHook(dp);
+		}
+		else
+			dp.app = app;
+		
+		//soft pause
+		if(sp == null)
+		{
+			sp = new OTSPThread(app, main);
+			sp.start();
+		}
+		else
+			sp.app = app;
 	}
 
 	/**

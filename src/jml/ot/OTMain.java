@@ -24,36 +24,25 @@ public class OTMain {
 	 */
 	public static void main(String[] args)
 	{
-		AnsiColors.enableCmdColors();//ensure ANSI colors are enabled by loading the class
 		if(!OTConstants.LAUNCHED)
 		{
 			TerminalApp app = args.length != 0 ? new TerminalApp(args[0], args[1], args[2], Boolean.parseBoolean(args[3]), Boolean.parseBoolean(args[4])) : new TerminalApp("ot", "Open Terminal", OTConstants.OTVERSION);
-			app.pause = false;
-			app.javaPause = true;
 			OpenTerminal.open(app);
 			app.manager.isRunning = false;
 		}
 		else
 		{
 			correctProps();
+			AnsiColors.enableCmdColors();//ensure ANSI colors are enabled by loading the class
 			TerminalApp app = new TerminalApp(System.getProperty("ot.id"), "CLI CLient", OTConstants.OTVERSION);
-			Runtime.getRuntime().addShutdownHook(
-			new Thread()
-			{
-				@Override
-				public void run()
-				{
-					app.pause();
-				}
-			});
 			app.loadSession();
 			app.startPipeManager();
 			app.sendColors();
 			boolean hostIsAlive = true;
-			while(hostIsAlive)
-			{
-//				TODO:PID keep alive check here
-			}
+//			while(hostIsAlive)
+//			{
+////				TODO:PID keep alive check here
+//			}
 			
 			//ensure final printlines happen before shutting down the client
 			app.manager.isRunning = false;//TODO: shutdown the thread
@@ -61,11 +50,13 @@ public class OTMain {
 			while(app.manager.isTicking)
 			{
 				if((System.currentTimeMillis() - time) > 10000)
-					break;//ensure it breaks
+				{
+					System.err.println("Unable to stop PipeManager it's single tick proceeded 10s!");
+					app.pause();
+					System.exit(-1);
+				}
 			}
-			//attempt pause from wrapper as System#in may be closed by time shutdown hooks occur and isn't guaranteed during shutdown
 			app.pause();
-			app.javaPause = false;
 		}
 	}
 

@@ -45,15 +45,18 @@ public class TerminalApp {
 	public String id;
 	public String name;
 	public String version;
-	public boolean force;//when enabled will always open a window
 	/**
-	 * shellscript pause will pause even if java is terminated or killed when a new CLI client gets populated
+	 * Opens a new CLI regardless of the initial boot. if you use multiple CLI's set this to true
+	 */
+	public boolean force;
+	/**
+	 * shellscript pause catches {@link System#exit(int)}
 	 */
 	public boolean pause;
 	/***
-	 * pauses from java instead of the shell won't catch if java is terminated or killed instead of closed
+	 * Java pause, doesn't catch {@link System#exit(int)}
 	 */
-	public boolean javaPause;
+	public boolean softPause;
 	public String terminal = "";
 	public String conHost = "";
 	public List<String> linuxCmdsExe = new ArrayList<>(0);//configurable list to use LinuxCmdExe instead of LinuxBash or another
@@ -91,7 +94,7 @@ public class TerminalApp {
 	/**
 	 * when true Console is nonnull on initial boot, PipeManager will be null, and if {@link #pause()} is true it will also do a java pause instead of a shell pause
 	 */
-	public boolean isIpcDisabled;
+	public boolean isShellDisabled;
 	/**
 	 * tell's PipeManager whether or not to replace the STD ERR & IN. Disable this if you have multiple CLI's running at once for your program
 	 */
@@ -141,7 +144,7 @@ public class TerminalApp {
 		this.version = version;
 		this.force = force;
 		this.pause = pause;
-		this.javaPause = System.getProperty("ot.jp") != null;
+		this.softPause = System.getProperty("ot.sp") != null;
 		this.shouldLog = System.getProperty("ot.log") != null;
 	}
 
@@ -241,24 +244,13 @@ public class TerminalApp {
 		}
 		else
 		{
-			this.isIpcDisabled = true;
+			this.isShellDisabled = true;
 			this.colors.setColorMode(this.getColorsEnv());
 			if(TerminalUtil.isWindowsTerm(this.terminal))
 			{
 				System.setProperty("ot.w", "true");
 				AnsiColors.enableCmdColors();
 			}
-			
-			//simulate the batch shell by pausing on System#exit when possible
-			Runtime.getRuntime().addShutdownHook(
-			new Thread()
-			{
-				@Override
-				public void run()
-				{
-					TerminalApp.this.pause();
-				}
-			});
 		}
 	}
 
@@ -382,7 +374,7 @@ public class TerminalApp {
 	@SuppressWarnings("resource")
 	public void pause() 
 	{
-		if(this.javaPause || this.pause && this.isIpcDisabled)
+		if(this.softPause || this.pause && this.isShellDisabled)
 		{
 			Profile p = this.getProfile();
 			String msg = p != null ? (this.colors.colorMode == TermColors.TRUE_COLOR ? p.getPauseMsg() : p.getPauseLowResMsg()) : OTConstants.pauseMsg;

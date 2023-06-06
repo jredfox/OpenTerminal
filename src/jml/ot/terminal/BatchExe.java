@@ -146,7 +146,7 @@ public class BatchExe extends TerminalExe {
 	@Override
 	public String getJVMFlags() 
 	{
-		return "-Dot.w=true " + super.getJVMFlags();
+		return "-Dot.w " + super.getJVMFlags();
 	}
 
 }
