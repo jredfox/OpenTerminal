@@ -124,7 +124,7 @@ public class TerminalApp {
 	
 	public TerminalApp(String id, String name, String version)
 	{
-		this(id, name, version, false);
+		this(id, name, version, true);
 	}
 	
 	public TerminalApp(String id, String n, String v, boolean force)

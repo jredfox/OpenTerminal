@@ -14,7 +14,7 @@ public class Debug {
 		app.softPause = false;
 		OpenTerminal.open(app);
 		System.out.println(AnsiColors.INSTANCE.formatColor(null, Color.GREEN, "hello world"));
-//		JREUtil.sleep(5000);
+		JREUtil.sleep(5000);
 	}
 	
 }
