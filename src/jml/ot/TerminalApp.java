@@ -47,11 +47,11 @@ public class TerminalApp {
 	public String version;
 	public boolean force;//when enabled will always open a window
 	/**
-	 * shellscript pause will always require user input even on {@link System#exit(int)} from CLI Client side
+	 * shellscript pause will pause even if java is terminated or killed when a new CLI client gets populated
 	 */
 	public boolean pause;
 	/***
-	 * java pause will not pause on {@link System#exit(int)} only when the program hasn't crashed and only from CLI Client side which {@link OpenTerminal#open(TerminalApp)} would have had to create a new CLI client
+	 * pauses from java instead of the shell won't catch if java is terminated or killed instead of closed
 	 */
 	public boolean javaPause;
 	public String terminal = "";
@@ -88,6 +88,10 @@ public class TerminalApp {
 	 * the IPC Pipe manager.
 	 */
 	public PipeManager manager;
+	/**
+	 * when true Console is nonnull on initial boot, PipeManager will be null, and if {@link #pause()} is true it will also do a java pause instead of a shell pause
+	 */
+	public boolean isIpcDisabled;
 	/**
 	 * tell's PipeManager whether or not to replace the STD ERR & IN. Disable this if you have multiple CLI's running at once for your program
 	 */
@@ -237,12 +241,24 @@ public class TerminalApp {
 		}
 		else
 		{
+			this.isIpcDisabled = true;
 			this.colors.setColorMode(this.getColorsEnv());
 			if(TerminalUtil.isWindowsTerm(this.terminal))
 			{
 				System.setProperty("ot.w", "true");
 				AnsiColors.enableCmdColors();
 			}
+			
+			//simulate the batch shell by pausing on System#exit when possible
+			Runtime.getRuntime().addShutdownHook(
+			new Thread()
+			{
+				@Override
+				public void run()
+				{
+					TerminalApp.this.pause();
+				}
+			});
 		}
 	}
 
@@ -361,14 +377,16 @@ public class TerminalApp {
 	}
 	
 	/**
-	 * used by {@link OTMain#main(String[])} at the end of the program on CLI client side to get the java pause
-	 * to override this behavior simply override {@link #appClass} to your TerminalApp class and then override this method
+	 * Non Shell Pause in java that fires at {@link System#exit(int)} or at the end of {@link OTMain#main(String[])} on CLI client side
 	 */
+	@SuppressWarnings("resource")
 	public void pause() 
 	{
-		if(this.javaPause)
+		if(this.javaPause || this.pause && this.isIpcDisabled)
 		{
-			System.out.print(OTConstants.pauseMsg);
+			Profile p = this.getProfile();
+			String msg = p != null ? (this.colors.colorMode == TermColors.TRUE_COLOR ? p.getPauseMsg() : p.getPauseLowResMsg()) : OTConstants.pauseMsg;
+			System.out.print(msg);
 			System.out.flush();//ensure it's written right away
 			new Scanner(System.in).nextLine();
 		}

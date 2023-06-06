@@ -54,7 +54,6 @@ public class OTMain {
 			{
 //				TODO:PID keep alive check here
 			}
-//			JREUtil.sleep(3000);
 			
 			//ensure final printlines happen before shutting down the client
 			app.manager.isRunning = false;//TODO: shutdown the thread
@@ -64,7 +63,7 @@ public class OTMain {
 				if((System.currentTimeMillis() - time) > 10000)
 					break;//ensure it breaks
 			}
-			//pause the app
+			//attempt pause from wrapper as System#in may be closed by time shutdown hooks occur and isn't guaranteed during shutdown
 			app.pause();
 			app.javaPause = false;
 		}
