@@ -41,6 +41,8 @@ public class OpenTerminal {
 		{
 			app.logBoot("Running in the background...");//don't printstream only log it
 			app.load(false);
+			app.pause = false;//disable pauses we are running in the background
+			app.javaPause = false;
 			boot.close();
 			return;
 		}

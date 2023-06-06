@@ -10,9 +10,6 @@ public class Debug {
 	public static void main(String[] args)
 	{
 		TerminalApp app = new TerminalApp("APP", "", "");
-		Profile p = new Profile();
-		app.setPauseMsg(Color.CYAN, Color.GREEN, "Exiting...", p);
-//		app.profile = p;
 		OpenTerminal.open(app);
 		System.out.println(AnsiColors.INSTANCE.formatColor(null, Color.GREEN, "hello world"));
 	}
