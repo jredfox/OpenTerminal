@@ -22,8 +22,17 @@ public class OpenTerminal {
 		 app.logBoot("JAVA:\t" + System.getProperty("java.version") + "\tJAVA VENDOR:" + System.getProperty("java.vendor") + "\tJAVAHOME:" + System.getProperty("java.home")
 		 + "\n" + TerminalUtil.osName + "\tVERSION:" + System.getProperty("os.version") + "\tCPU-ISA(OS-ARCH):" + System.getProperty("os.arch") + "\n");
 		
+		if(System.getProperty("ot.bg") != null || System.getProperty("ot.background") != null)
+		{
+			app.logBoot("Running in the background...");//don't printstream only log it
+			app.load(false);
+			app.pause = false;//disable pauses we are running in the background
+			app.javaPause = false;
+			boot.close();
+			return;
+		}
 		//if open terminal has launched and failed printline and exit the application as it failed
-		if(System.console() == null && OTConstants.LAUNCHED)
+		else if(System.console() == null && OTConstants.LAUNCHED)
 		{
 			app.logBoot("System console boot failed report to https://github.com/jredfox/OpenTerminal/issues");
 			System.err.println("System console boot failed report to https://github.com/jredfox/OpenTerminal/issues");
@@ -34,15 +43,6 @@ public class OpenTerminal {
 		{
 			app.logBoot("Console is already opened. Loading TerminalApp with IPC disabled");
 			app.load(false);
-			boot.close();
-			return;
-		}
-		else if(System.getProperty("ot.bg") != null || System.getProperty("ot.background") != null)
-		{
-			app.logBoot("Running in the background...");//don't printstream only log it
-			app.load(false);
-			app.pause = false;//disable pauses we are running in the background
-			app.javaPause = false;
 			boot.close();
 			return;
 		}
