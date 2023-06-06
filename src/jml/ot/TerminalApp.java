@@ -371,7 +371,6 @@ public class TerminalApp {
 	/**
 	 * Non Shell Pause in java that fires at {@link System#exit(int)} or at the end of {@link OTMain#main(String[])} on CLI client side
 	 */
-	@SuppressWarnings("resource")
 	public void pause(boolean soft) 
 	{
 		if(soft && this.softPause || !soft && this.pause && this.isShellDisabled)
@@ -383,6 +382,7 @@ public class TerminalApp {
 	/**
 	 * direct pause no checks
 	 */
+	@SuppressWarnings("resource")
 	public void pause() 
 	{
 		Profile p = this.getProfile();

@@ -76,6 +76,21 @@ public class OpenTerminal {
 			boot.close();
 		}
 	}
+	
+	/**
+	 * open your TerminalApp and grab args before executing your main(String[] args)
+	 * @return the new arguments
+	 */
+	public static String[] openWithArgs(TerminalApp app, String msg, String[] initArgs)
+	{
+		open(app);
+		@SuppressWarnings("resource")
+		Scanner scanner = new Scanner(System.in);
+		boolean newArgs = initArgs.length == 0 || initArgs[0] == null || initArgs[0].isEmpty();
+		if(newArgs)
+			System.out.print(msg);
+		return newArgs ? TerminalUtil.parseCommand(scanner.nextLine()) : initArgs;
+	}
 
 	protected static OTDSPThread dp;
 	protected static OTSPThread sp;
@@ -99,21 +114,6 @@ public class OpenTerminal {
 		}
 		else
 			sp.app = app;
-	}
-
-	/**
-	 * open your TerminalApp and grab args before executing your main(String[] args)
-	 * @return the new arguments
-	 */
-	public static String[] openWithArgs(TerminalApp app, String msg, String[] initArgs)
-	{
-		open(app);
-		@SuppressWarnings("resource")
-		Scanner scanner = new Scanner(System.in);
-		boolean newArgs = initArgs.length == 0 || initArgs[0] == null || initArgs[0].isEmpty();
-		if(newArgs)
-			System.out.print(msg);
-		return newArgs ? TerminalUtil.parseCommand(scanner.nextLine()) : initArgs;
 	}
 
 }
