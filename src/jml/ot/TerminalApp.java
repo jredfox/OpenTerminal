@@ -368,11 +368,6 @@ public class TerminalApp {
 			this.sendColors();
 	}
 	
-	public void pause() 
-	{
-		this.pause(true);
-	}
-	
 	/**
 	 * Non Shell Pause in java that fires at {@link System#exit(int)} or at the end of {@link OTMain#main(String[])} on CLI client side
 	 */
@@ -381,12 +376,20 @@ public class TerminalApp {
 	{
 		if(soft && this.softPause || !soft && this.pause && this.isShellDisabled)
 		{
-			Profile p = this.getProfile();
-			String msg = p != null ? (this.colors.colorMode == TermColors.TRUE_COLOR ? p.getPauseMsg() : p.getPauseLowResMsg()) : OTConstants.pauseMsg;
-			System.out.print(msg);
-			System.out.flush();//ensure it's written right away
-			new Scanner(System.in).nextLine();
+			this.pause();
 		}
+	}
+	
+	/**
+	 * direct pause no checks
+	 */
+	public void pause() 
+	{
+		Profile p = this.getProfile();
+		String msg = p != null ? (this.colors.colorMode == TermColors.TRUE_COLOR ? p.getPauseMsg() : p.getPauseLowResMsg()) : OTConstants.pauseMsg;
+		System.out.print(msg);
+		System.out.flush();//ensure it's written right away
+		new Scanner(System.in).nextLine();
 	}
 	
 	/**

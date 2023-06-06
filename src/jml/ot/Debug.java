@@ -8,7 +8,7 @@ public class Debug {
 
 	public static void main(String[] args)
 	{
-		TerminalApp app = new TerminalApp("APP", "", "");
+		TerminalApp app = new TerminalApp("APP", "APP TITLE", "");
 		app.pause = true;
 		app.softPause = true;
 		OpenTerminal.open(app);
