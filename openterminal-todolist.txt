@@ -13,9 +13,8 @@ profiling
 fullscreen
 
 ot.p #shell script pause overrides TerminalApp#pause
-ot.jp #javaPause only pauses on java without catching system exit
+ot.sp #softPause only pauses on java without catching system exit
 ot.c.app = terminal app class object to reconstruct
-ot.c.pm=pipe manager class
 ot.color.format
 ot.color.mode
 ot.name
