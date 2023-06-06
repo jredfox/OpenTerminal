@@ -10,7 +10,7 @@ progress bar API??? set progress and have a charcter that later turns green
 passwords??
 re-fix can't boot with eclipse's JAR IN JAR
 profiling
-macOs change profile on noForce boot
+macOs change profile on noForce boot. macos/linux noForce boot title, fix noForce boot window
 fullscreen
 
 have to specify the appid in override update ot.appId.property or ot.*.property for all TerminalApps

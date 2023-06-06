@@ -68,7 +68,7 @@ public class Test {
 			}
 		};
 		app.appClass = app.getClass();
-		
+
 //		app.force = true;
 //		app.pause = false;
 //		Profile p = app.getProfile();

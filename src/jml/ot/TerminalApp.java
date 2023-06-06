@@ -124,7 +124,7 @@ public class TerminalApp {
 	
 	public TerminalApp(String id, String name, String version)
 	{
-		this(id, name, version, true);
+		this(id, name, version, false);
 	}
 	
 	public TerminalApp(String id, String n, String v, boolean force)
@@ -267,7 +267,10 @@ public class TerminalApp {
 	{
 		try
 		{
-			new ProcessBuilder(new String[]{this.terminal, TerminalUtil.getExeAndClose(this.terminal), "<nul set /p dt=]0;" + this.getTitle() + ""}).inheritIO().start().waitFor();
+			if(TerminalUtil.isWindowsTerm(this.terminal))
+				new ProcessBuilder(new String[]{this.terminal, TerminalUtil.getExeAndClose(), "<nul set /p dt=]0;" + this.getTitle() + ""}).inheritIO().start().waitFor();
+			else
+				new ProcessBuilder(new String[]{this.terminal, TerminalUtil.getExeAndClose(this.terminal), "echo", "-n", "-e", "]0;" + this.getTitle() + ""});
 		}
 		catch (Exception e){e.printStackTrace();}
 	}
