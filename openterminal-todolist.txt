@@ -1,8 +1,8 @@
 PID checker on both server and client to see if they close
-debug inputstreams and terminal app when two or more CLI's replace SYSO
 
 create SocketPipes(pipes over the network from a socket)
 create SharedPipes (localhost pipes)
+debug inputstreams and terminal app when two or more CLI's replace SYSO
 saveable last arguments #request input and add robot keys to input the last known command
 tabbing and key events #since already in input mode detect when key is down and provide a limited very limited tab IMPL which will continue to replace the tab field with each press and backspace to delete them
 singleton(don't boot if one has already been launched)
