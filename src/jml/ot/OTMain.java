@@ -52,11 +52,11 @@ public class OTMain {
 				if((System.currentTimeMillis() - time) > 10000)
 				{
 					System.err.println("Unable to stop PipeManager it's single tick proceeded 10s!");
-					app.pause();
+					app.pause(true);
 					System.exit(-1);
 				}
 			}
-			app.pause();
+			app.pause(true);
 		}
 	}
 

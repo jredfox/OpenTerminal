@@ -372,9 +372,9 @@ public class TerminalApp {
 	 * Non Shell Pause in java that fires at {@link System#exit(int)} or at the end of {@link OTMain#main(String[])} on CLI client side
 	 */
 	@SuppressWarnings("resource")
-	public void pause() 
+	public void pause(boolean soft) 
 	{
-		if(this.softPause || this.pause && this.isShellDisabled)
+		if(soft && this.softPause || !soft && this.pause && this.isShellDisabled)
 		{
 			Profile p = this.getProfile();
 			String msg = p != null ? (this.colors.colorMode == TermColors.TRUE_COLOR ? p.getPauseMsg() : p.getPauseLowResMsg()) : OTConstants.pauseMsg;

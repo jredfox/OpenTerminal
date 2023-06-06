@@ -14,8 +14,7 @@ public class OTDSPThread extends Thread {
 	@Override
 	public void run()
 	{
-		if(app.pause)
-			this.app.pause();
+		this.app.pause(false);
 	}
 
 }

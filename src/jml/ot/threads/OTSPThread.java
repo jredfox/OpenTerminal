@@ -22,8 +22,7 @@ public class OTSPThread extends OTDSPThread {
 		{
 			JREUtil.sleep(50);
 		}
-		if(app.softPause)
-			app.pause();
+		app.pause(true);
 	}
 
 }
