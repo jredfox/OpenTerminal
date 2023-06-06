@@ -3,9 +3,11 @@ package jml.ot;
 import java.io.PrintStream;
 import java.util.Scanner;
 
+import jml.ipc.pipes.WrappedPrintStream;
 import jml.ot.terminal.host.ConsoleHost;
 import jml.ot.threads.OTDSPThread;
 import jml.ot.threads.OTSPThread;
+import jredfox.common.io.NullOutputStream;
 
 public class OpenTerminal {
 	
@@ -50,6 +52,16 @@ public class OpenTerminal {
 		
 		try
 		{
+			//nullify output of forceCLI mode so the end user doesn't get confused on which window is which
+			if(System.console() != null && !OTConstants.LAUNCHED && !hasNullified)
+			{
+				System.out.println("Launched:" + app.getTitle() + " Do Not close this window or it will close the app");
+				PrintStream nullified = new PrintStream(new NullOutputStream());
+				System.setOut(nullified);
+				System.setErr(nullified);
+				hasNullified = true;
+			}
+			
 			app.load(true);
 			app.logBoot("TerminalApp Session Started On:\t" + app.session);
 			ConsoleHost console = app.getConsoleHost();
@@ -95,6 +107,7 @@ public class OpenTerminal {
 	protected static OTDSPThread dp;
 	protected static OTSPThread sp;
 	protected static final Thread main = Thread.currentThread();
+	protected static boolean hasNullified;
 	protected static void setPauseThread(TerminalApp app) 
 	{
 		//disabled shell pause
