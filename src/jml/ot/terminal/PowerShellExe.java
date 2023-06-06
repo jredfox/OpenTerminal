@@ -144,10 +144,4 @@ public class PowerShellExe extends TerminalExe {
 		this.shell.delete();
 	}
 
-	@Override
-	public String getJVMFlags()
-	{
-		return "-Dot.w=false " + super.getJVMFlags();
-	}
-
 }
