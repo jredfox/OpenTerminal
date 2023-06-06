@@ -422,4 +422,12 @@ public class TerminalUtil {
 		return arr.isEmpty() ? new String[0] : arr.toArray(new String[0]);
 	}
 
+	/**
+	 * returns whether or not conHost needs the color hack to happen
+	 */
+	public static boolean shouldEnableColors(String terminal) 
+	{
+		return terminal.equals("cmd");
+	}
+
 }

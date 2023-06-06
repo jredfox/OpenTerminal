@@ -1,0 +1,1 @@
+apply title and profile properties when console is non null

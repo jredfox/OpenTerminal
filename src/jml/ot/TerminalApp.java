@@ -245,11 +245,13 @@ public class TerminalApp {
 		else
 		{
 			this.isShellDisabled = true;
-			this.colors.setColorMode(this.getColorsEnv());
-			if(TerminalUtil.isWindowsTerm(this.terminal))
+			try 
 			{
-				System.setProperty("ot.w", "true");
-				AnsiColors.enableCmdColors();
+				this.loadColors();
+			} 
+			catch (IOException e)
+			{
+				e.printStackTrace();
 			}
 		}
 	}
@@ -592,7 +594,7 @@ public class TerminalApp {
 	public void loadColors() throws IOException 
 	{
 		boolean check = false;
-		String mode = this.cachedColorTerm;
+		String mode = this.isShellDisabled ? this.getTermColors() : this.cachedColorTerm;
 		if(this.ANSI4BIT)
 		{
 			this.colors.setColorMode(TermColors.ANSI4BIT);//ignore cached and current CLI's data in this mode
@@ -623,6 +625,12 @@ public class TerminalApp {
 			this.logBoot("Get CLI Color in:" + (System.currentTimeMillis()-ms) + " COLOR ENV:" + mode);
 			this.colors.setColorMode(mode);//safe to assume true color as ansi4bit is never true here
 		}
+		//enable colors on server when IPC is disabled
+		if(this.isShellDisabled && TerminalUtil.shouldEnableColors(this.terminal))
+		{
+			System.setProperty("ot.w", "true");
+			AnsiColors.enableCmdColors();
+		}
 		Profile p = this.getProfile();
 		if(p != null)
 		{
@@ -630,7 +638,7 @@ public class TerminalApp {
 			if(p.hasColoredErr)
 				System.setErr(new ColoredPrintStream(p.bgErr, p.fgErr, p.ansiFormatErr, this.colors, System.err));
 		}
-		if(check)
+		if(check && !this.isShellDisabled)
 			this.startTermColorThread(mode);//TODO move to end
 		this.logBoot("TermColors:" + this.colors.colorMode + " CachedColor:" + this.colors.colors);
 	}
@@ -640,7 +648,7 @@ public class TerminalApp {
 	 */
 	public void startTermColorThread(String mode) throws IOException 
 	{
-		this.logBoot("Starting $TERMCOLOR check from CLI on desynced thread");
+		this.logBoot("Starting $TERMCOLOR $TERM check from CLI on desynced thread");
 		Thread t = new Thread()
 		{
 			@Override
@@ -678,6 +686,8 @@ public class TerminalApp {
 
 	public String getTermColors() throws IOException 
 	{
+		if(this.isShellDisabled)
+			return this.getColorsEnv();
 		File noREQ = new File(this.session, "ot-noREQ.txt");
 		FileUtils.create(noREQ);
 		PipeInputStream pipedIn = new PipeInputStream(noREQ, null, null, 1L);
