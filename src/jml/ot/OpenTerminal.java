@@ -24,6 +24,7 @@ public class OpenTerminal {
 		 app.logBoot("JAVA:\t" + System.getProperty("java.version") + "\tJAVA VENDOR:" + System.getProperty("java.vendor") + "\tJAVAHOME:" + System.getProperty("java.home")
 		 + "\n" + TerminalUtil.osName + "\tVERSION:" + System.getProperty("os.version") + "\tCPU-ISA(OS-ARCH):" + System.getProperty("os.arch") + "\n");
 		
+		boolean forcedWindow = false;
 		if(System.getProperty("ot.bg") != null || System.getProperty("ot.background") != null)
 		{
 			app.logBoot("Running in the background...");//don't printstream only log it
@@ -50,17 +51,20 @@ public class OpenTerminal {
 			return;
 		}
 		//nullify output of forceCLI mode so the end user doesn't get confused on which window is which
-		else if(!hasNullified && System.console() != null && !OTConstants.LAUNCHED)
+		else if(System.console() != null && !OTConstants.LAUNCHED)
 		{
-			System.out.println("Launched:" + app.getTitle() + " Do Not close this window or it will close the app");
-			PrintStream nullified = new PrintStream(new NullOutputStream());
-			System.setOut(nullified);
-			System.setErr(nullified);
-			hasNullified = true;
+			setCtrStream();
+			forcedWindow = app.replaceSYSO;//allow non main CLI windows to not cause blank output
 		}
 		
 		try
 		{
+			//disable out during launch but let boot errors print to the first CLI
+			if(forcedWindow)
+			{
+				System.out.println("Don't Close this window or it will shutdown the program! Launched:" + app.getTitle() + " id:" + app.id);
+				ctrOut.setEnabled(false);
+			}
 			app.load(true);
 			app.logBoot("TerminalApp Session Started On:\t" + app.session);
 			ConsoleHost console = app.getConsoleHost();
@@ -85,9 +89,30 @@ public class OpenTerminal {
 		finally
 		{
 			boot.close();
+			if(forcedWindow)
+			{
+				ctrOut.setEnabled(false);
+				ctrErr.setEnabled(false);
+			}
 		}
 	}
 	
+	public static void setCtrStream() 
+	{
+		if(ctrOut == null)
+		{
+			ctrOut = new ControlStream(System.out);
+			ctrErr = new ControlStream(System.err);
+			System.setOut(ctrOut);
+			System.setErr(ctrErr);
+		}
+		else
+		{
+			ctrOut.setEnabled(true);
+			ctrErr.setEnabled(true);
+		}
+	}
+
 	/**
 	 * open your TerminalApp and grab args before executing your main(String[] args)
 	 * @return the new arguments
@@ -106,7 +131,8 @@ public class OpenTerminal {
 	protected static OTDSPThread dp;
 	protected static OTSPThread sp;
 	protected static final Thread main = Thread.currentThread();
-	protected static boolean hasNullified;
+	protected static ControlStream ctrOut;
+	protected static ControlStream ctrErr;
 	protected static void setPauseThread(TerminalApp app) 
 	{
 		//disabled shell pause
