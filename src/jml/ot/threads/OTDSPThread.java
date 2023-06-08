@@ -18,6 +18,7 @@ public class OTDSPThread extends Thread {
 		this.app.pause(false);
 		//reset the console back to original profile settings
 		System.out.print(app.colors.getHardReset() + AnsiColors.getSoftCls());
+		System.out.print("]0;" + "");//clear the title so the CLI resets itself
 		System.out.flush();
 	}
 
