@@ -28,7 +28,8 @@ public class OTMain {
 		{
 			TerminalApp app = args.length != 0 ? new TerminalApp(args[0], args[1], args[2], Boolean.parseBoolean(args[3]), Boolean.parseBoolean(args[4])) : new TerminalApp("ot", "Open Terminal", OTConstants.OTVERSION);
 			OpenTerminal.open(app);
-			app.manager.isRunning = false;
+			if(app.manager != null)
+				app.manager.isRunning = false;
 		}
 		else
 		{
