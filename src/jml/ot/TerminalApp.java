@@ -270,7 +270,7 @@ public class TerminalApp {
 			if(TerminalUtil.isWindowsTerm(this.terminal))
 				new ProcessBuilder(new String[]{this.terminal, TerminalUtil.getExeAndClose(), "<nul set /p dt=]0;" + this.getTitle() + ""}).inheritIO().start().waitFor();
 			else
-				new ProcessBuilder(new String[]{this.terminal, TerminalUtil.getExeAndClose(this.terminal), "echo", "-n", "-e", "]0;" + this.getTitle() + ""});
+				System.out.println("]0;" + this.getTitle() + "");
 		}
 		catch (Exception e){e.printStackTrace();}
 	}
