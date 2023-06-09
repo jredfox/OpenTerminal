@@ -122,6 +122,7 @@ public class TerminalApp {
 	 */
 	public Class<? extends TerminalApp> appClass = null;
 	public String defaultProfile;
+	public TerminalExe termExe;
 	
 	public TerminalApp(String id, String name, String version)
 	{
@@ -188,6 +189,14 @@ public class TerminalApp {
 	
 	public TerminalExe getTerminalExe()
 	{
+		if(this.termExe != null)
+			return this.termExe;
+		this.termExe = this.createTerminalExe();
+		return this.termExe;
+	}
+	
+	public TerminalExe createTerminalExe()
+	{
 		switch(this.terminal)
 		{
 			case "cmd":
@@ -227,7 +236,7 @@ public class TerminalApp {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * load the configurations for this terminal app
 	 */
