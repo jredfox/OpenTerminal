@@ -1,3 +1,4 @@
+macOs change profile on noForce boot. macos/linux noForce boot title
 PID checker on both server and client to see if they close
 
 create SocketPipes(pipes over the network from a socket)
@@ -10,7 +11,6 @@ progress bar API??? set progress and have a charcter that later turns green
 passwords??
 re-fix can't boot with eclipse's JAR IN JAR
 profiling
-macOs change profile on noForce boot. macos/linux noForce boot title
 fullscreen
 
 have to specify the appid in override update ot.appId.property or ot.*.property for all TerminalApps

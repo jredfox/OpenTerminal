@@ -267,6 +267,7 @@ public class TerminalApp {
 	{
 		try
 		{
+<<<<<<< Updated upstream
 			if(TerminalUtil.isWindowsTerm(this.terminal))
 				new ProcessBuilder(new String[]{this.terminal, TerminalUtil.getExeAndClose(), "<nul set /p dt=]0;" + this.getTitle() + ""}).inheritIO().start().waitFor();
 			else
@@ -274,6 +275,10 @@ public class TerminalApp {
 				System.out.print("]0;" + this.getTitle() + "");
 				System.out.flush();
 			}
+=======
+			System.out.print("]0;" + this.getTitle() + "");
+			System.out.flush();
+>>>>>>> Stashed changes
 		}
 		catch (Exception e){e.printStackTrace();}
 	}
