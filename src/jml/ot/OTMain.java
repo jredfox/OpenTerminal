@@ -64,7 +64,7 @@ public class OTMain {
 	/**
 	 * convert all ot.* "@" to "$" from {@link System#getProperties()}
 	 */
-	public static void correctProps() 
+	public static void correctProps()
 	{
 		Set<String> qf = new HashSet<>(5);
 		for(Entry<Object, Object> s : System.getProperties().entrySet())

@@ -3,11 +3,9 @@ package jml.ot;
 import java.io.PrintStream;
 import java.util.Scanner;
 
-import jml.ipc.pipes.WrappedPrintStream;
 import jml.ot.terminal.host.ConsoleHost;
 import jml.ot.threads.OTDSPThread;
 import jml.ot.threads.OTSPThread;
-import jredfox.common.io.NullOutputStream;
 
 public class OpenTerminal {
 	

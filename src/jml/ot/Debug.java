@@ -6,8 +6,15 @@ public class Debug {
 
 	public static void main(String[] args) throws InterruptedException, IOException
 	{
-		ProcessBuilder pb = new ProcessBuilder(new String[] {"osascript", "/Users/jredfox/Desktop/profileAndImport.scpt", "Red Sands", ""});
-		pb.inheritIO().start().waitFor();
+		Runtime.getRuntime().addShutdownHook(new Thread() 
+		{
+			@Override
+			public void run()
+			{
+				System.out.println("shutting down now");
+			}
+		});
+		System.out.println("end the program");
 	}
 	
 }

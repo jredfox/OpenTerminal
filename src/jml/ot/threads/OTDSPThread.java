@@ -15,7 +15,6 @@ public class OTDSPThread extends Thread {
 	@Override
 	public void run()
 	{
-		System.out.println("pausing now");
 		this.app.pause(false);
 		
 		//reset the console back to original colors and profiles
