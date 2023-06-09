@@ -22,11 +22,9 @@ public class MacBashExe extends TerminalExe {
 	public static final File closeMeAs = new File(macStart, "closeMe.applescript");
 	public static final File profileAs = new File(macStart, "profile.applescript");
 	public static final File startAs = new File(macStart, "start.applescript");
-	public static final File getProfileAs = new File(macStart, "getProfile.applescript");
 	
 	public static final File closeMeScpt = new File(macStart, "closeMe.scpt");
 	public static final File profileScpt = new File(macStart, "profile.scpt");
-	public static final File getProfileScpt = new File(macStart, "getProfile.scpt");
 	public static final File startScpt = new File(macStart, "start.scpt");
 	public static final File profileMac = new File(OTConstants.profiles, "mac");
 
@@ -129,9 +127,10 @@ public class MacBashExe extends TerminalExe {
 					+ "		--find the selected tab\n"
 					+ "		set winList to windows\n"
 					+ "		repeat with win in winList\n"
-					+ "			set n to name of win\n"
+					+ "			set pname to name of current settings of win\n"
 					+ "			if name of win contains lookFor then\n"
 					+ "				set newWin to win\n"
+					+ "				log pname --output the profile name if found\n"
 					+ "				set hasFound to true\n"
 					+ "				exit repeat\n"
 					+ "			end if\n"
@@ -155,23 +154,6 @@ public class MacBashExe extends TerminalExe {
 					+ "	end tell\n"
 					+ "end run");
 			this.makeAs(processes, li, profileAs, profileScpt);
-		}
-		if(!getProfileScpt.exists())
-		{
-			List<String> li = new ArrayList<>();
-			li.add("on run argv\n"
-					+ "	set lookFor to first item in argv\n"
-					+ "	tell application \"Terminal\"\n"
-					+ "		repeat with win in windows\n"
-					+ "			if name of win contains lookFor then\n"
-					+ "				set a to name of current settings of win\n"
-					+ "				log a\n"
-					+ "				exit repeat\n"
-					+ "			end if\n"
-					+ "		end repeat\n"
-					+ "	end tell\n"
-					+ "end run");
-			this.makeAs(processes, li, getProfileAs, getProfileScpt);
 		}
 		if(!startScpt.exists())
 		{
@@ -224,7 +206,6 @@ public class MacBashExe extends TerminalExe {
 			//make the scripts runnable
 			IOUtils.makeExe(closeMeScpt);
 			IOUtils.makeExe(profileScpt);
-			IOUtils.makeExe(getProfileScpt);
 			IOUtils.makeExe(startScpt);
 		}
 		
@@ -325,18 +306,16 @@ public class MacBashExe extends TerminalExe {
 			System.out.print("]0;" + this.app.sessionName + "");
 			System.out.flush();
 			
-			//get the profile's name
-			ProcessBuilder getName = new ProcessBuilder(new String[] {"osascript", MacBashExe.getProfileScpt.getPath(), this.app.sessionName});
-			Process pr = getName.start();
+			//set the current profile
+			ProcessBuilder pb = new ProcessBuilder(new String[] {"osascript", MacBashExe.profileScpt.getPath(), p.mac_profileName, this.app.sessionName, OTConstants.home.getPath()});
+			Process pr = pb.start();
 			pr.waitFor();
+			
+			//get the profile's name
 			List<String> arr = IOUtils.getFileLines(IOUtils.getReader(pr.getErrorStream()));
 			if(arr.isEmpty())
 				arr = IOUtils.getFileLines(IOUtils.getReader(pr.getInputStream()));
-			this.app.defaultProfile = arr.get(0);
-			
-			//set the current profile
-			ProcessBuilder pb = new ProcessBuilder(new String[] {"osascript", MacBashExe.profileScpt.getPath(), p.mac_profileName, this.app.sessionName, OTConstants.home.getPath()});
-			pb.start().waitFor();
+			this.app.defaultProfile = arr.isEmpty() ? null : arr.get(0);
 		}
 		super.applyProperties();
 	}
@@ -350,7 +329,6 @@ public class MacBashExe extends TerminalExe {
 			{
 				System.out.print("]0;" + this.app.sessionName + "");//clear the title so the CLI resets itself
 				System.out.flush();
-				System.out.println(this.app.defaultProfile + " " + this.app.sessionName);
 				ProcessBuilder pb = new ProcessBuilder(new String[] {"osascript", MacBashExe.profileScpt.getPath(), this.app.defaultProfile, this.app.sessionName, OTConstants.home.getPath()});
 				pb.start().waitFor();
 			}

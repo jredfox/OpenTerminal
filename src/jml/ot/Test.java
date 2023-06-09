@@ -77,24 +77,24 @@ public class Test {
 		OpenTerminal.open(app);
 //		JREUtil.sleep(500);
 //		app.colors.println(null, Color.BLACK, "BLACK");
-		System.out.println(app.defaultProfile);
+//		System.out.println(app.defaultProfile);
 		System.out.println(app.colors.formatColor(AnsiColors.COLOR_DEFAULT, AnsiColors.COLOR_DEFAULT, "This is default text"));
-		System.out.println(app.colors.formatANSI4BitColor(ANSI4BitColor.WHITE, ANSI4BitColor.BLACK, ANSI4BitColor.BLACK.name(), true));
-		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.RED, ANSI4BitColor.RED.name(), true));
-		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.GREEN, ANSI4BitColor.GREEN.name(), true));
-		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.YELLOW, ANSI4BitColor.YELLOW.name(), true));
-		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BLUE, ANSI4BitColor.BLUE.name(), true));
-		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.MAGENTA, ANSI4BitColor.MAGENTA.name(), true));
-		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.CYAN, ANSI4BitColor.CYAN.name(), true));
-		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.WHITE, ANSI4BitColor.WHITE.name(), true));
-		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_BLACK, ANSI4BitColor.BRIGHT_BLACK.name(), true));
-		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_RED, ANSI4BitColor.BRIGHT_RED.name(), true));
-		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_GREEN, ANSI4BitColor.BRIGHT_GREEN.name(), true));
-		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_YELLOW, ANSI4BitColor.BRIGHT_YELLOW.name(), true));
-		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_BLUE, ANSI4BitColor.BRIGHT_BLUE.name(), true));
-		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_MAGENTA, ANSI4BitColor.BRIGHT_MAGENTA.name(), true));
-		System.out.println(app.colors.getHardReset() + app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_CYAN, ANSI4BitColor.BRIGHT_CYAN.name(), true));
-		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_WHITE, ANSI4BitColor.BRIGHT_WHITE.name(), true));
+//		System.out.println(app.colors.formatANSI4BitColor(ANSI4BitColor.WHITE, ANSI4BitColor.BLACK, ANSI4BitColor.BLACK.name(), true));
+//		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.RED, ANSI4BitColor.RED.name(), true));
+//		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.GREEN, ANSI4BitColor.GREEN.name(), true));
+//		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.YELLOW, ANSI4BitColor.YELLOW.name(), true));
+//		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BLUE, ANSI4BitColor.BLUE.name(), true));
+//		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.MAGENTA, ANSI4BitColor.MAGENTA.name(), true));
+//		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.CYAN, ANSI4BitColor.CYAN.name(), true));
+//		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.WHITE, ANSI4BitColor.WHITE.name(), true));
+//		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_BLACK, ANSI4BitColor.BRIGHT_BLACK.name(), true));
+//		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_RED, ANSI4BitColor.BRIGHT_RED.name(), true));
+//		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_GREEN, ANSI4BitColor.BRIGHT_GREEN.name(), true));
+//		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_YELLOW, ANSI4BitColor.BRIGHT_YELLOW.name(), true));
+//		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_BLUE, ANSI4BitColor.BRIGHT_BLUE.name(), true));
+//		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_MAGENTA, ANSI4BitColor.BRIGHT_MAGENTA.name(), true));
+//		System.out.println(app.colors.getHardReset() + app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_CYAN, ANSI4BitColor.BRIGHT_CYAN.name(), true));
+//		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.BRIGHT_WHITE, ANSI4BitColor.BRIGHT_WHITE.name(), true));
 //		
 //		System.out.println(app.colors.formatANSI4BitColor(ANSI4BitColor.BLACK, null, ANSI4BitColor.BLACK.name(), true));
 //		System.out.println(app.colors.formatANSI4BitColor(ANSI4BitColor.RED,null, ANSI4BitColor.RED.name(), true));
@@ -159,10 +159,13 @@ public class Test {
 		
 //		app.colors.colors = app.colors.formatColor(p.bg, p.fg, p.ansiFormat, false);
 //		app.colors.print(Color.BLACK, Color.green, "OLDE TESTE");
-		System.out.println(app.colors.formatColor(Color.RED, Color.WHITE, "server to client test...", true));
+//		System.out.println(app.colors.formatColor(Color.RED, Color.WHITE, "server to client test...", true));
 //		System.out.println(app.colors.colors.replace(AnsiColors.ESC, "ESC"));
 		if(app.manager != null)
+		{
 			app.manager.isRunning = false;//TODO: remove once PID auto detection has been reached
+		}
+		System.out.println("SHUTTING DOWN");
 	}
 	
 //	public static void printTest(AnsiColors colors)
