@@ -1,4 +1,3 @@
-macOs change profile on noForce boot. macos/linux noForce boot title
 PID checker on both server and client to see if they close
 
 create SocketPipes(pipes over the network from a socket)
