@@ -359,6 +359,7 @@ public class MacBashExe extends TerminalExe {
 				e.printStackTrace();
 			}
 		}
+		super.applyDefaultProperties();
 	}
 	
 	/**

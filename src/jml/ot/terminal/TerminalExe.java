@@ -98,7 +98,8 @@ public abstract class TerminalExe {
 	
 	public void applyDefaultProperties() 
 	{
-
+		System.out.print("]0;" + "");//clear the title so the CLI resets itself
+		System.out.flush();
 	}
 	
 	/**
