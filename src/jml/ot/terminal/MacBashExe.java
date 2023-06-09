@@ -20,12 +20,13 @@ public class MacBashExe extends TerminalExe {
 	
 	public static final File macStart = new File(OTConstants.start, "mac");
 	public static final File closeMeAs = new File(macStart, "closeMe.applescript");
-	public static final File importAs = new File(macStart, "import.applescript");
 	public static final File profileAs = new File(macStart, "profile.applescript");
 	public static final File startAs = new File(macStart, "start.applescript");
+	public static final File getProfileAs = new File(macStart, "getProfile.applescript");
+	
 	public static final File closeMeScpt = new File(macStart, "closeMe.scpt");
-	public static final File importScpt = new File(macStart, "import.scpt");
 	public static final File profileScpt = new File(macStart, "profile.scpt");
+	public static final File getProfileScpt = new File(macStart, "getProfile.scpt");
 	public static final File startScpt = new File(macStart, "start.scpt");
 	public static final File profileMac = new File(OTConstants.profiles, "mac");
 
@@ -117,30 +118,85 @@ public class MacBashExe extends TerminalExe {
 					+ "end run");
 			this.makeAs(processes, li, closeMeAs, closeMeScpt);
 		}
-		if(!importScpt.exists())
-		{
-			List<String> li = new ArrayList<>();
-			li.add("on run argv\n"
-					+ "	set pfile to first item of argv --profile file\n"
-					+ "	set profileId to second item of argv --the profile id which is also it's name\n"
-					+ "	set closeScript to third item of argv\n"
-					+ "	do shell script \"open -a Terminal \\\"\" & pfile & \"\\\"\"\n"
-					+ "	do shell script \"osascript \\\"\" & closeScript & \"\\\"\" & \" oti.\" & profileId & \".profile\"\n"
-					+ "	tell application \"Terminal\" to set custom title of settings set profileId to \"\" --after importing it change profile's title window to blank\n"
-					+ "end run");
-			this.makeAs(processes, li, importAs, importScpt);
-		}
+//		if(!importScpt.exists())
+//		{
+//			List<String> li = new ArrayList<>();
+//			li.add("on run argv\n"
+//					+ "	set pfile to first item of argv --profile file\n"
+//					+ "	set profileId to second item of argv --the profile id which is also it's name\n"
+//					+ "	set closeScript to third item of argv\n"
+//					+ "	do shell script \"open -a Terminal \\\"\" & pfile & \"\\\"\"\n"
+//					+ "	do shell script \"osascript \\\"\" & closeScript & \"\\\"\" & \" oti.\" & profileId & \".profile\"\n"
+//					+ "	tell application \"Terminal\" to set custom title of settings set profileId to \"\" --after importing it change profile's title window to blank\n"
+//					+ "end run");
+//			this.makeAs(processes, li, importAs, importScpt);
+//		}
+//		if(!profileScpt.exists())
+//		{
+//			List<String> li = new ArrayList<>();
+//			li.add("on run argv\n"
+//					+ "	set profileName to first item in argv\n"
+//					+ "	set profileId to \"_pf\" & profileName & \"_\"\n"
+//					+ "	tell application \"Terminal\"\n"
+//					+ "		set current settings of (every window whose name contains profileId) to settings set profileName\n"
+//					+ "	end tell\n"
+//					+ "end run");
+//			this.makeAs(processes, li, profileAs, profileScpt);
+//		}
 		if(!profileScpt.exists())
 		{
 			List<String> li = new ArrayList<>();
 			li.add("on run argv\n"
-					+ "	set profileName to first item in argv\n"
-					+ "	set profileId to \"_pf\" & profileName & \"_\"\n"
+					+ "	set p to first item in argv\n"
+					+ "	set lookFor to second item in argv\n"
+					+ "	set hasFound to false\n"
 					+ "	tell application \"Terminal\"\n"
-					+ "		set current settings of (every window whose name contains profileId) to settings set profileName\n"
+					+ "		--find the selected tab\n"
+					+ "		set winList to windows\n"
+					+ "		repeat with win in winList\n"
+					+ "			set n to name of win\n"
+					+ "			if name of win contains lookFor then\n"
+					+ "				set newWin to win\n"
+					+ "				set hasFound to true\n"
+					+ "				exit repeat\n"
+					+ "			end if\n"
+					+ "		end repeat\n"
+					+ "		--set the profile and import\n"
+					+ "		try\n"
+					+ "			if hasFound then set current settings of newWin to settings set p\n"
+					+ "		on error\n"
+					+ "			--start the import if it doesn't exist\n"
+					+ "			set otHome to third item in argv\n"
+					+ "			set custom title of newWin to \"\" --prevent it from being accidently closed\n"
+					+ "			set pscpt to otHome & \"/profiles/mac/\" & p & \".terminal\"\n"
+					+ "			set cscpt to otHome & \"/scripts/start/mac/closeMe.scpt\"\n"
+					+ "			do shell script \"open -a Terminal \\\"\" & pscpt & \"\\\"\"\n"
+					+ "			do shell script \"osascript \\\"\" & cscpt & \"\\\"\" & \" oti.\" & p & \".profile\"\n"
+					+ "			try\n"
+					+ "				set current settings of newWin to settings set p --try to set the profile after importing it\n"
+					+ "				set custom title of settings set p to \"\" --after importing it change profile's title window to blank\n"
+					+ "			end try\n"
+					+ "		end try\n"
 					+ "	end tell\n"
 					+ "end run");
 			this.makeAs(processes, li, profileAs, profileScpt);
+		}
+		if(!getProfileScpt.exists())
+		{
+			List<String> li = new ArrayList<>();
+			li.add("on run argv\n"
+					+ "	set lookFor to first item in argv\n"
+					+ "	tell application \"Terminal\"\n"
+					+ "		repeat with win in windows\n"
+					+ "			if name of win contains lookFor then\n"
+					+ "				set a to name of current settings of win\n"
+					+ "				log a\n"
+					+ "				exit repeat\n"
+					+ "			end if\n"
+					+ "		end repeat\n"
+					+ "	end tell\n"
+					+ "end run");
+			this.makeAs(processes, li, getProfileAs, getProfileScpt);
 		}
 		if(!startScpt.exists())
 		{
@@ -192,7 +248,6 @@ public class MacBashExe extends TerminalExe {
 			}
 			//make the scripts runnable
 			IOUtils.makeExe(closeMeScpt);
-			IOUtils.makeExe(importScpt);
 			IOUtils.makeExe(profileScpt);
 			IOUtils.makeExe(startScpt);
 		}

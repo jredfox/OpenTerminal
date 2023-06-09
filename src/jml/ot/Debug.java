@@ -1,24 +1,13 @@
 package jml.ot;
 
-import java.awt.Color;
-
-import jml.ot.colors.AnsiColors;
-import jredfox.common.utils.JREUtil;
+import java.io.IOException;
 
 public class Debug {
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws InterruptedException, IOException
 	{
-		TerminalApp app = new TerminalApp("APP", "APP TITLE", "");
-		app.pause = true;
-		app.softPause = false;
-		OpenTerminal.open(app);
-		System.out.println(AnsiColors.INSTANCE.formatColor(null, Color.GREEN, "hello world"));
-		while(true)
-		{
-			System.out.println(System.currentTimeMillis());
-			JREUtil.sleep(1000);
-		}
+		ProcessBuilder pb = new ProcessBuilder(new String[] {"osascript", "/Users/jredfox/Desktop/profileAndImport.scpt", "Red Sands", ""});
+		pb.inheritIO().start().waitFor();
 	}
 	
 }

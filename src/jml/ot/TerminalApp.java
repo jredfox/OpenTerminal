@@ -121,6 +121,7 @@ public class TerminalApp {
 	 * set this field if you require custom logic on the CLI client side running it must have a valid default contructor
 	 */
 	public Class<? extends TerminalApp> appClass = null;
+	public String defaultProfile;
 	
 	public TerminalApp(String id, String name, String version)
 	{
@@ -266,7 +267,27 @@ public class TerminalApp {
 	public void applyProperties() 
 	{
 		try
-		{
+		{			
+			Profile p = this.getProfile();
+			if(TerminalUtil.isMacTerm(this.terminal) && p != null && p.mac_profileName != null)
+			{
+				this.getTerminalExe().genStart();//ensure the start scripts are here
+				System.out.print("]0;" + this.sessionName + "");
+				System.out.flush();
+				//get the profile's name
+				ProcessBuilder getName = new ProcessBuilder(new String[] {"osascript", MacBashExe.getProfileScpt.getPath(), this.sessionName});
+				Process pr = getName.start();
+				pr.waitFor();
+				List<String> arr = IOUtils.getFileLines(IOUtils.getReader(pr.getErrorStream()));
+				if(arr.isEmpty())
+					arr = IOUtils.getFileLines(IOUtils.getReader(pr.getInputStream()));
+				this.defaultProfile = arr.get(0);
+				
+				//set the current profile
+				ProcessBuilder pb = new ProcessBuilder(new String[] {"osascript", MacBashExe.profileScpt.getPath(), p.mac_profileName, this.sessionName, OTConstants.home.getPath()});
+				pb.start().waitFor();
+			}
+			
 			System.out.print("]0;" + this.getTitle() + "");
 			System.out.flush();
 		}
@@ -426,6 +447,7 @@ public class TerminalApp {
 	
 	public static class Profile
 	{
+		public String mac_default_profile;
 		public Color bg;
 		public Color fg;
 		public String ansiFormat;

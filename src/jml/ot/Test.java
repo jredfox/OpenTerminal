@@ -77,6 +77,7 @@ public class Test {
 		OpenTerminal.open(app);
 //		JREUtil.sleep(500);
 //		app.colors.println(null, Color.BLACK, "BLACK");
+		System.out.println(app.defaultProfile);
 		System.out.println(app.colors.formatColor(AnsiColors.COLOR_DEFAULT, AnsiColors.COLOR_DEFAULT, "This is default text"));
 		System.out.println(app.colors.formatANSI4BitColor(ANSI4BitColor.WHITE, ANSI4BitColor.BLACK, ANSI4BitColor.BLACK.name(), true));
 		System.out.println(app.colors.formatANSI4BitColor(null, ANSI4BitColor.RED, ANSI4BitColor.RED.name(), true));
