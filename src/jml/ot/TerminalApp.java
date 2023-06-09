@@ -251,47 +251,14 @@ public class TerminalApp {
 				if(System.console() != null)
 				{
 					this.loadColors();
-					this.applyProperties();
+					this.getTerminalExe().applyProperties();
 				}
 			}
-			catch (IOException e)
+			catch (IOException | InterruptedException e)
 			{
 				e.printStackTrace();
 			}
 		}
-	}
-
-	/**
-	 * apply properties when new CLI doesn't open like title and CLI profiles
-	 */
-	public void applyProperties() 
-	{
-		try
-		{			
-			Profile p = this.getProfile();
-			if(TerminalUtil.isMacTerm(this.terminal) && p != null && p.mac_profileName != null)
-			{
-				this.getTerminalExe().genStart();//ensure the start scripts are here
-				System.out.print("]0;" + this.sessionName + "");
-				System.out.flush();
-				//get the profile's name
-				ProcessBuilder getName = new ProcessBuilder(new String[] {"osascript", MacBashExe.getProfileScpt.getPath(), this.sessionName});
-				Process pr = getName.start();
-				pr.waitFor();
-				List<String> arr = IOUtils.getFileLines(IOUtils.getReader(pr.getErrorStream()));
-				if(arr.isEmpty())
-					arr = IOUtils.getFileLines(IOUtils.getReader(pr.getInputStream()));
-				this.defaultProfile = arr.get(0);
-				
-				//set the current profile
-				ProcessBuilder pb = new ProcessBuilder(new String[] {"osascript", MacBashExe.profileScpt.getPath(), p.mac_profileName, this.sessionName, OTConstants.home.getPath()});
-				pb.start().waitFor();
-			}
-			
-			System.out.print("]0;" + this.getTitle() + "");
-			System.out.flush();
-		}
-		catch (Exception e){e.printStackTrace();}
 	}
 
 	public void loadConfig() 

@@ -118,31 +118,6 @@ public class MacBashExe extends TerminalExe {
 					+ "end run");
 			this.makeAs(processes, li, closeMeAs, closeMeScpt);
 		}
-//		if(!importScpt.exists())
-//		{
-//			List<String> li = new ArrayList<>();
-//			li.add("on run argv\n"
-//					+ "	set pfile to first item of argv --profile file\n"
-//					+ "	set profileId to second item of argv --the profile id which is also it's name\n"
-//					+ "	set closeScript to third item of argv\n"
-//					+ "	do shell script \"open -a Terminal \\\"\" & pfile & \"\\\"\"\n"
-//					+ "	do shell script \"osascript \\\"\" & closeScript & \"\\\"\" & \" oti.\" & profileId & \".profile\"\n"
-//					+ "	tell application \"Terminal\" to set custom title of settings set profileId to \"\" --after importing it change profile's title window to blank\n"
-//					+ "end run");
-//			this.makeAs(processes, li, importAs, importScpt);
-//		}
-//		if(!profileScpt.exists())
-//		{
-//			List<String> li = new ArrayList<>();
-//			li.add("on run argv\n"
-//					+ "	set profileName to first item in argv\n"
-//					+ "	set profileId to \"_pf\" & profileName & \"_\"\n"
-//					+ "	tell application \"Terminal\"\n"
-//					+ "		set current settings of (every window whose name contains profileId) to settings set profileName\n"
-//					+ "	end tell\n"
-//					+ "end run");
-//			this.makeAs(processes, li, profileAs, profileScpt);
-//		}
 		if(!profileScpt.exists())
 		{
 			List<String> li = new ArrayList<>();
@@ -249,6 +224,7 @@ public class MacBashExe extends TerminalExe {
 			//make the scripts runnable
 			IOUtils.makeExe(closeMeScpt);
 			IOUtils.makeExe(profileScpt);
+			IOUtils.makeExe(getProfileScpt);
 			IOUtils.makeExe(startScpt);
 		}
 		
@@ -336,6 +312,53 @@ public class MacBashExe extends TerminalExe {
 		li.add("bash");
 		li.add(bash);
 		return li;
+	}
+	
+	@Override
+	public void applyProperties() throws IOException, InterruptedException
+	{
+		Profile p = this.app.getProfile();
+		if(p != null && p.mac_profileName != null)
+		{
+			this.genStart();
+			//set the title to the sessions name so the scripts can find this window
+			System.out.print("]0;" + this.app.sessionName + "");
+			System.out.flush();
+			
+			//get the profile's name
+			ProcessBuilder getName = new ProcessBuilder(new String[] {"osascript", MacBashExe.getProfileScpt.getPath(), this.app.sessionName});
+			Process pr = getName.start();
+			pr.waitFor();
+			List<String> arr = IOUtils.getFileLines(IOUtils.getReader(pr.getErrorStream()));
+			if(arr.isEmpty())
+				arr = IOUtils.getFileLines(IOUtils.getReader(pr.getInputStream()));
+			this.app.defaultProfile = arr.get(0);
+			
+			//set the current profile
+			ProcessBuilder pb = new ProcessBuilder(new String[] {"osascript", MacBashExe.profileScpt.getPath(), p.mac_profileName, this.app.sessionName, OTConstants.home.getPath()});
+			pb.start().waitFor();
+		}
+		super.applyProperties();
+	}
+	
+	@Override
+	public void applyDefaultProperties()
+	{
+		if(this.app.defaultProfile != null)
+		{
+			try
+			{
+				System.out.print("]0;" + this.app.sessionName + "");//clear the title so the CLI resets itself
+				System.out.flush();
+				System.out.println(this.app.defaultProfile + " " + this.app.sessionName);
+				ProcessBuilder pb = new ProcessBuilder(new String[] {"osascript", MacBashExe.profileScpt.getPath(), this.app.defaultProfile, this.app.sessionName, OTConstants.home.getPath()});
+				pb.start().waitFor();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**

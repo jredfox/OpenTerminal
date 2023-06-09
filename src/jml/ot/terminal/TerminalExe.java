@@ -86,6 +86,22 @@ public abstract class TerminalExe {
 	}
 	
 	/**
+	 * apply properties like title and profiles on manual boot
+	 * @throws IOException 
+	 * @throws InterruptedException 
+	 */
+	public void applyProperties() throws IOException, InterruptedException
+	{
+		System.out.print("]0;" + this.app.getTitle() + "");
+		System.out.flush();
+	}
+	
+	public void applyDefaultProperties() 
+	{
+
+	}
+	
+	/**
 	 * add the process builder debug info into the log
 	 */
 	public void logPB(ProcessBuilder pb)
