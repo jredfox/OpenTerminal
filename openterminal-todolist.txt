@@ -11,6 +11,7 @@ passwords??
 re-fix can't boot with eclipse's JAR IN JAR
 profiling
 fullscreen
+shutdown hooks
 
 have to specify the appid in override update ot.appId.property or ot.*.property for all TerminalApps
 ot.p #shell script pause overrides TerminalApp#pause

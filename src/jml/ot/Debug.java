@@ -1,6 +1,5 @@
 package jml.ot;
 
-import java.awt.Color;
 import java.io.IOException;
 
 public class Debug {
