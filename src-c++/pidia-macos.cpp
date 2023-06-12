@@ -69,6 +69,11 @@ bool isProcessAlive(unsigned long pid)
 
     //extract start time and confirm PID start time equals org start time
     struct timeval tv = info.kp_proc.p_starttime;
+    if(tv.tv_sec == 0)
+    {
+    	handles.erase(pid);
+    	return false;
+    }
     string time = to_string(tv.tv_usec) + "-" + to_string(tv.tv_sec);
     if(handles.find(pid) != handles.end())
     {
