@@ -20,16 +20,18 @@ void testIsAlive();
 map<DWORD, string> m;
 int main()
 {
-
+	testIsAlive();
 }
 
 void testIsAlive()
 {
-	DWORD pid;
+	DWORD pid = 0;
 	while(true)
 	{
 		cout << "Enter PID:";
 		cin >> pid;
+		if(pid == 0)
+			break;
 		cout << "PID " << pid << " isAlive:" << toString(isProcessAlive(pid)) + "\n";
 	}
 }
