@@ -5,7 +5,7 @@
 // Copyright   : Your copyright notice
 // Description : PID is alive WINDOWS branch
 //============================================================================
-//#define _WIN32_WINNT 0x0501
+#define _WIN32_WINNT 0x0501
 #include <windows.h>
 #include <psapi.h>
 #include <process.h>
@@ -17,6 +17,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <tlhelp32.h>
 
 using namespace std;
 
@@ -24,11 +25,12 @@ bool isProcessAlive(DWORD pid);
 string toString(bool b);
 void testIsAlive();
 unsigned long getPID();
+unsigned long getPPID();
 string getProcessName(unsigned long pid);
 
 int main()
 {
-	cout << getProcessName(getPID());
+	cout << getProcessName(getPPID()) << "\n" << getProcessName(getPID());
 }
 
 void testIsAlive()
@@ -52,9 +54,30 @@ unsigned long getPID()
 	return getpid();
 }
 
+unsigned long getPPID(unsigned long pid)
+{
+	unsigned long ppid = -1;
+    PROCESSENTRY32 entry;
+    entry.dwSize = sizeof(PROCESSENTRY32);
+	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+    if (Process32First(snapshot, &entry))
+    {
+        while (Process32Next(snapshot, &entry))
+        {
+            if (entry.th32ProcessID == pid)
+            {
+                ppid = entry.th32ParentProcessID;
+                break;
+            }
+        }
+    }
+    CloseHandle(snapshot);
+	return ppid;
+}
+
 unsigned long getPPID()
 {
-	return -1;//TODO:
+	return getPPID(getPID());
 }
 
 unsigned long getProcessTime(unsigned long pid)
@@ -106,6 +129,9 @@ void getProcessTree(unsigned long pid)
 	//TODO: create a process tree with pids
 }
 
+/**
+ * returns the full executable path of the running process
+ */
 string getProcessName(unsigned long pid)
 {
 	string name = "";
