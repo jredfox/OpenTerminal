@@ -94,6 +94,16 @@ void killProcesss(unsigned long pid)
 	sendSignal(pid, 9);//SIGKILL is 9 on all CPUS ARCS and isn't defined on windows
 }
 
+void getProcessTree(unsigned long pid)
+{
+	//TODO: create a process tree with pids
+}
+
+string getProcessName(unsigned long pid)
+{
+	return "";//TODO: get a process's name from it's PID
+}
+
 map<DWORD, HANDLE> handles;
 bool isProcessAlive(DWORD pid)
 {
