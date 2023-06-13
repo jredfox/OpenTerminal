@@ -1,32 +1,34 @@
 //============================================================================
 // Name        : pidia.cpp
 // Author      : jredfox
-// Version     : beta 1.0.0
+// Version     : beta 1.0.0-b2
 // Copyright   : Your copyright notice
 // Description : PID is alive WINDOWS branch
 //============================================================================
-
+//#define _WIN32_WINNT 0x0501
+#include <windows.h>
+#include <psapi.h>
 #include <process.h>
+#include <signal.h>
 #include <winbase.h>
 #include <windef.h>
-#include <winerror.h>
 #include <winnt.h>
+#include <cstdlib>
 #include <iostream>
 #include <map>
 #include <string>
-#include <signal.h>
-#include <sys/types.h>
 
 using namespace std;
 
 bool isProcessAlive(DWORD pid);
 string toString(bool b);
 void testIsAlive();
+unsigned long getPID();
+string getProcessName(unsigned long pid);
 
-map<DWORD, string> m;
 int main()
 {
-	testIsAlive();
+	cout << getProcessName(getPID());
 }
 
 void testIsAlive()
@@ -48,6 +50,11 @@ void testIsAlive()
 unsigned long getPID()
 {
 	return getpid();
+}
+
+unsigned long getPPID()
+{
+	return -1;//TODO:
 }
 
 unsigned long getProcessTime(unsigned long pid)
@@ -101,7 +108,12 @@ void getProcessTree(unsigned long pid)
 
 string getProcessName(unsigned long pid)
 {
-	return "";//TODO: get a process's name from it's PID
+	string name = "";
+	HANDLE phandle = OpenProcess( PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
+	TCHAR filename[MAX_PATH];
+	GetModuleFileNameEx(phandle, NULL, filename, MAX_PATH);
+    CloseHandle(phandle);
+    return string(filename);
 }
 
 map<DWORD, HANDLE> handles;
