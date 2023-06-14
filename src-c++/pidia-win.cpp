@@ -25,6 +25,7 @@ string toString(bool b);
 void testIsAlive();
 unsigned long getPID();
 unsigned long getPPID();
+unsigned long getPPID(unsigned long pid);
 unsigned long getPID(string path);
 string getProcessStartTime(unsigned long pid);
 string getProcessName(unsigned long pid);
@@ -32,7 +33,7 @@ bool isProcessAlive(unsigned long pid, string org_time);
 
 int main()
 {
-
+	cout << getPPID(9340);
 }
 
 void testIsAlive()
@@ -171,11 +172,6 @@ void terminateProcess(unsigned long pid)
 void killProcesss(unsigned long pid)
 {
 	sendSignal(pid, 9);//SIGKILL is 9 on all CPUS ARCS and isn't defined on windows
-}
-
-void getProcessTree(unsigned long pid)
-{
-	//TODO: create a process tree with pids
 }
 
 /**
