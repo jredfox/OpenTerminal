@@ -26,11 +26,14 @@ string toString(bool b);
 void testIsAlive();
 unsigned long getPID();
 unsigned long getPPID();
+unsigned long getPID(string path);
+string getProcessStartTime(unsigned long pid);
 string getProcessName(unsigned long pid);
 
 int main()
 {
-	cout << getProcessName(getPPID()) << "\n" << getProcessName(getPID());
+//	cout << getProcessName(getPPID()) << "\n" << getProcessName(getPID());
+	testIsAlive();
 }
 
 void testIsAlive()
@@ -42,7 +45,7 @@ void testIsAlive()
 		cin >> pid;
 		if(pid == 0)
 			break;
-		cout << "PID " << pid << " isAlive:" << toString(isProcessAlive(pid)) + "\n";
+		cout << "PID " << pid << " isAlive:" << getProcessStartTime(pid) + "\n";
 	}
 }
 
@@ -80,19 +83,53 @@ unsigned long getPPID()
 	return getPPID(getPID());
 }
 
-unsigned long getProcessTime(unsigned long pid)
+/**
+ * returns process's creation time
+ */
+string getProcessStartTime(unsigned long pid)
 {
-	return -1;//TODO:
+	FILETIME startTime, ftExit, ftKernel, ftUser; // this variables for get process start time and etc.
+	HANDLE hProc = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);//Open process for all access
+	GetProcessTimes(hProc, &startTime, &ftExit, &ftKernel, &ftUser);//Get process time
+	CloseHandle(hProc);
+	return to_string(startTime.dwLowDateTime) + "-" + to_string(startTime.dwHighDateTime);
 }
 
-unsigned long getProcessTime()
+string getProcessStartTime()
 {
-	return getProcessTime(getPID());
+	return getProcessStartTime(getPID());
 }
 
-long unsigned getPID(string process_name)
+bool endsWith (std::string const &fullString, std::string const &ending)
 {
-	return -1;//TODO:
+    if (fullString.length() >= ending.length())
+    {
+        return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+    }
+    return false;
+}
+
+/**
+ * returns the first instance of the pid found from the given PATH
+ */
+long unsigned getPID(string path)
+{
+	unsigned long pid = 0;
+    PROCESSENTRY32 entry;
+    entry.dwSize = sizeof(PROCESSENTRY32);
+	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+    if (Process32First(snapshot, &entry))
+    {
+        while (Process32Next(snapshot, &entry))
+        {
+            if(endsWith(path, entry.szExeFile) && getProcessName(entry.th32ProcessID) == path)
+            {
+            	pid = entry.th32ProcessID;
+            }
+        }
+    }
+    CloseHandle(snapshot);
+    return pid;
 }
 
 void sendSignal(unsigned long pid, int signal)
