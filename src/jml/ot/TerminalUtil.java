@@ -299,7 +299,6 @@ public class TerminalUtil {
 	
 	/**
 	 * parse a command and turn it into arguments with escape sequencing supported
-	 * \\ \" \' "" ''
 	 */
 	public static String[] parseCommand(String cmd)
 	{
