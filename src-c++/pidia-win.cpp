@@ -21,7 +21,7 @@
 
 using namespace std;
 
-bool isProcessAlive(DWORD pid);
+bool isProcessAlive(unsigned long pid);
 string toString(bool b);
 void testIsAlive();
 unsigned long getPID();
@@ -32,8 +32,9 @@ string getProcessName(unsigned long pid);
 
 int main()
 {
+	cout << "\""<< getProcessStartTime(14868) << "\"\n";
 //	cout << getProcessName(getPPID()) << "\n" << getProcessName(getPID());
-	testIsAlive();
+//	testIsAlive();
 }
 
 void testIsAlive()
@@ -62,7 +63,7 @@ unsigned long getPPID(unsigned long pid)
 	unsigned long ppid = -1;
     PROCESSENTRY32 entry;
     entry.dwSize = sizeof(PROCESSENTRY32);
-	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if (Process32First(snapshot, &entry))
     {
         while (Process32Next(snapshot, &entry))
@@ -83,14 +84,53 @@ unsigned long getPPID()
 	return getPPID(getPID());
 }
 
+map<unsigned long, HANDLE> handles;
 /**
- * returns process's creation time
+ * on windows using isProcessAlive without knowing the process time is better for lower latency pinging as it only uses one handle and doesn't require the time while reserving the PID on the OS
+ */
+bool isProcessAlive(unsigned long pid)
+{
+	HANDLE process;
+	if(handles.find(pid) == handles.end())
+	{
+		process = OpenProcess(SYNCHRONIZE, FALSE, pid);
+		handles[pid] = process;
+	}
+	else
+	{
+		process = handles[pid];
+	}
+	unsigned long ret = WaitForSingleObject(process, 0);
+	bool isRunning = ret == WAIT_TIMEOUT;
+	if(!isRunning)//close the cached handle to free the PID and erase from the cache
+	{
+		CloseHandle(process);
+		handles.erase(pid);
+	}
+    return isRunning;
+}
+
+/**
+ * default interface cross platform way of knowing isProcessAlive.
+ * @parameter string org_time used a cached of PIDIA#getProcessTime(YOUR_PID)
+ */
+bool isProcessAlive(unsigned long pid, string org_time)
+{
+	string new_time = getProcessStartTime(pid);
+	return !new_time.empty() && org_time == new_time;
+}
+
+/**
+ * returns process's creation time or "" if the process isn't open
  */
 string getProcessStartTime(unsigned long pid)
 {
 	FILETIME startTime, ftExit, ftKernel, ftUser; // this variables for get process start time and etc.
 	HANDLE hProc = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);//Open process for all access
-	GetProcessTimes(hProc, &startTime, &ftExit, &ftKernel, &ftUser);//Get process time
+	if(hProc == 0)
+		return "";
+	if(GetProcessTimes(hProc, &startTime, &ftExit, &ftKernel, &ftUser) == 0)
+		return "";
 	CloseHandle(hProc);
 	return to_string(startTime.dwLowDateTime) + "-" + to_string(startTime.dwHighDateTime);
 }
@@ -117,7 +157,7 @@ long unsigned getPID(string path)
 	unsigned long pid = 0;
     PROCESSENTRY32 entry;
     entry.dwSize = sizeof(PROCESSENTRY32);
-	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if (Process32First(snapshot, &entry))
     {
         while (Process32Next(snapshot, &entry))
@@ -177,29 +217,6 @@ string getProcessName(unsigned long pid)
 	GetModuleFileNameEx(phandle, NULL, filename, MAX_PATH);
     CloseHandle(phandle);
     return string(filename);
-}
-
-map<DWORD, HANDLE> handles;
-bool isProcessAlive(DWORD pid)
-{
-	HANDLE process;
-	if(handles.find(pid) == handles.end())
-	{
-		process = OpenProcess(SYNCHRONIZE, FALSE, pid);
-		handles[pid] = process;
-	}
-	else
-	{
-		process = handles[pid];
-	}
-	DWORD ret = WaitForSingleObject(process, 0);
-	bool isRunning = ret == WAIT_TIMEOUT;
-	if(!isRunning)//close the cached handle to free the PID and erase from the cache
-	{
-		CloseHandle(process);
-		handles.erase(pid);
-	}
-    return isRunning;
 }
 
 string toString(bool b)
