@@ -21,7 +21,6 @@
 
 using namespace std;
 
-bool isProcessAlive(unsigned long pid);
 string toString(bool b);
 void testIsAlive();
 unsigned long getPID();
@@ -29,12 +28,11 @@ unsigned long getPPID();
 unsigned long getPID(string path);
 string getProcessStartTime(unsigned long pid);
 string getProcessName(unsigned long pid);
+bool isProcessAlive(unsigned long pid, string org_time);
 
 int main()
 {
-	cout << "\""<< getProcessStartTime(14868) << "\"\n";
-//	cout << getProcessName(getPPID()) << "\n" << getProcessName(getPID());
-//	testIsAlive();
+
 }
 
 void testIsAlive()
@@ -46,7 +44,7 @@ void testIsAlive()
 		cin >> pid;
 		if(pid == 0)
 			break;
-		cout << "PID " << pid << " isAlive:" << getProcessStartTime(pid) + "\n";
+		cout << "PID " << pid << " isAlive:" << toString(isProcessAlive(pid, getProcessStartTime(pid))) + "\n";
 	}
 }
 
@@ -84,35 +82,9 @@ unsigned long getPPID()
 	return getPPID(getPID());
 }
 
-map<unsigned long, HANDLE> handles;
 /**
- * on windows using isProcessAlive without knowing the process time is better for lower latency pinging as it only uses one handle and doesn't require the time while reserving the PID on the OS
- */
-bool isProcessAlive(unsigned long pid)
-{
-	HANDLE process;
-	if(handles.find(pid) == handles.end())
-	{
-		process = OpenProcess(SYNCHRONIZE, FALSE, pid);
-		handles[pid] = process;
-	}
-	else
-	{
-		process = handles[pid];
-	}
-	unsigned long ret = WaitForSingleObject(process, 0);
-	bool isRunning = ret == WAIT_TIMEOUT;
-	if(!isRunning)//close the cached handle to free the PID and erase from the cache
-	{
-		CloseHandle(process);
-		handles.erase(pid);
-	}
-    return isRunning;
-}
-
-/**
- * default interface cross platform way of knowing isProcessAlive.
- * @parameter string org_time used a cached of PIDIA#getProcessTime(YOUR_PID)
+ * a reliable way to determine if PID is alive by securing it with the creation time.
+ * cache a version of #getProcessStartTime(PID) when it returns a non-empty string for the second parameter
  */
 bool isProcessAlive(unsigned long pid, string org_time)
 {
