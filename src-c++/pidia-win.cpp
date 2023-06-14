@@ -155,7 +155,7 @@ void sendSignal(unsigned long pid, int signal)
  */
 void stopProcess(unsigned long pid)
 {
-	sendSignal(pid, SIGINT);//TODO figure out if SIGSTOP should be here instead
+	sendSignal(pid, SIGINT);
 }
 
 /**

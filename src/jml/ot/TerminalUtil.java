@@ -297,63 +297,6 @@ public class TerminalUtil {
 		return mac_terminals.contains(terminal) || !terminal.endsWith(".app") && mac_terminals.contains(terminal + ".app");
 	}
 	
-    /**
-     * parse a command without the need of escape sequences as only the end quote and a spacing delimiter will end the variable
-     */
-    public static String[] parseCommandLoosely(String cmd)
-    {
-        cmd = cmd.trim();
-        List<String> arr = new ArrayList<>();
-        StringBuilder b = new StringBuilder();
-        boolean q = false;
-        boolean hadQ = false;
-        char startQ = 'Z';
-        char slash = '\\';
-        char q1 = '"';
-        char q2 = '\'';
-        char[] chars = cmd.toCharArray();
-        char c = '.';
-        char next = '.';
-        for(int i=0; i < chars.length; i++)
-        {
-            c = chars[i];
-            next = i+1 < chars.length ? chars[i+1] : ' ';
-            
-            //set the quote boolean to preserve spacing
-            if(!q && (c == q1 || c == q2) || q && c == startQ && next == ' ')
-            {
-                hadQ = true;
-                q = !q;
-                startQ = q ? c : 'Z';
-                continue;
-            }
-            
-            //new variable detected
-            if(!q && c == ' ')
-            {
-                String bs = b.toString();
-                if(!bs.isEmpty() || hadQ)
-                {
-                    arr.add(bs);
-                    b = new StringBuilder();
-                    hadQ = false;
-                }
-                continue;
-            }
-            
-            //append the characters
-            b.append(c);
-        }
-        //add the last arg
-        String l = b.toString();
-        if(!l.isEmpty() || hadQ)
-        {
-            arr.add(l);
-            hadQ = false;
-        }
-        return arr.isEmpty() ? new String[0] : arr.toArray(new String[0]);
-    }
-	
 	/**
 	 * parse a command and turn it into arguments with escape sequencing supported
 	 * \\ \" \' "" ''
