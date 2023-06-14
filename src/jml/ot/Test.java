@@ -161,10 +161,6 @@ public class Test {
 //		app.colors.print(Color.BLACK, Color.green, "OLDE TESTE");
 //		System.out.println(app.colors.formatColor(Color.RED, Color.WHITE, "server to client test...", true));
 //		System.out.println(app.colors.colors.replace(AnsiColors.ESC, "ESC"));
-		if(app.manager != null)
-		{
-			app.manager.isRunning = false;//TODO: remove once PID auto detection has been reached
-		}
 	}
 	
 //	public static void printTest(AnsiColors colors)

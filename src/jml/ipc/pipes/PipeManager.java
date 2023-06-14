@@ -68,6 +68,7 @@ public abstract class PipeManager {
 				while(PipeManager.this.isRunning);
 			}
 		};
+		this.ticker.setDaemon(!this.isClient);//prevent this from stopping the server from shutting down
 		this.ticker.start();
 	}
 	

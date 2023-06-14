@@ -33,7 +33,7 @@ bool isProcessAlive(unsigned long pid, string org_time);
 
 int main()
 {
-	cout << getPPID(9340);
+//	cout << getPPID(9340);
 }
 
 void testIsAlive()
