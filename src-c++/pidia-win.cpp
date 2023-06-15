@@ -18,6 +18,7 @@
 #include <map>
 #include <string>
 #include <tlhelp32.h>
+#include "jmln_PID.h"
 
 using namespace std;
 
@@ -33,7 +34,7 @@ bool isProcessAlive(unsigned long pid, string org_time);
 
 int main()
 {
-//	cout << getPPID(9340);
+	Java_jmln_PID_l(NULL, NULL);
 }
 
 void testIsAlive()
