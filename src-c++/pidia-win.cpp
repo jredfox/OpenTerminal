@@ -18,6 +18,7 @@
 #include <map>
 #include <string>
 #include <tlhelp32.h>
+#include <winnt.h>
 #include "jmln_PID.h"
 
 using namespace std;
@@ -28,13 +29,22 @@ unsigned long getPID();
 unsigned long getPPID();
 unsigned long getPPID(unsigned long pid);
 unsigned long getPID(string path);
+void killProcess(unsigned long pid);
 string getProcessStartTime(unsigned long pid);
 string getProcessName(unsigned long pid);
 bool isProcessAlive(unsigned long pid, string org_time);
 
+void handle(int signal)
+{
+	Beep(800,200);
+}
+
 int main()
 {
 	Java_jmln_PID_l(NULL, NULL);
+	signal(SIGINT, handle);
+	signal(SIGBREAK, handle);
+//	while(true);
 }
 
 void testIsAlive()
@@ -148,7 +158,7 @@ long unsigned getPID(string path)
 
 void sendSignal(unsigned long pid, int signal)
 {
-	//TODO:
+	GenerateConsoleCtrlEvent(CTRL_C_EVENT , 0);
 }
 
 /**
@@ -160,19 +170,21 @@ void stopProcess(unsigned long pid)
 }
 
 /**
- * abnormal termination of a process. I believe there is a 2 second delay before the OS closes the process or sends a SIGKILL
+ * SIGTERM(SIGBREAK/CONTROL_CLOSE_EVENT on windows)
  */
 void terminateProcess(unsigned long pid)
 {
-	sendSignal(pid, SIGTERM);
+	sendSignal(pid, SIGBREAK);
 }
 
 /**
- * kills the process without being handled by System#exit. this may cause file corruption
+ * kills the process without being handled by System#exit or SIGNALING. this may cause file corruption
  */
-void killProcesss(unsigned long pid)
+void killProcess(unsigned long pid)
 {
-	sendSignal(pid, 9);//SIGKILL is 9 on all CPUS ARCS and isn't defined on windows
+	const auto explorer = OpenProcess(PROCESS_TERMINATE, false, pid);
+	TerminateProcess(explorer, 1);
+	CloseHandle(explorer);
 }
 
 /**
