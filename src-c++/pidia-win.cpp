@@ -278,6 +278,7 @@ void sendSignal(unsigned long pid, int signal)
 	if(signal == 9)
 	{
 		killProcess(pid);
+		return;
 	}
 
 	//we have to first see if it's a CLI App by using WINSIG
