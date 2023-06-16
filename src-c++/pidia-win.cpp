@@ -54,6 +54,7 @@ void testIsAlive()
 		cin >> pid;
 		if(pid == 0)
 			break;
+//		terminateProcess(pid);
 		closeProcess(pid);
 //		cout << "PID " << pid << " isAlive:" << toString(isProcessAlive(pid, getProcessStartTime(pid))) + "\n";
 	}
@@ -155,7 +156,7 @@ long unsigned getPID(string path)
     return pid;
 }
 
-void GetAllWindowsFromProcessID(DWORD dwProcessID, std::vector <HWND> &vhWnds)
+void GetAllWindowsFromProcessID(DWORD dwProcessID, std::vector <HWND> &vhWnds, bool bg)
 {
     // find all hWnds (vhWnds) associated with a process id (dwProcessID)
     HWND hCurWnd = nullptr;
@@ -164,7 +165,7 @@ void GetAllWindowsFromProcessID(DWORD dwProcessID, std::vector <HWND> &vhWnds)
         hCurWnd = FindWindowEx(nullptr, hCurWnd, nullptr, nullptr);
         DWORD checkProcessID = 0;
         GetWindowThreadProcessId(hCurWnd, &checkProcessID);
-        if (checkProcessID == dwProcessID && IsWindowVisible(hCurWnd))
+        if (checkProcessID == dwProcessID && (bg || IsWindowVisible(hCurWnd)))
         {
             vhWnds.push_back(hCurWnd);
         }
@@ -178,12 +179,20 @@ void GetAllWindowsFromProcessID(DWORD dwProcessID, std::vector <HWND> &vhWnds)
 void sendWinUISignal(unsigned long pid, int signal)
 {
 	BOOL force = signal != SIGINT;
-	vector<HWND> windows(10);
-	GetAllWindowsFromProcessID(pid, windows);
+	vector<HWND> windows;
+	GetAllWindowsFromProcessID(pid, windows, false);
+
+	//if all of the windows are not visible something is wrong force close with WM_SYSCOMMAND
+	if(windows.empty())
+	{
+		GetAllWindowsFromProcessID(pid, windows, true);
+		force = true;
+		if(!windows.empty())
+			cerr << "All Windows Are Invisible! Possibly SUS or ERR PID:" + to_string(pid) + " EXE:" + getProcessName(pid) << endl;
+	}
+
 	for(HWND win : windows)
 	{
-		if(win == 0)
-			continue;
 		if(!force)
 		{
 			PostMessage(win, WM_CLOSE, 0, 0);
