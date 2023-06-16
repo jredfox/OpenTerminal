@@ -19,6 +19,8 @@
 #include <string>
 #include <tlhelp32.h>
 #include <winnt.h>
+#include <winuser.h>
+#include <vector>
 #include "jmln_PID.h"
 
 using namespace std;
@@ -34,12 +36,13 @@ string getProcessStartTime(unsigned long pid);
 string getProcessName(unsigned long pid);
 bool isProcessAlive(unsigned long pid, string org_time);
 void stopProcess(unsigned long pid);
+void terminateProcess(unsigned long pid);
 
 int main()
 {
-	Java_jmln_PID_l(NULL, NULL);
-	stopProcess(16472);
-	while(true);
+//	Java_jmln_PID_l(NULL, NULL);
+	testIsAlive();
+//	while(true);
 }
 
 void testIsAlive()
@@ -51,7 +54,8 @@ void testIsAlive()
 		cin >> pid;
 		if(pid == 0)
 			break;
-		cout << "PID " << pid << " isAlive:" << toString(isProcessAlive(pid, getProcessStartTime(pid))) + "\n";
+		terminateProcess(pid);
+//		cout << "PID " << pid << " isAlive:" << toString(isProcessAlive(pid, getProcessStartTime(pid))) + "\n";
 	}
 }
 
@@ -151,12 +155,45 @@ long unsigned getPID(string path)
     return pid;
 }
 
+void GetAllWindowsFromProcessID(DWORD dwProcessID, std::vector <HWND> &vhWnds)
+{
+    // find all hWnds (vhWnds) associated with a process id (dwProcessID)
+    HWND hCurWnd = nullptr;
+    do
+    {
+        hCurWnd = FindWindowEx(nullptr, hCurWnd, nullptr, nullptr);
+        DWORD checkProcessID = 0;
+        GetWindowThreadProcessId(hCurWnd, &checkProcessID);
+        if (checkProcessID == dwProcessID && IsWindowVisible(hCurWnd))
+        {
+            vhWnds.push_back(hCurWnd);
+        }
+    }
+    while (hCurWnd != nullptr);
+}
+
 /**
  * do not call this on the same process it's internal
  */
 void sendSignal(unsigned long pid, int signal)
 {
-   //TODO: extract WINSIG.exe, create process, and wait till the process has exited
+	BOOL force = signal != SIGINT;
+	vector<HWND> windows(10);
+	GetAllWindowsFromProcessID(pid, windows);
+	for(HWND win : windows)
+	{
+		if(win == 0)
+			continue;
+		cout << "posting msg to:" << win << endl;
+		if(!force)
+		{
+			SendMessage(win, WM_CLOSE, 0, 0);
+		}
+		else
+		{
+			PostMessage(win, WM_SYSCOMMAND, SC_CLOSE, 0);//Terminate what TaskManager uses
+		}
+	}
 }
 
 /**
@@ -172,7 +209,7 @@ void stopProcess(unsigned long pid)
  */
 void terminateProcess(unsigned long pid)
 {
-	sendSignal(pid, SIGBREAK);
+	sendSignal(pid, SIGTERM);
 }
 
 /**

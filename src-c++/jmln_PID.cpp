@@ -26,19 +26,19 @@ BOOL WINAPI controlHandler(DWORD sig)
 	//normal close
 	if(sig == CTRL_C_EVENT)
 	{
-		return false;
+		return TRUE;
 	}
 	//dump core and close
 	else if(sig == CTRL_BREAK_EVENT)
 	{
-		return false;
+		return TRUE;
 	}
 	//terminate process CONTROL_CLOSE_EVENT(SIGBREAK) or another signal
 	else
 	{
 
 	}
-	return FALSE;
+	return TRUE;
 }
 
 void handle(int signal)
@@ -54,12 +54,9 @@ JNIEXPORT void JNICALL Java_jmln_PID_l (JNIEnv* env, jclass thisObject)
     if(!SetConsoleCtrlHandler(&controlHandler, TRUE))
     {
     	std::cerr << "Unable to set the Consoler's Handler";
-        //if your current windows supports signals use them instead
+        //use windows signals on console failure
     	signal(SIGINT, handle);//^C CONTROL+C
     	signal(SIGBREAK, handle);//CONTROL+BREAK
     	signal(SIGTERM, handle);//SIGTERM in case older or newer versions of TaskManager send this instead of SIGBREAK for terminating the program
     }
-//	signal(SIGINT, handle);//^C CONTROL+C
-//	signal(SIGBREAK, handle);//CONTROL+BREAK
-//	signal(SIGTERM, handle);
 }
