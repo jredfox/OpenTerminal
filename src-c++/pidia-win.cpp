@@ -173,9 +173,9 @@ void GetAllWindowsFromProcessID(DWORD dwProcessID, std::vector <HWND> &vhWnds)
 }
 
 /**
- * do not call this on the same process it's internal
+ * send a signal to a windows ui app
  */
-void sendSignal(unsigned long pid, int signal)
+void sendWinUISignal(unsigned long pid, int signal)
 {
 	BOOL force = signal != SIGINT;
 	vector<HWND> windows(10);
@@ -192,6 +192,23 @@ void sendSignal(unsigned long pid, int signal)
 		{
 			PostMessage(win, WM_SYSCOMMAND, SC_CLOSE, 0);//Terminate what TaskManager uses
 		}
+	}
+}
+
+bool sendWinCLISignal(unsigned long pid, int signal)
+{
+	return false;//TODO:call WINSIG.exe here and extract if required
+}
+
+/**
+ * sends a signal to standard UI apps. this won't properly stop CLI apps
+ */
+void sendSignal(unsigned long pid, int signal)
+{
+	//we have to first see if it's a CLI App by using WINSIG
+	if(!sendWinCLISignal(pid, signal))
+	{
+		sendWinUISignal(pid, signal);
 	}
 }
 
