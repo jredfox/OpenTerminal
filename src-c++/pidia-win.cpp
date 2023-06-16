@@ -34,17 +34,10 @@ string getProcessStartTime(unsigned long pid);
 string getProcessName(unsigned long pid);
 bool isProcessAlive(unsigned long pid, string org_time);
 
-void handle(int signal)
-{
-	Beep(800,200);
-}
-
 int main()
 {
 	Java_jmln_PID_l(NULL, NULL);
-	signal(SIGINT, handle);
-	signal(SIGBREAK, handle);
-//	while(true);
+	while(true);
 }
 
 void testIsAlive()

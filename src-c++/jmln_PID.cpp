@@ -3,31 +3,59 @@
 #include <windows.h>
 #include <stdio.h>
 #include <process.h>
+#include <fstream>
+#include <signal.h>
+#include <filesystem>
 #include "jmln_PID.h"
+
+using namespace std;
+
+void printTest(int signal)
+{
+	cout << to_string(signal) << endl;
+	string s = "singal-" + to_string(signal) + ".txt";
+	std::ofstream outfile (filesystem::current_path().string() + "\\" + s);
+	outfile << "singal-test";
+	outfile.flush();
+}
 
 BOOL WINAPI controlHandler(DWORD sig)
 {
+	Beep(800, 500);
+	printTest(sig);
 	//normal close
 	if(sig == CTRL_C_EVENT)
 	{
-
+		return false;
 	}
 	//dump core and close
 	else if(sig == CTRL_BREAK_EVENT)
 	{
-
+		return false;
 	}
 	//terminate process CONTROL_CLOSE_EVENT(SIGBREAK) or another signal
 	else
 	{
 
 	}
-	return TRUE;
+	return FALSE;
+}
+
+void handle(int signal)
+{
+	printTest(signal);
 }
 
 JNIEXPORT void JNICALL Java_jmln_PID_l (JNIEnv* env, jclass thisObject)
 {
     std::cout << "Hello from C++ " << getpid() << std::endl;
+    SetConsoleCtrlHandler(NULL, FALSE);
     if(!SetConsoleCtrlHandler(&controlHandler, TRUE))
+    {
     	std::cerr << "Unable to set the Consoler's Handler";
+        //if your current windows supports signals use them instead
+    	signal(SIGINT, handle);//^C CONTROL+C
+    	signal(SIGBREAK, handle);//CONTROL+BREAK
+    	signal(SIGTERM, handle);//SIGTERM in case older or newer versions of TaskManager send this instead of SIGBREAK for terminating the program
+    }
 }
