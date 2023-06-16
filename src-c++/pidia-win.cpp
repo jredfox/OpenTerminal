@@ -182,13 +182,15 @@ void sendWinUISignal(unsigned long pid, int signal)
 	vector<HWND> windows;
 	GetAllWindowsFromProcessID(pid, windows, false);
 
-	//if all of the windows are not visible something is wrong force close with WM_SYSCOMMAND
+	//if no windows appears it's either all in the background with windows SUS or uneable to terminate due to being a background process
 	if(windows.empty())
 	{
 		GetAllWindowsFromProcessID(pid, windows, true);
-		force = true;
 		if(!windows.empty())
+		{
 			cerr << "All Windows Are Invisible! Possibly SUS or ERR PID:" + to_string(pid) + " EXE:" + getProcessName(pid) << endl;
+			force = true;
+		}
 	}
 
 	for(HWND win : windows)
