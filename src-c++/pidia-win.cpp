@@ -35,7 +35,7 @@ void killProcess(unsigned long pid);
 string getProcessStartTime(unsigned long pid);
 string getProcessName(unsigned long pid);
 bool isProcessAlive(unsigned long pid, string org_time);
-void stopProcess(unsigned long pid);
+void closeProcess(unsigned long pid);
 void terminateProcess(unsigned long pid);
 
 int main()
@@ -54,7 +54,7 @@ void testIsAlive()
 		cin >> pid;
 		if(pid == 0)
 			break;
-		terminateProcess(pid);
+		closeProcess(pid);
 //		cout << "PID " << pid << " isAlive:" << toString(isProcessAlive(pid, getProcessStartTime(pid))) + "\n";
 	}
 }
@@ -184,10 +184,9 @@ void sendSignal(unsigned long pid, int signal)
 	{
 		if(win == 0)
 			continue;
-		cout << "posting msg to:" << win << endl;
 		if(!force)
 		{
-			SendMessage(win, WM_CLOSE, 0, 0);
+			PostMessage(win, WM_CLOSE, 0, 0);
 		}
 		else
 		{
@@ -199,7 +198,7 @@ void sendSignal(unsigned long pid, int signal)
 /**
  * equal to System#exit(0) hopefully
  */
-void stopProcess(unsigned long pid)
+void closeProcess(unsigned long pid)
 {
 	sendSignal(pid, SIGINT);
 }
