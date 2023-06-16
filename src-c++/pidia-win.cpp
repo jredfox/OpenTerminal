@@ -182,7 +182,7 @@ void sendWinUISignal(unsigned long pid, int signal)
 	vector<HWND> windows;
 	GetAllWindowsFromProcessID(pid, windows, false);
 
-	//if no windows appears it's either all in the background with windows SUS or uneable to terminate due to being a background process
+	//handle bg process's and susy bakas
 	if(windows.empty())
 	{
 		GetAllWindowsFromProcessID(pid, windows, true);
