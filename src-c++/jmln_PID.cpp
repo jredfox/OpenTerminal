@@ -43,6 +43,7 @@ BOOL WINAPI controlHandler(DWORD sig)
 
 void handle(int signal)
 {
+	cout << "im handling here\n";
 	printTest(signal);
 }
 
@@ -58,4 +59,7 @@ JNIEXPORT void JNICALL Java_jmln_PID_l (JNIEnv* env, jclass thisObject)
     	signal(SIGBREAK, handle);//CONTROL+BREAK
     	signal(SIGTERM, handle);//SIGTERM in case older or newer versions of TaskManager send this instead of SIGBREAK for terminating the program
     }
+//	signal(SIGINT, handle);//^C CONTROL+C
+//	signal(SIGBREAK, handle);//CONTROL+BREAK
+//	signal(SIGTERM, handle);
 }

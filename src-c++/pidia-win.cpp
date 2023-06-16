@@ -33,10 +33,12 @@ void killProcess(unsigned long pid);
 string getProcessStartTime(unsigned long pid);
 string getProcessName(unsigned long pid);
 bool isProcessAlive(unsigned long pid, string org_time);
+void stopProcess(unsigned long pid);
 
 int main()
 {
 	Java_jmln_PID_l(NULL, NULL);
+	stopProcess(16472);
 	while(true);
 }
 
@@ -149,9 +151,12 @@ long unsigned getPID(string path)
     return pid;
 }
 
+/**
+ * do not call this on the same process it's internal
+ */
 void sendSignal(unsigned long pid, int signal)
 {
-	GenerateConsoleCtrlEvent(CTRL_C_EVENT , 0);
+   //TODO: extract WINSIG.exe, create process, and wait till the process has exited
 }
 
 /**
