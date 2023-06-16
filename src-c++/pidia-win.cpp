@@ -21,6 +21,10 @@
 #include <winnt.h>
 #include <winuser.h>
 #include <vector>
+#include <filesystem>
+#include <stdlib.h>
+#include <stdio.h>
+#include <tchar.h>
 #include "jmln_PID.h"
 
 using namespace std;
@@ -206,16 +210,77 @@ void sendWinUISignal(unsigned long pid, int signal)
 	}
 }
 
-bool sendWinCLISignal(unsigned long pid, int signal)
+/**
+ * portable accross all PC's to get APPDATA
+ */
+string getAppData()
 {
-	return false;//TODO:call WINSIG.exe here and extract if required
+	#ifdef WIN32
+		return filesystem::path(std::getenv("APPDATA")).generic_u8string();
+	#elif __APPLE__
+		return (filesystem::path(std::getenv("HOME")).generic_u8string()) + "\\Library\\Application Support";//OSX / macOS
+	#endif
+
+	return filesystem::path(std::getenv("HOME")).generic_u8string(); //linux / unix
 }
 
 /**
- * sends a signal to standard UI apps. this won't properly stop CLI apps
+ * run a process and wait for the exit code
+ */
+int runProcess(string exe, string args)
+{
+    STARTUPINFO si;
+    PROCESS_INFORMATION pi;
+
+    ZeroMemory( &si, sizeof(si) );
+    si.cb = sizeof(si);
+    ZeroMemory( &pi, sizeof(pi) );
+    string cmd = exe + " " + args;
+
+    // Start the child process.
+    if( !CreateProcess(NULL,   // No module name (use command line)
+    	(LPSTR)cmd.c_str(),    // Command line
+        NULL,           // Process handle not inheritable
+        NULL,           // Thread handle not inheritable
+        FALSE,          // Set handle inheritance to FALSE
+        0,              // No creation flags
+        NULL,           // Use parent's environment block
+        NULL,           // Use parent's starting directory
+        &si,            // Pointer to STARTUPINFO structure
+        &pi )           // Pointer to PROCESS_INFORMATION structure
+    )
+    {
+    	cerr << "Failed to create Process:" + cmd;
+    }
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    DWORD exitCode = -2;
+    GetExitCodeProcess(pi.hProcess, &exitCode);
+
+    // Close process and thread handles.
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+
+    return exitCode;
+}
+
+bool sendWinCLISignal(unsigned long pid, int signal)
+{
+	int exitCode = runProcess(getAppData() + "\\PIDIA\\natives\\WINSIG.exe", (to_string(pid) + " " + to_string(signal)));
+	cout << exitCode << endl;
+	return exitCode == 0;
+}
+
+/**
+ * sends a signal to CLI apps first and if it fails it will send a signal to a UI app
  */
 void sendSignal(unsigned long pid, int signal)
 {
+	//SIGKILL is 9 accross all CPUS
+	if(signal == 9)
+	{
+		killProcess(pid);
+	}
+
 	//we have to first see if it's a CLI App by using WINSIG
 	if(!sendWinCLISignal(pid, signal))
 	{
