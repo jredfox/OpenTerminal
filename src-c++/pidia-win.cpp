@@ -266,7 +266,6 @@ int runProcess(string exe, string args)
 bool sendWinCLISignal(unsigned long pid, int signal)
 {
 	int exitCode = runProcess(getAppData() + "\\PIDIA\\natives\\WINSIG.exe", (to_string(pid) + " " + to_string(signal)));
-	cout << exitCode << endl;
 	return exitCode == 0;
 }
 
