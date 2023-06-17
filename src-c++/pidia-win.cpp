@@ -45,7 +45,7 @@ void terminateProcess(unsigned long pid);
 int main()
 {
 //	Java_jmln_PID_l(NULL, NULL);
-	testIsAlive();
+//	testIsAlive();
 //	while(true);
 }
 

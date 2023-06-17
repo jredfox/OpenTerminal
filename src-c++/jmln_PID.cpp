@@ -9,6 +9,9 @@
 #include "jmln_PID.h"
 
 using namespace std;
+JavaVM* jvm;
+JNIEnv* env;
+
 
 void printTest(int signal)
 {
@@ -21,23 +24,13 @@ void printTest(int signal)
 
 BOOL WINAPI controlHandler(DWORD sig)
 {
-	Beep(800, 500);
-	printTest(sig);
-	//normal close
-	if(sig == CTRL_C_EVENT)
-	{
-		return TRUE;
-	}
-	//dump core and close
-	else if(sig == CTRL_BREAK_EVENT)
-	{
-		return TRUE;
-	}
-	//terminate process CONTROL_CLOSE_EVENT(SIGBREAK) or another signal
-	else
-	{
-
-	}
+//	Beep(800, 500);
+//	printTest(sig);
+	jint res =  jvm->AttachCurrentThread((void **)(&env), &env);
+	jclass cls = env->FindClass("jredfox/common/pida/ShutdownHooks");
+	jmethodID mid = env->GetStaticMethodID(cls, "shutdownWindows", "(I)V");
+	env->CallStaticVoidMethod(cls, mid, sig);
+	jvm->DetachCurrentThread();
 	return TRUE;
 }
 
@@ -47,10 +40,10 @@ void handle(int signal)
 	printTest(signal);
 }
 
-JNIEXPORT void JNICALL Java_jmln_PID_l (JNIEnv* env, jclass thisObject)
+JNIEXPORT void JNICALL Java_jmln_PID_l (JNIEnv* p_env, jclass thisObject)
 {
-    std::cout << "Hello from C++ " << getpid() << std::endl;
-    SetConsoleCtrlHandler(NULL, FALSE);
+	env = p_env;
+	env->GetJavaVM(&jvm);
     if(!SetConsoleCtrlHandler(&controlHandler, TRUE))
     {
     	std::cerr << "Unable to set the Consoler's Handler";
@@ -59,4 +52,5 @@ JNIEXPORT void JNICALL Java_jmln_PID_l (JNIEnv* env, jclass thisObject)
     	signal(SIGBREAK, handle);//CONTROL+BREAK
     	signal(SIGTERM, handle);//SIGTERM in case older or newer versions of TaskManager send this instead of SIGBREAK for terminating the program
     }
+    std::cout << "Win ShutDown Hooks installed C++ " << getpid() << std::endl;
 }
