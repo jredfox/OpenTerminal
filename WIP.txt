@@ -1,4 +1,5 @@
 Replace x button of conHost windows 10/11
+add getChildren() & getAllProcesses() from base process's perspective won't work with IPC as the kernal/wrapper will often be the parent of the new IPC process
 posix handle real signals unlike windows
 port code to macOs & linux
 verify everything works in java
