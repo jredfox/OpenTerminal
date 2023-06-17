@@ -1,11 +1,12 @@
 //============================================================================
 // Name        : pidia.cpp
 // Author      : jredfox
-// Version     : beta 1.0.0-b2
-// Copyright   : Your copyright notice
+// Version     : beta 1.1.0
 // Description : PID is alive WINDOWS branch
 //============================================================================
+#ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0501
+#endif
 #include <windows.h>
 #include <psapi.h>
 #include <process.h>
@@ -25,12 +26,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <tchar.h>
-#include "jmln_PID.h"
-
 using namespace std;
 
+namespace pidiaW
+{
 string toString(bool b);
-void testIsAlive();
 unsigned long getPID();
 unsigned long getPPID();
 unsigned long getPPID(unsigned long pid);
@@ -41,28 +41,6 @@ string getProcessName(unsigned long pid);
 bool isProcessAlive(unsigned long pid, string org_time);
 void closeProcess(unsigned long pid);
 void terminateProcess(unsigned long pid);
-
-int main()
-{
-//	Java_jmln_PID_l(NULL, NULL);
-//	testIsAlive();
-//	while(true);
-}
-
-void testIsAlive()
-{
-	DWORD pid = 0;
-	while(true)
-	{
-		cout << "Enter PID:";
-		cin >> pid;
-		if(pid == 0)
-			break;
-//		terminateProcess(pid);
-		closeProcess(pid);
-//		cout << "PID " << pid << " isAlive:" << toString(isProcessAlive(pid, getProcessStartTime(pid))) + "\n";
-	}
-}
 
 /**
  * returns the current process's id
@@ -211,7 +189,7 @@ void sendWinUISignal(unsigned long pid, int signal)
 }
 
 /**
- * portable accross all PC's to get APPDATA
+ * portable across all PC's to get APPDATA
  */
 string getAppData()
 {
@@ -330,4 +308,6 @@ string getProcessName(unsigned long pid)
 string toString(bool b)
 {
 	return b ? "true" : "false";
+}
+
 }
