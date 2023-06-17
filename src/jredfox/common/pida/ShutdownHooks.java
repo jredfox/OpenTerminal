@@ -1,5 +1,7 @@
 package jredfox.common.pida;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,31 +35,39 @@ public class ShutdownHooks extends SecurityManager {
 		Runtime.getRuntime().addShutdownHook(st);
 	}
 	
+	public static void shutdown(int signal_code)
+	{
+		
+	}
+
 	public static void shutdownWindows(int signal_code)
 	{
 		SIGNAL signal = SIGNAL.values()[signal_code];//windows signals unlike POSIX will always be the same codes across CPUS
 		//shutdown normally
-		if(signal == SIGNAL.CTRL_C_EVENT || signal == SIGNAL.CTRL_CLOSE_EVENT)
+		if(signal == SIGNAL.CTRL_C_EVENT)
 		{
 			shutdown(signal);
+			System.exit(0);
 		}
 		//dump core and shutdown
 		else if(signal == SIGNAL.CTRL_BREAK_EVENT)
 		{
 			coreDump(signal);
 			shutdown(signal);
+			System.exit(0);
 		}
 		//Quickly terminate the process
 		else
 		{
 			terminate(signal);
+			System.exit(-1);
 		}
 	}
 	
 	private static void shutdown(SIGNAL exitCode)
 	{
 		for(ShutdownThread t : shutdowns)
-			t.shutdown(0);
+			t.run();
 	}
 	
 	private static void terminate(SIGNAL signal) 

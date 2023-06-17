@@ -1,4 +1,3 @@
-Finish shutdown hooks
 clean up code to interfaces
 Replace x button of conHost windows 10/11
 port code to macOs & linux
