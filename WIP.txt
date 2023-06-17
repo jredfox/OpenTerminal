@@ -1,3 +1,4 @@
 Replace x button of conHost windows 10/11
+posix handle real signals unlike windows
 port code to macOs & linux
 verify everything works in java

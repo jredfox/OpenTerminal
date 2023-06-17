@@ -60,7 +60,7 @@ public class ShutdownHooks extends SecurityManager {
 		else
 		{
 			terminate(signal);
-			System.exit(-1);
+			Runtime.getRuntime().halt(-1);//terminate signals can only be handled via terminate otherwise shutdown hooks can take as much time as they need when shutting down
 		}
 	}
 	

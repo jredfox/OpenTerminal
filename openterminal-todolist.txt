@@ -1,4 +1,5 @@
 PID checker on both server and client to see if they close
+fix batch file due to batch bug where it doesn't set vars until after if block
 
 create SocketPipes(pipes over the network from a socket)
 create SharedPipes (localhost pipes)
