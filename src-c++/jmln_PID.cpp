@@ -22,7 +22,7 @@ void printTest(int signal)
 	outfile.flush();
 }
 
-void shutdownJVM()
+void shutdownJVM(int sig)
 {
 	jint res =  jvm->AttachCurrentThread((void **)(&env), &env);
 	jclass cls = env->FindClass("jredfox/common/pida/ShutdownHooks");
@@ -35,14 +35,14 @@ BOOL WINAPI controlHandler(DWORD sig)
 {
 //	Beep(800, 500);
 //	printTest(sig);
-	shutdownJVM();
+	shutdownJVM(sig);
 	return TRUE;
 }
 
 void handle(int signal)
 {
 //	printTest(signal);
-	shutdownJVM();
+	shutdownJVM(signal);
 }
 
 JNIEXPORT void JNICALL Java_jmln_PID_l (JNIEnv* p_env, jclass thisObject)
