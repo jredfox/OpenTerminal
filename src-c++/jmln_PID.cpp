@@ -22,22 +22,27 @@ void printTest(int signal)
 	outfile.flush();
 }
 
-BOOL WINAPI controlHandler(DWORD sig)
+void shutdownJVM()
 {
-//	Beep(800, 500);
-//	printTest(sig);
 	jint res =  jvm->AttachCurrentThread((void **)(&env), &env);
 	jclass cls = env->FindClass("jredfox/common/pida/ShutdownHooks");
 	jmethodID mid = env->GetStaticMethodID(cls, "shutdownWindows", "(I)V");
 	env->CallStaticVoidMethod(cls, mid, sig);
 	jvm->DetachCurrentThread();
+}
+
+BOOL WINAPI controlHandler(DWORD sig)
+{
+//	Beep(800, 500);
+//	printTest(sig);
+	shutdownJVM();
 	return TRUE;
 }
 
 void handle(int signal)
 {
-	cout << "im handling here\n";
-	printTest(signal);
+//	printTest(signal);
+	shutdownJVM();
 }
 
 JNIEXPORT void JNICALL Java_jmln_PID_l (JNIEnv* p_env, jclass thisObject)
