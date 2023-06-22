@@ -13,6 +13,7 @@ passwords??
 re-fix can't boot with eclipse's JAR IN JAR
 profiling
 fullscreen
+findExe could be improved by scanning Path's executable file types useful for non exe scans
 
 have to specify the appid in override update ot.appId.property or ot.*.property for all TerminalApps
 ot.p #shell script pause overrides TerminalApp#pause
