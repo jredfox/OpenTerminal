@@ -84,10 +84,10 @@ public class BatchExe extends TerminalExe {
             List<String> li = new ArrayList<>();
             li.add("@Echo off\n"
                     + "set c=%~1%\n"
+                    + "set c=%c:$=;%\n"
                     + "IF NOT \"%c%\" == \" \" (\n"
-                    + "  set c=%c:$=;%\n"
                     + "  echo=%c%\n"
-                    + "  cls ::hotfix for Windows Terminal\n"
+                    + "  cls\n"
                     + ")\n"
                     + "title %~2%\n"
                     + "set boot=%~3%\n"
