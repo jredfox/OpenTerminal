@@ -18,6 +18,7 @@ profiling:
 - maximized
 - minimized
 - fullscreen
+- transparency
 - icon (conhost, taskmanagers)
 - specific CLI profiles such as macOs, windows terminal, iterm for advanced features
 
@@ -26,7 +27,6 @@ conhost profiling:
 - fontName
 - fontBold #boolean
 - screen buffer lines (amount of charcters per line x, amount of lines y)
-- transparency
 
 have to specify the appid in override update ot.appId.property or ot.*.property for all TerminalApps
 ot.p #shell script pause overrides TerminalApp#pause
@@ -40,6 +40,7 @@ ot.force
 ot.pause
 ot.terminal
 ot.conhost
+ot.jvm #args specified in the meta-inf for initial jvm args and can be overriden from a command line
 redo color formatting to accept formatting without rebuilding esc[<code>m every time
 
 done:

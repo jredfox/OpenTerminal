@@ -1,13 +1,14 @@
 #include <iostream>
 #include <windows.h>
 #include <wincon.h>
+#include <dwmapi.h>
 #include "pidia.h"
 
 using namespace std;
 
 int main()
 {
-	setConsoleOpacity(230);
+
 //	cout << getPID() << getProcessName(getPPID());
 }
 

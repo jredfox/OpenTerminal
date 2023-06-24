@@ -1,10 +1,12 @@
 Replace x button of conHost windows 10/11
+fix not displaying java icon conHost.exe
 port code to macOs & linux
 posix handle real signals unlike windows
 fix task manager make jvm behave clear all signals by doing sigset SIG_DFL, sigset https://stackoverflow.com/a/49897306/8477015 and signal(SIGINT, SIG_DFL);
 add getChildren() & getAllProcesses() from base process's perspective won't work with IPC as the kernal/wrapper will often be the parent of the new IPC process
 verify everything works in java
 
+//to fix java icons / profile icons use this
 HICON hIcon, hIconSm;
 hIcon = LoadImage(NULL, szFileName, IMAGE_ICON, 32, 32, 
 LR_LOADFROMFILE);
