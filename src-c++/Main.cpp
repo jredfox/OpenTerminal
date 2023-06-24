@@ -7,7 +7,7 @@ using namespace std;
 
 int main()
 {
-
+	setConsoleOpacity(230);
 //	cout << getPID() << getProcessName(getPPID());
 }
 

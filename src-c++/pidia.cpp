@@ -94,6 +94,21 @@ int runProcess(string exe, string args)
 	return pidh::runProcess(exe, args);
 }
 
+/**
+ * sets the console buffer size(x=amount of characters/bytes per line, y=amount of lines)
+ */
+void setConsoleBuffer(int Width, int Height)
+{
+	pidh::setConsoleBuffer(Width, Height);
+}
+/**
+ * sets the opacity 0-255 where 255 is solid and 0 is invisible
+ */
+void setConsoleOpacity(int opacity)
+{
+	pidh::setConsoleOpacity(opacity);
+}
+
 string toString(bool b)
 {
 	return b ? "true" : "false";

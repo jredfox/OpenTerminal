@@ -254,9 +254,9 @@ namespace pidiaW
 	*/
 	void killProcess(unsigned long pid)
 	{
-	const auto explorer = OpenProcess(PROCESS_TERMINATE, false, pid);
-	TerminateProcess(explorer, 1);
-	CloseHandle(explorer);
+		const auto explorer = OpenProcess(PROCESS_TERMINATE, false, pid);
+		TerminateProcess(explorer, 1);
+		CloseHandle(explorer);
 	}
 
 	/**
@@ -313,6 +313,14 @@ namespace pidiaW
 	    HANDLE Handle = GetStdHandle(STD_OUTPUT_HANDLE);      // Get Handle
 	    SetConsoleWindowInfo(Handle, TRUE, &Rect);            // Set Window Size
 	    SetConsoleScreenBufferSize(Handle, coord);            // Set Buffer Size
+	}
+
+	/**
+	 * sets the transparency of the console window
+	 */
+	void setConsoleOpacity(int opacity)
+	{
+		SetLayeredWindowAttributes(GetConsoleWindow(), 0, opacity, LWA_ALPHA);
 	}
 
 	string toString(bool b)

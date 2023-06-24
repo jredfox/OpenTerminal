@@ -19,9 +19,14 @@ profiling:
 - minimized
 - fullscreen
 - icon (conhost, taskmanagers)
-- screen buffer lines (amount of charcters per line x, amount of lines y)
-- transparency(supported on conhost only)
 - specific CLI profiles such as macOs, windows terminal, iterm for advanced features
+
+conhost profiling:
+- fontSize
+- fontName
+- fontBold #boolean
+- screen buffer lines (amount of charcters per line x, amount of lines y)
+- transparency
 
 have to specify the appid in override update ot.appId.property or ot.*.property for all TerminalApps
 ot.p #shell script pause overrides TerminalApp#pause

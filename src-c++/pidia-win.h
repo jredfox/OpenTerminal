@@ -69,6 +69,14 @@ namespace pidiaW
 	 * get the full Executable name of a process
 	 */
 	string getProcessName(unsigned long pid);
+	/**
+	 * sets the console buffer size(x=amount of characters/bytes per line, y=amount of lines)
+	 */
+	void setConsoleBuffer(int Width, int Height);
+	/**
+	 * sets the opacity 0-255 where 255 is solid and 0 is invisible
+	 */
+	void setConsoleOpacity(int opacity);
 
 	//START INTERNAL UTILITY METHODS
 	bool endsWith(std::string const &fullString, std::string const &ending);
