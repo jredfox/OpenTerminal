@@ -1,8 +1,7 @@
 PID checker on both server and client to see if they close
-fix batch file due to batch bug where it doesn't set vars until after if block
 
 create SocketPipes(pipes over the network from a socket)
-create SharedPipes (localhost pipes)
+create SharedPipes (same machine only pipes faster then SocketPipes)
 fix when default terminal isn't conHost on windows
 debug inputstreams and terminal app when two or more CLI's replace SYSO
 saveable last arguments #request input and add robot keys to input the last known command
