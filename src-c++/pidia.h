@@ -71,6 +71,10 @@ void killProcess(unsigned long pid);
  * get the full Executable name of a process
  */
 string getProcessName(unsigned long pid);
+/**
+ * sets the console buffer size(x=amount of characters/bytes per line, y=amount of lines)
+ */
+void setConsoleBuffer(int Width, int Height);
 
 //START INTERNAL UTILITY METHODS
 bool endsWith (std::string const &fullString, std::string const &ending);

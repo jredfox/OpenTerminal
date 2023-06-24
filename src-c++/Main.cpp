@@ -1,11 +1,14 @@
 #include <iostream>
+#include <windows.h>
+#include <wincon.h>
 #include "pidia.h"
 
 using namespace std;
 
 int main()
 {
-	cout << getPID() << getProcessName(getPPID());
+
+//	cout << getPID() << getProcessName(getPPID());
 }
 
 void testIsAlive()

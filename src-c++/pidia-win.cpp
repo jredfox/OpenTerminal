@@ -294,6 +294,27 @@ namespace pidiaW
 		sendSignal(pid, SIGTERM);
 	}
 
+	/**
+	 * defaults to width 120 with no max but increasing it past 500 will affect cli performance
+	 * defaults to height is 9001 with height being capped at 9999 and sometimes can glitch it to 10000
+	 */
+	void setConsoleBuffer(int Width, int Height)
+	{
+	    _COORD coord;
+	    coord.X = Width;
+	    coord.Y = Height;
+
+	    _SMALL_RECT Rect;
+	    Rect.Top = 0;
+	    Rect.Left = 0;
+	    Rect.Bottom = Height - 1;
+	    Rect.Right = Width - 1;
+
+	    HANDLE Handle = GetStdHandle(STD_OUTPUT_HANDLE);      // Get Handle
+	    SetConsoleWindowInfo(Handle, TRUE, &Rect);            // Set Window Size
+	    SetConsoleScreenBufferSize(Handle, coord);            // Set Buffer Size
+	}
+
 	string toString(bool b)
 	{
 		return b ? "true" : "false";

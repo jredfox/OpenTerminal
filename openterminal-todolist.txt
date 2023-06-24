@@ -11,9 +11,17 @@ singleton(don't boot if one has already been launched)
 progress bar API??? set progress and have a charcter that later turns green
 passwords??
 re-fix can't boot with eclipse's JAR IN JAR
-profiling
-fullscreen
 findExe could be improved by scanning Path's executable file types useful for non exe scans
+
+profiling:
+- normal
+- maximized
+- minimized
+- fullscreen
+- icon (conhost, taskmanagers)
+- screen buffer lines (amount of charcters per line x, amount of lines y)
+- transparency(supported on conhost only)
+- specific CLI profiles such as macOs, windows terminal, iterm for advanced features
 
 have to specify the appid in override update ot.appId.property or ot.*.property for all TerminalApps
 ot.p #shell script pause overrides TerminalApp#pause
@@ -27,7 +35,6 @@ ot.force
 ot.pause
 ot.terminal
 ot.conhost
-ot.jvmArgs && ot.dirs...= #includes program args if launched with any. this will boot the program if nessary with the proper changes
 redo color formatting to accept formatting without rebuilding esc[<code>m every time
 
 done:
