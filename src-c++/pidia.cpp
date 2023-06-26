@@ -109,6 +109,11 @@ void setConsoleOpacity(int opacity)
 	pidh::setConsoleOpacity(opacity);
 }
 
+void activateWindow(unsigned long pid)
+{
+	pidh::activateWindow(pid);
+}
+
 string toString(bool b)
 {
 	return b ? "true" : "false";

@@ -323,6 +323,55 @@ namespace pidiaW
 		SetLayeredWindowAttributes(GetConsoleWindow(), 0, opacity, LWA_ALPHA);
 	}
 
+	void activateWindow(HWND hwnd)
+	{
+		//if it's minimized restore it
+		if (IsIconic(hwnd))
+		{
+			SendMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
+		}
+		//bring the window to the top and activate it
+		SetForegroundWindow(hwnd);
+		SetFocus(hwnd);
+		SetActiveWindow(hwnd);
+		SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE);
+		//redraw to prevent the window blank.
+		RedrawWindow(hwnd, NULL, 0, RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN);
+	}
+
+	void activateWindow(unsigned long pid)
+	{
+		vector<HWND> vec;
+		GetAllWindowsFromProcessID(pid, vec, false);
+		for(HWND h : vec)
+		{
+			activateWindow(h);
+		}
+	}
+
+	void EnableUTF8()
+	{
+		SetConsoleOutputCP(65001);
+	}
+
+	void EnableConsoleColors()
+	{
+		HANDLE hStdin = GetStdHandle(STD_OUTPUT_HANDLE);
+		DWORD mode = 0;
+		GetConsoleMode(hStdin, &mode);
+		mode |= ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+		SetConsoleMode(hStdin, mode);
+	}
+
+	/**
+	 * enables colors unicode and if requested replaces the close button
+	 */
+	void fixConsole(bool replaceClose)
+	{
+		EnableConsoleColors();
+		EnableUTF8();
+	}
+
 	string toString(bool b)
 	{
 		return b ? "true" : "false";

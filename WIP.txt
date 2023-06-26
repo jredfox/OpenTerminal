@@ -1,4 +1,3 @@
-See if simulating keystrokes is a better solution then focusing the taskbar
 Finish replacing x button functionality
 add getChildren() which returns all children of the current PID
 fix task manager make jvm behave clear all signals by doing sigset SIG_DFL, sigset https://stackoverflow.com/a/49897306/8477015 and signal(SIGINT, SIG_DFL);

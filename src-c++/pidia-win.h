@@ -77,6 +77,15 @@ namespace pidiaW
 	 * sets the opacity 0-255 where 255 is solid and 0 is invisible
 	 */
 	void setConsoleOpacity(int opacity);
+	/**
+	 * activates all windows from a specific process
+	 */
+	void activateWindow(unsigned long pid);
+	/**
+	 * fixes conHost on windows 10 or higher
+	 * UTF-8, COLORS, replacing the close button
+	 */
+	void fixConsole(bool replaceClose);
 
 	//START INTERNAL UTILITY METHODS
 	bool endsWith(std::string const &fullString, std::string const &ending);

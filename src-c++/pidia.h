@@ -79,6 +79,10 @@ void setConsoleBuffer(int Width, int Height);
  * sets the opacity 0-255 where 255 is solid and 0 is invisible
  */
 void setConsoleOpacity(int opacity);
+/**
+ * activates all windows by PID
+ */
+void activateWindow(unsigned long pid);
 
 //START INTERNAL UTILITY METHODS
 bool endsWith (std::string const &fullString, std::string const &ending);
