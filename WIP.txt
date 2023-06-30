@@ -1,7 +1,7 @@
-Finish replacing x button functionality{while pids are alive && handle 2d button click && handle taskmanager}
+add getChildren() and getAllChildren() getBaseParent() which returns all children of the current PID
+Finish replacing x button functionality{while pids are alive && handle 2d button click or 5s ask do you want to terminate && handle taskmanager}
 fix task manager make jvm behave clear all signals by doing sigset SIG_DFL, sigset https://stackoverflow.com/a/49897306/8477015 and signal(SIGINT, SIG_DFL);
 don't fire shutdown if Control+C is typed instead of being generated (CONTROL+SHIFT+C) to shutdown
-add getChildren() and getAllChildren() which returns all children of the current PID
 
 port code to macOs & linux
 posix handle real signals unlike windows

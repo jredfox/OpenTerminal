@@ -11,11 +11,13 @@ using namespace std;
 
 int main()
 {
-	pidiaW::fixConsole(true);
-	cout << "Testing unicode -- English -- Ελληνικά -- Español. -- Chinese 你好吗" << std::endl;
-	cout << "\033[31mHELLOW WORLD" << endl;
-	cout << "\033[38;2;0;255;0mHELLOW WORLD green" << endl;
-	printf("%s\n", "中文");
+	vector<unsigned long> childs;
+//	pidiaW::getChildren(pidiaW::getPID(GetConsoleWindow()), childs);
+	getAllChildren(15940, childs);
+	for(unsigned long c : childs)
+	{
+		cout << c << " " << getProcessName(c) << endl;
+	}
 }
 
 void testIsAlive()

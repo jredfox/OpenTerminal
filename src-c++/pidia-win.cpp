@@ -95,7 +95,7 @@ namespace pidiaW
 		return !new_time.empty() && org_time == new_time;
 	}
 
-	bool endsWith (std::string const &fullString, std::string const &ending)
+	bool endsWith (string const &fullString, string const &ending)
 	{
 		if (fullString.length() >= ending.length())
 		{
@@ -120,7 +120,7 @@ namespace pidiaW
 	/**
 	 * returns the first instance of the pid found from the given PATH
 	 */
-	long unsigned getPID(string path)
+	unsigned long getPID(string path)
 	{
 		unsigned long pid = 0;
 		PROCESSENTRY32 entry;
@@ -140,7 +140,14 @@ namespace pidiaW
 		return pid;
 	}
 
-	void GetAllWindowsFromProcessID(DWORD dwProcessID, std::vector <HWND> &vhWnds, bool bg)
+	DWORD getPID(HWND h)
+	{
+		DWORD pid = 0;
+		GetWindowThreadProcessId(h, &pid);
+		return pid;
+	}
+
+	void GetAllWindowsFromProcessID(DWORD dwProcessID, vector <HWND> &vhWnds, bool bg)
 	{
 		// find all hWnds (vhWnds) associated with a process id (dwProcessID)
 		HWND hCurWnd = nullptr;
@@ -370,6 +377,27 @@ namespace pidiaW
 	{
 		EnableConsoleColors();
 		EnableUTF8();
+	}
+
+	bool getChildren(unsigned long pid, vector<unsigned long> &vec)
+	{
+		bool hasKids = false;
+		PROCESSENTRY32 entry;
+		entry.dwSize = sizeof(PROCESSENTRY32);
+		HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+		if (Process32First(snapshot, &entry))
+    	{
+			while (Process32Next(snapshot, &entry))
+			{
+				if (entry.th32ParentProcessID == pid)
+            	{
+					vec.push_back(entry.th32ProcessID);
+					hasKids = true;
+            	}
+			}
+    	}
+		CloseHandle(snapshot);
+		return hasKids;
 	}
 
 	string toString(bool b)

@@ -83,11 +83,19 @@ void setConsoleOpacity(int opacity);
  * activates all windows by PID
  */
 void activateWindow(unsigned long pid);
+/**
+ * gets children from the selected process but not all children
+ */
+void getChildren(unsigned long pid, vector<unsigned long> &vec);
+/**
+ * gets all children specified from parent's perspective
+ */
+void getAllChildren(unsigned long pid, vector<unsigned long> &children);
 
 //START INTERNAL UTILITY METHODS
-bool endsWith (std::string const &fullString, std::string const &ending);
+bool endsWith (string const &fullString, string const &ending);
 string getAppData();
 int runProcess(string exe, string args);
-string toString(bool b);//bool to string why wasn't this implemented correctly in std::to_string(bool b);????
+string toString(bool b);//bool to string why wasn't this implemented correctly in to_string(bool b);????
 
 #endif /* PIDIA_H_ */

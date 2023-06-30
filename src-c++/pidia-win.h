@@ -38,6 +38,10 @@ namespace pidiaW
 	 */
 	long unsigned getPID(string path);
 	/**
+	 * get PID from window
+	 */
+	DWORD getPID(HWND h);
+	/**
 	 * send a kill signal to a GUI app
 	 * NOTE: recommend using sendSignal directly as it will handle if it needs to send CLI or GUI signal
 	 */
@@ -86,6 +90,10 @@ namespace pidiaW
 	 * UTF-8, COLORS, replacing the close button
 	 */
 	void fixConsole(bool replaceClose);
+	/**
+	 * gets children of the process but not all children
+	 */
+	void getChildren(unsigned long pid, vector<unsigned long> &vec);
 
 	//START INTERNAL UTILITY METHODS
 	bool endsWith(std::string const &fullString, std::string const &ending);

@@ -113,6 +113,33 @@ void activateWindow(unsigned long pid)
 {
 	pidh::activateWindow(pid);
 }
+/**
+ * gets children from the selected process but not all children
+ */
+void getChildren(unsigned long pid, vector<unsigned long> &vec)
+{
+	pidh::getChildren(pid, vec);
+}
+/**
+ * gets all children iteratively as a flat vector of PIDs
+ */
+void getAllChildren(unsigned long pid, vector<unsigned long> &children)
+{
+	getChildren(pid, children);
+	unsigned int size = 0;
+	unsigned int index = 0;
+	do
+	{
+		size = children.size();
+		for(unsigned int i=index; i < size ; i++)
+		{
+			unsigned long c = children[i];
+			getChildren(c, children);
+			index++;
+		}
+	}
+	while(children.size() > size);
+}
 
 string toString(bool b)
 {
