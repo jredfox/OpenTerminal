@@ -11,13 +11,19 @@ using namespace std;
 
 int main()
 {
-	vector<unsigned long> childs;
-//	pidiaW::getChildren(pidiaW::getPID(GetConsoleWindow()), childs);
-	getAllChildren(15940, childs);
-	for(unsigned long c : childs)
+	DWORD pid = getPID();
+	for(int i=0;i<10;i++)
 	{
-		cout << c << " " << getProcessName(c) << endl;
+		pid = getPPID(pid);
+		cout << getProcessName(pid) << endl;
 	}
+//	vector<unsigned long> childs;
+//	pidiaW::getChildren(pidiaW::getPID(GetConsoleWindow()), childs);
+//	getAllChildren(15940, childs);
+//	for(unsigned long c : childs)
+//	{
+//		cout << c << " " << getProcessName(c) << endl;
+//	}
 }
 
 void testIsAlive()

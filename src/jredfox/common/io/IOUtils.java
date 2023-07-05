@@ -21,7 +21,18 @@ import java.util.List;
 
 public class IOUtils {
 	
-	public static final byte[] buffer = new byte[1048576/2];
+	public static final int BUFFER_SIZE = 1048576/2;
+	/**
+	 * enforce thread saftey with per thread local variables
+	 */
+	public static final ThreadLocal<byte[]> bufferes = new ThreadLocal<byte[]>()
+	{
+        @Override
+        protected byte[] initialValue() 
+        {
+			return new byte[BUFFER_SIZE];
+        }
+	};
 	
 	public static void copy(InputStream in, OutputStream out) throws IOException
 	{
@@ -30,6 +41,7 @@ public class IOUtils {
 	
 	public static void copy(InputStream in, OutputStream out, boolean close) throws IOException
 	{
+		byte[] buffer = bufferes.get();
 		int length;
    	 	while ((length = in.read(buffer)) >= 0)
 		{
