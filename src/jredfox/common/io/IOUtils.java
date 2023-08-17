@@ -23,7 +23,7 @@ public class IOUtils {
 	
 	public static final int BUFFER_SIZE = 1048576/2;
 	/**
-	 * enforce thread saftey with per thread local variables
+	 * enforce thread safety with per thread local variables
 	 */
 	public static final ThreadLocal<byte[]> bufferes = new ThreadLocal<byte[]>()
 	{
